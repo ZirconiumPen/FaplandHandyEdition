@@ -11,11 +11,6 @@ offset_right = 40.0
 offset_bottom = 40.0
 script = ExtResource("1_s3esy")
 
-[node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="."]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
 [node name="UI" type="Control" parent="."]
 anchors_preset = 0
 offset_right = 40.0

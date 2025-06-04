@@ -246,8 +246,7 @@ func update_session_timer_display():
 
 func clear_ui():
 	for child in get_children():
-		if child.name != "VideoStreamPlayer":
-			child.queue_free()
+		child.queue_free()
 	await get_tree().process_frame
 
 
