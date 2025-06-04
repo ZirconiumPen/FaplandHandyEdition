@@ -3,7 +3,8 @@
 /android/
 
 # Local media
-media/
+media/*
+!media/.gdignore
 
 # Local config/save files
 highscores.json
