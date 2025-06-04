@@ -1,4 +1,4 @@
-class_name MainContainer
+class_name TitleScreen
 extends Control
 
 const MainScene = preload("uid://c4ei5qhvpx1qf")

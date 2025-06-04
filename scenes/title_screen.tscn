@@ -1,7 +1,7 @@
 [gd_scene load_steps=17 format=3 uid="uid://bcan4ssdl6xe8"]
 
 [ext_resource type="StyleBox" uid="uid://cgxu8klvvwq83" path="res://ui/rounded_panel_orange.tres" id="1_0bs6e"]
-[ext_resource type="Script" uid="uid://cy0hf7drjmhq0" path="res://scenes/main_container.gd" id="1_ksq0p"]
+[ext_resource type="Script" uid="uid://cy0hf7drjmhq0" path="res://scenes/title_screen.gd" id="1_ksq0p"]
 [ext_resource type="PackedScene" uid="uid://chp646yq2krhh" path="res://scenes/emojis.tscn" id="2_atygf"]
 [ext_resource type="StyleBox" uid="uid://bq1egb14cda57" path="res://ui/rounded_panel_purple.tres" id="3_mrdy1"]
 [ext_resource type="StyleBox" uid="uid://bqa2nytr2ods4" path="res://ui/title_panel.tres" id="4_082gr"]
@@ -17,7 +17,7 @@
 [ext_resource type="PackedScene" uid="uid://b4keb3q83utsv" path="res://scenes/popup_box.tscn" id="15_xholb"]
 [ext_resource type="Script" uid="uid://d4msg6xtekugj" path="res://scenes/popup_box.gd" id="16_ktl6d"]
 
-[node name="MainContainer" type="Control"]
+[node name="TitleScreen" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -245,7 +245,9 @@ anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -300.0
+offset_top = 0.0
 offset_right = 300.0
+offset_bottom = 80.0
 grow_horizontal = 2
 script = ExtResource("16_ktl6d")
 
