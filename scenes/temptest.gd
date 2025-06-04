@@ -184,10 +184,6 @@ func _ready():
 		current_time["hour"] * 3600 + current_time["minute"] * 60 + current_time["second"]
 	)
 
-	# Force solid black background
-	get_viewport().get_window().set_flag(Window.FLAG_TRANSPARENT, false)
-	RenderingServer.set_default_clear_color(Color.BLACK)
-
 	# Initialize perk system
 	perk_system = PerkSystem.new(self)
 	perk_system.perk_earned.connect(_on_perk_earned)
