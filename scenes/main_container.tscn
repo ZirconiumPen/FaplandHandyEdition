@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://bcan4ssdl6xe8"]
+[gd_scene load_steps=17 format=3 uid="uid://bcan4ssdl6xe8"]
 
 [ext_resource type="StyleBox" uid="uid://cgxu8klvvwq83" path="res://ui/rounded_panel_orange.tres" id="1_0bs6e"]
 [ext_resource type="Script" uid="uid://cy0hf7drjmhq0" path="res://scenes/main_container.gd" id="1_ksq0p"]
@@ -14,6 +14,8 @@
 [ext_resource type="StyleBox" uid="uid://ectt20ddfq2f" path="res://ui/rounded_panel_exit_hover.tres" id="9_dktcb"]
 [ext_resource type="StyleBox" uid="uid://pq10vctlkt37" path="res://ui/rounded_panel_exit.tres" id="10_ectsu"]
 [ext_resource type="PackedScene" uid="uid://dwesryglekge2" path="res://scenes/how_to_play_box.tscn" id="14_tvm32"]
+[ext_resource type="PackedScene" uid="uid://b4keb3q83utsv" path="res://scenes/popup_box.tscn" id="15_xholb"]
+[ext_resource type="Script" uid="uid://d4msg6xtekugj" path="res://scenes/popup_box.gd" id="16_ktl6d"]
 
 [node name="MainContainer" type="Control"]
 layout_mode = 3
@@ -235,6 +237,17 @@ overlay = NodePath("../Overlay")
 visible = false
 layout_mode = 1
 overlay = NodePath("../Overlay")
+
+[node name="PopupBox" parent="." instance=ExtResource("15_xholb")]
+visible = false
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -300.0
+offset_right = 300.0
+grow_horizontal = 2
+script = ExtResource("16_ktl6d")
 
 [connection signal="pressed" from="FullscreenButton" to="." method="_on_fullscreen_button_pressed"]
 [connection signal="pressed" from="InstallButton" to="." method="_on_install_button_pressed"]

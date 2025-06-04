@@ -14,6 +14,7 @@ const MainScene = preload("uid://c4ei5qhvpx1qf")
 @onready var overlay: Control = $Overlay
 @onready var handy_config_box: Panel = $HandyConfigBox
 @onready var how_to_play_box: Panel = $HowToPlayBox
+@onready var popup_box: Panel = $PopupBox
 
 
 func _ready() -> void:
@@ -103,12 +104,10 @@ func _on_install_button_pressed() -> void:
 			break
 
 	if not python_found:
-		# show_premium_popup(
-		# "❌ Python not found! Please install Python first from python.org", Color.RED
-		# )
+		popup_box.open("❌ Python not found! Please install Python first from python.org", Color.RED)
 		return
 
-	# show_premium_popup("🔄 Installing Python dependencies... This may take a moment.", Color.YELLOW)
+	popup_box.open("🔄 Installing Python dependencies... This may take a moment.", Color.YELLOW)
 
 	# Install required packages
 	var packages = ["requests", "python-vlc", "keyboard"]
@@ -121,7 +120,7 @@ func _on_install_button_pressed() -> void:
 			OS.create_process("pip3", ["install", package])
 
 	await get_tree().create_timer(3.0).timeout
-	# show_premium_popup("✅ Dependencies installation completed!", Color.GREEN)
+	popup_box.open("✅ Dependencies installation completed!", Color.GREEN)
 
 
 func _on_handy_button_pressed() -> void:
@@ -134,13 +133,11 @@ func _on_start_button_pressed() -> void:
 	var press_tween = create_tween()
 	press_tween.tween_property(start_button, "scale", Vector2.ONE, 0.1).from(0.95 * Vector2.ONE)
 
-	# Show loading message
-	# show_premium_popup("🎮 Loading FapLand Game...", Color.GREEN)
+	popup_box.open("🎮 Loading FapLand Game...", Color.GREEN)
+	# TODO: start loading here
 
-	# Wait for button animation
-	await get_tree().create_timer(0.5).timeout
+	await popup_box.done
 
-	# Premium transition out
 	await play_exit_animation()
 
 	get_tree().change_scene_to_packed(MainScene)
@@ -160,12 +157,11 @@ func _on_how_to_play_button_pressed() -> void:
 func _on_exit_button_pressed() -> void:
 	print("🚪 Exit pressed")
 
-	var press_tween = create_tween()
-	press_tween.tween_property(exit_button, "scale", Vector2(0.95, 0.95), 0.1)
-	press_tween.tween_property(exit_button, "scale", Vector2(1.0, 1.0), 0.1)
+	var press_tween := create_tween()
+	press_tween.tween_property(exit_button, "scale", 0.95 * Vector2.ONE, 0.1)
+	press_tween.tween_property(exit_button, "scale", Vector2.ONE, 0.1)
 
-	# show_premium_popup("👋 Thanks for playing FapLand!", Color.YELLOW)
+	popup_box.open("👋 Thanks for playing FapLand!", Color.YELLOW)
 
-	# Wait for popup then exit
-	await get_tree().create_timer(1.5).timeout
+	await popup_box.done
 	get_tree().quit()

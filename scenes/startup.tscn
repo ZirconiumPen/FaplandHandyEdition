@@ -12,12 +12,5 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_t87yh")
 
-[node name="PopupBox" type="Panel" parent="."]
-layout_mode = 0
-offset_left = 297.0
-offset_top = 12.0
-offset_right = 897.0
-offset_bottom = 92.0
-
 [node name="MainContainer" parent="." instance=ExtResource("2_tpfpu")]
 layout_mode = 1
