@@ -1,3 +1,10 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
+
+# Local config/save files
+highscores.json
+handy_config.json
+pause_config.json
+handy_sync.log
+iejaculated.txt
