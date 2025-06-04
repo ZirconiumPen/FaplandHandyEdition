@@ -3,7 +3,6 @@ extends Control
 
 # UI References
 var ui_elements = {}
-var title_animation_tween: Tween
 
 @onready var main_container: Control = $MainContainer
 
@@ -15,31 +14,9 @@ func _ready():
 	# Force solid black background
 	RenderingServer.set_default_clear_color(Color.BLACK)
 
-	start_background_animations()
-
 	play_entrance_animation()
 
 	print("✅ Premium Start Menu ready!")
-
-
-func start_background_animations():
-	"""Start continuous background animations"""
-
-	# Title pulsing animation
-	if ui_elements.has("game_title"):
-		var title = ui_elements["game_title"]
-		title_animation_tween = create_tween()
-		title_animation_tween.set_loops()
-		title_animation_tween.tween_property(title, "modulate", Color(1.2, 1.2, 1.2, 1.0), 2.0)
-		title_animation_tween.tween_property(title, "modulate", Color.WHITE, 2.0)
-
-	# Start button glow animation
-	if ui_elements.has("start_button"):
-		var start_btn = ui_elements["start_button"]
-		var glow_tween = create_tween()
-		glow_tween.set_loops()
-		glow_tween.tween_property(start_btn, "modulate", Color(1.15, 1.15, 1.15, 1.0), 1.5)
-		glow_tween.tween_property(start_btn, "modulate", Color.WHITE, 1.5)
 
 
 func play_entrance_animation():

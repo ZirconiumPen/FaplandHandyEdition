@@ -6,10 +6,26 @@ const MainScene = preload("uid://c4ei5qhvpx1qf")
 @onready var start_button: Button = %StartButton
 @onready var how_to_play_button: Button = %HowToPlayButton
 @onready var exit_button: Button = %ExitButton
+@onready var game_title: Label = %GameTitle
 
 @onready var overlay: Control = $Overlay
 @onready var handy_config_box: Panel = $HandyConfigBox
 @onready var how_to_play_box: Panel = $HowToPlayBox
+
+
+func _ready() -> void:
+	# Title pulsing animation
+	var title_animation_tween := create_tween()
+	title_animation_tween.set_loops()
+	# WARN: colors above 1.0 don't seem to do anything
+	title_animation_tween.tween_property(game_title, "modulate", Color(1.2, 1.2, 1.2, 1.0), 2.0)
+	title_animation_tween.tween_property(game_title, "modulate", Color.WHITE, 2.0)
+
+	# Start button glow animation
+	var glow_tween := create_tween()
+	glow_tween.set_loops()
+	glow_tween.tween_property(start_button, "modulate", Color(1.15, 1.15, 1.15, 1.0), 1.5)
+	glow_tween.tween_property(start_button, "modulate", Color.WHITE, 1.5)
 
 
 func _on_fullscreen_button_pressed():
