@@ -11,51 +11,7 @@ func _ready():
 	print("🎮 Creating Premium FapLand Start Menu...")
 	get_node("PopupBox").visible = false
 
-	play_entrance_animation()
-
 	print("✅ Premium Start Menu ready!")
-
-
-func play_entrance_animation():
-	"""Play premium entrance animation for all elements"""
-
-	# Start everything invisible
-	main_container.modulate = Color.TRANSPARENT
-
-	# Fade in background
-	var bg_tween = create_tween()
-	bg_tween.tween_property(main_container, "modulate", Color.WHITE, 1.5)
-
-	# Title container entrance
-	if ui_elements.has("title_container"):
-		var title_container = ui_elements["title_container"]
-		title_container.position.y -= 100
-		title_container.modulate = Color.TRANSPARENT
-
-		await bg_tween.finished
-
-		var title_tween = create_tween()
-		title_tween.parallel().tween_property(
-			title_container, "position:y", title_container.position.y + 100, 1.0
-		)
-		title_tween.parallel().tween_property(title_container, "modulate", Color.WHITE, 1.0)
-
-		await title_tween.finished
-
-	# Menu buttons entrance (staggered)
-	var buttons = ["start_button", "how_to_play_button", "exit_button"]
-	for i in range(buttons.size()):
-		if ui_elements.has(buttons[i]):
-			var button = ui_elements[buttons[i]]
-			button.modulate = Color.TRANSPARENT
-			button.scale = Vector2(0.5, 0.5)
-
-			var button_tween = create_tween()
-			button_tween.parallel().tween_property(button, "modulate", Color.WHITE, 0.6)
-			button_tween.parallel().tween_property(button, "scale", Vector2(1.0, 1.0), 0.6)
-
-			# Stagger the button animations
-			await get_tree().create_timer(0.2).timeout
 
 
 func show_premium_popup(message: String, color: Color = Color.YELLOW):

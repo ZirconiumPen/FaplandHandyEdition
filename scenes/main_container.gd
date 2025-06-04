@@ -3,10 +3,13 @@ extends Control
 
 const MainScene = preload("uid://c4ei5qhvpx1qf")
 
+@onready var title_container: Control = %TitleContainer
+@onready var game_title: Label = %GameTitle
+
+@onready var menu_container: Container = %MenuContainer
 @onready var start_button: Button = %StartButton
 @onready var how_to_play_button: Button = %HowToPlayButton
 @onready var exit_button: Button = %ExitButton
-@onready var game_title: Label = %GameTitle
 
 @onready var overlay: Control = $Overlay
 @onready var handy_config_box: Panel = $HandyConfigBox
@@ -29,6 +32,53 @@ func _ready() -> void:
 	glow_tween.set_loops()
 	glow_tween.tween_property(start_button, "modulate", Color(1.15, 1.15, 1.15, 1.0), 1.5)
 	glow_tween.tween_property(start_button, "modulate", Color.WHITE, 1.5)
+
+	play_entrance_animation()
+
+
+func play_entrance_animation() -> void:
+	# Start everything invisible
+	modulate = Color.TRANSPARENT
+
+	# Fade in background
+	var bg_tween := create_tween()
+	bg_tween.tween_property(self, "modulate", Color.WHITE, 1.5)
+
+	await bg_tween.finished
+
+	# Title container entrance
+	title_container.position.y -= 100
+	title_container.modulate = Color.TRANSPARENT
+
+	var title_tween := create_tween()
+	title_tween.set_parallel()
+	title_tween.tween_property(title_container, "position:y", 100, 1.0).as_relative()
+	title_tween.tween_property(title_container, "modulate", Color.WHITE, 1.0)
+
+	await title_tween.finished
+
+	# Menu buttons entrance (staggered)
+	for button: Button in menu_container.get_children():
+		button.modulate = Color.TRANSPARENT
+		button.scale = Vector2(0.5, 0.5)
+
+		var button_tween = create_tween()
+		button_tween.set_parallel()
+		button_tween.tween_property(button, "modulate", Color.WHITE, 0.6)
+		button_tween.tween_property(button, "scale", Vector2.ONE, 0.6)
+
+		# Stagger the button animations
+		await get_tree().create_timer(0.2).timeout
+
+
+func play_exit_animation():
+	# Fade out with scale down
+	var exit_tween = create_tween()
+	exit_tween.set_parallel()
+	exit_tween.tween_property(self, "modulate", Color.TRANSPARENT, 1.0)
+	exit_tween.tween_property(self, "scale", 0.8 * Vector2.ONE, 1.0)
+
+	await exit_tween.finished
 
 
 func _on_fullscreen_button_pressed():
@@ -119,13 +169,3 @@ func _on_exit_button_pressed() -> void:
 	# Wait for popup then exit
 	await get_tree().create_timer(1.5).timeout
 	get_tree().quit()
-
-
-func play_exit_animation():
-	# Fade out with scale down
-	var exit_tween = create_tween()
-	exit_tween.set_parallel()
-	exit_tween.tween_property(self, "modulate", Color.TRANSPARENT, 1.0)
-	exit_tween.tween_property(self, "scale", 0.8 * Vector2.ONE, 1.0)
-
-	await exit_tween.finished
