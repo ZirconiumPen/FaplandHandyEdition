@@ -1,0 +1,88 @@
+[gd_scene load_steps=3 format=3 uid="uid://cj1mom8fj17ap"]
+
+[ext_resource type="StyleBox" uid="uid://nu8i5bfbnvvs" path="res://ui/purple_border_panel.tres" id="1_s22kl"]
+[ext_resource type="Script" uid="uid://ctv8a1xaxpv8b" path="res://scenes/handy_config_box.gd" id="2_l28ul"]
+
+[node name="HandyConfigBox" type="Panel"]
+offset_left = 294.0
+offset_top = 124.0
+offset_right = 894.0
+offset_bottom = 524.0
+theme_override_styles/panel = ExtResource("1_s22kl")
+script = ExtResource("2_l28ul")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.843, 0, 1)
+theme_override_font_sizes/font_size = 24
+text = "🎮 HANDY CONFIGURATION"
+horizontal_alignment = 1
+
+[node name="ConnectionKey" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="ConnectionKeyLabel" type="Label" parent="MarginContainer/VBoxContainer/ConnectionKey"]
+custom_minimum_size = Vector2(150, 30)
+layout_mode = 2
+text = "Connection Key:"
+vertical_alignment = 1
+
+[node name="ConnectionKeyField" type="LineEdit" parent="MarginContainer/VBoxContainer/ConnectionKey"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(380, 30)
+layout_mode = 2
+placeholder_text = "Enter your Handy connection key"
+
+[node name="AppID" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="AppIDLabel" type="Label" parent="MarginContainer/VBoxContainer/AppID"]
+custom_minimum_size = Vector2(150, 30)
+layout_mode = 2
+text = "App ID:"
+vertical_alignment = 1
+
+[node name="AppIDField" type="LineEdit" parent="MarginContainer/VBoxContainer/AppID"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(380, 30)
+layout_mode = 2
+placeholder_text = "Enter your Handy app ID"
+
+[node name="Spacer" type="Control" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="SaveButton" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+text = "💾 SAVE"
+
+[node name="CancelButton" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+text = "❌ CANCEL"
+
+[connection signal="pressed" from="MarginContainer/VBoxContainer/HBoxContainer/SaveButton" to="." method="_on_save_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/HBoxContainer/CancelButton" to="." method="_on_cancel_button_pressed"]

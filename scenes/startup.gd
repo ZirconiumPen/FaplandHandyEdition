@@ -16,7 +16,6 @@ var current_emoji_index = 0
 
 func _ready():
 	print("🎮 Creating Premium FapLand Start Menu...")
-	get_node("HandyConfigBox").visible = false
 	get_node("HowToPlayBox").visible = false
 	get_node("PopupBox").visible = false
 
@@ -32,7 +31,6 @@ func _ready():
 
 func create_start_menu():
 	"""Create the premium start menu interface"""
-	# handy_button.pressed.connect(_on_handy_config_pressed)
 
 	# Create animated background particles
 	create_background_particles(main_container)
@@ -46,143 +44,6 @@ func create_start_menu():
 
 	# Footer info
 	create_footer_section(main_container)
-
-
-func _on_handy_config_pressed():
-	"""Show Handy configuration popup"""
-
-	# Create overlay
-	var overlay = ColorRect.new()
-	overlay.color = Color(0, 0, 0, 0.8)
-	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	add_child(overlay)
-
-	# Create config container
-	var config_container = get_node("HandyConfigBox")
-	config_container.visible = true
-
-	move_child(config_container, get_child_count() - 1)
-
-	for child in config_container.get_children():
-		child.queue_free()
-
-	var config_style = StyleBoxFlat.new()
-	config_style.bg_color = Color(0.05, 0.05, 0.15, 0.98)
-	config_style.border_width_left = 4
-	config_style.border_width_right = 4
-	config_style.border_width_top = 4
-	config_style.border_width_bottom = 4
-	config_style.border_color = Color(0.5, 0.2, 0.8, 1.0)
-	config_style.corner_radius_top_left = 20
-	config_style.corner_radius_top_right = 20
-	config_style.corner_radius_bottom_left = 20
-	config_style.corner_radius_bottom_right = 20
-	config_container.add_theme_stylebox_override("panel", config_style)
-	#add_child(config_container)
-
-	# Title
-	var title = Label.new()
-	title.text = "🎮 HANDY CONFIGURATION"
-	title.position = Vector2(0, 20)
-	title.size = Vector2(600, 40)
-	title.add_theme_font_size_override("font_size", 24)
-	title.add_theme_color_override("font_color", Color.GOLD)
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	config_container.add_child(title)
-
-	# Access Token field
-	var token_label = Label.new()
-	token_label.text = "Connection Key:"
-	token_label.position = Vector2(20, 80)
-	token_label.size = Vector2(150, 30)
-	token_label.add_theme_color_override("font_color", Color.WHITE)
-	config_container.add_child(token_label)
-
-	var token_input = LineEdit.new()
-	token_input.position = Vector2(180, 80)
-	token_input.size = Vector2(380, 30)
-	token_input.placeholder_text = "Enter your Handy connection key"
-	config_container.add_child(token_input)
-
-	# App ID field
-	var app_label = Label.new()
-	app_label.text = "App ID:"
-	app_label.position = Vector2(20, 130)
-	app_label.size = Vector2(150, 30)
-	app_label.add_theme_color_override("font_color", Color.WHITE)
-	config_container.add_child(app_label)
-
-	var app_input = LineEdit.new()
-	app_input.position = Vector2(180, 130)
-	app_input.size = Vector2(380, 30)
-	app_input.placeholder_text = "Enter your Handy app ID"
-	config_container.add_child(app_input)
-
-	# Load existing config
-	var config = load_handy_config()
-	token_input.text = config.get("access_token", "")
-	app_input.text = config.get("app_id", "")
-
-	# Buttons
-	var save_button = Button.new()
-	save_button.text = "💾 SAVE"
-	save_button.position = Vector2(200, 320)
-	save_button.size = Vector2(100, 40)
-	save_button.add_theme_color_override("font_color", Color.WHITE)
-	config_container.add_child(save_button)
-
-	var cancel_button = Button.new()
-	cancel_button.text = "❌ CANCEL"
-	cancel_button.position = Vector2(320, 320)
-	cancel_button.size = Vector2(100, 40)
-	cancel_button.add_theme_color_override("font_color", Color.WHITE)
-	config_container.add_child(cancel_button)
-
-	# Save functionality
-	save_button.pressed.connect(
-		func():
-			save_handy_config(token_input.text, app_input.text)
-			show_premium_popup("✅ Handy configuration saved!", Color.GREEN)
-			overlay.queue_free()
-			config_container.visible = false
-	)
-
-	# Cancel functionality
-	cancel_button.pressed.connect(
-		func():
-			overlay.queue_free()
-			config_container.visible = false
-	)
-
-
-func load_handy_config() -> Dictionary:
-	"""Load Handy configuration from file"""
-	if not FileAccess.file_exists("handy_config.json"):
-		return {}
-
-	var file = FileAccess.open("handy_config.json", FileAccess.READ)
-	if not file:
-		return {}
-
-	var json_text = file.get_as_text()
-	file.close()
-
-	var json = JSON.new()
-	if json.parse(json_text) != OK:
-		return {}
-
-	return json.data
-
-
-func save_handy_config(access_token: String, app_id: String):
-	"""Save Handy configuration to file"""
-	var config = {"access_token": access_token, "app_id": app_id}
-
-	var file = FileAccess.open("handy_config.json", FileAccess.WRITE)
-	if file:
-		file.store_string(JSON.stringify(config))
-		file.close()
-		print("💾 Saved Handy configuration")
 
 
 func create_background_particles(parent: Control):

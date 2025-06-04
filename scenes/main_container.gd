@@ -1,6 +1,9 @@
 class_name MainContainer
 extends Control
 
+@onready var overlay: Control = $Overlay
+@onready var handy_config_box: Panel = $HandyConfigBox
+
 
 func _on_fullscreen_button_pressed():
 	if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN:
@@ -43,3 +46,7 @@ func _on_install_button_pressed() -> void:
 
 	await get_tree().create_timer(3.0).timeout
 	# show_premium_popup("✅ Dependencies installation completed!", Color.GREEN)
+
+
+func _on_handy_button_pressed() -> void:
+	handy_config_box.open()
