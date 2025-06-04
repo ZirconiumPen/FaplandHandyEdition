@@ -1,8 +1,8 @@
 [gd_scene load_steps=2 format=3 uid="uid://bu2fo76f4grju"]
 
-[ext_resource type="Script" uid="uid://bc8a2rncq61kw" path="res://startup.gd" id="1_t87yh"]
+[ext_resource type="Script" uid="uid://bc8a2rncq61kw" path="res://scenes/startup.gd" id="1_t87yh"]
 
-[node name="Control" type="Control"]
+[node name="Startup" type="Control"]
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
