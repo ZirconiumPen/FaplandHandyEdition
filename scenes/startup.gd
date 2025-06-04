@@ -11,9 +11,6 @@ func _ready():
 	print("🎮 Creating Premium FapLand Start Menu...")
 	get_node("PopupBox").visible = false
 
-	# Force solid black background
-	RenderingServer.set_default_clear_color(Color.BLACK)
-
 	play_entrance_animation()
 
 	print("✅ Premium Start Menu ready!")
