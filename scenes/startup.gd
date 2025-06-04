@@ -32,53 +32,7 @@ func _ready():
 
 func create_start_menu():
 	"""Create the premium start menu interface"""
-
-	main_container.get_node("FullscreenButton").pressed.connect(_on_fullscreen_button_pressed)
-
-	# INSTALL DEPENDENCIES button
-	var install_button = Button.new()
-	install_button.name = "InstallButton"
-	install_button.text = "⚙️ INSTALL DEPS"
-	install_button.position = Vector2(50, 500)
-	install_button.size = Vector2(300, 50)
-	install_button.add_theme_font_size_override("font_size", 18)
-
-	var install_style = StyleBoxFlat.new()
-	install_style.bg_color = Color(0.8, 0.5, 0.1, 0.95)
-	install_style.corner_radius_top_left = 15
-	install_style.corner_radius_top_right = 15
-	install_style.corner_radius_bottom_left = 15
-	install_style.corner_radius_bottom_right = 15
-	install_style.shadow_color = Color(0.8, 0.5, 0.1, 0.5)
-	install_style.shadow_size = 8
-	install_button.add_theme_stylebox_override("normal", install_style)
-	install_button.add_theme_color_override("font_color", Color.WHITE)
-
-	main_container.add_child(install_button)
-	install_button.pressed.connect(_on_install_deps_pressed)
-
-	# HANDY CONFIG button
-	var handy_button = Button.new()
-	handy_button.name = "HandyButton"
-	handy_button.text = "🎮 HANDY CONFIG"
-	handy_button.position = Vector2(50, 450)
-	handy_button.size = Vector2(300, 50)
-	handy_button.add_theme_font_size_override("font_size", 18)
-
-	var handy_style = StyleBoxFlat.new()
-	handy_style.bg_color = Color(0.5, 0.2, 0.8, 0.95)
-	handy_style.corner_radius_top_left = 15
-	handy_style.corner_radius_top_right = 15
-	handy_style.corner_radius_bottom_left = 15
-	handy_style.corner_radius_bottom_right = 15
-	handy_style.shadow_color = Color(0.5, 0.2, 0.8, 0.5)
-	handy_style.shadow_size = 8
-	handy_button.add_theme_stylebox_override("normal", handy_style)
-	handy_button.add_theme_color_override("font_color", Color.WHITE)
-
-	main_container.add_child(handy_button)
-	ui_elements["handy_button"] = handy_button
-	handy_button.pressed.connect(_on_handy_config_pressed)
+	# handy_button.pressed.connect(_on_handy_config_pressed)
 
 	# Create animated background particles
 	create_background_particles(main_container)
@@ -442,42 +396,6 @@ func create_menu_section(parent: Control):
 
 	# Connect exit button signal
 	exit_button.pressed.connect(_on_exit_pressed)
-
-
-func _on_install_deps_pressed():
-	"""Handle install dependencies button press"""
-	print("⚙️ Install Dependencies pressed")
-
-	# Check if Python is installed first
-	var python_commands = ["python", "python3", "py"]
-	var python_found = false
-
-	for python_cmd in python_commands:
-		var process_id = OS.create_process(python_cmd, ["--version"])
-		if process_id > 0:
-			python_found = true
-			break
-
-	if not python_found:
-		show_premium_popup(
-			"❌ Python not found! Please install Python first from python.org", Color.RED
-		)
-		return
-
-	show_premium_popup("🔄 Installing Python dependencies... This may take a moment.", Color.YELLOW)
-
-	# Install required packages
-	var packages = ["requests", "python-vlc", "keyboard"]
-
-	for package in packages:
-		print("Installing: " + package)
-		var pip_process = OS.create_process("pip", ["install", package])
-		# You could also try "pip3" if pip fails
-		if pip_process <= 0:
-			OS.create_process("pip3", ["install", package])
-
-	await get_tree().create_timer(3.0).timeout
-	show_premium_popup("✅ Dependencies installation completed!", Color.GREEN)
 
 
 func create_footer_section(parent: Control):
@@ -1032,10 +950,3 @@ func show_premium_popup(message: String, color: Color = Color.YELLOW):
 	popup_tween.tween_interval(2.0)
 	popup_tween.parallel().tween_property(popup_container, "modulate", Color.TRANSPARENT, 0.8)
 	popup_tween.tween_callback(func(): popup_container.visible = false)
-
-
-func _on_fullscreen_button_pressed():
-	if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN:
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
-	else:
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
