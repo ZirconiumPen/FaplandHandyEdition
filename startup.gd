@@ -19,7 +19,6 @@ func _ready():
 	get_node("PopupBox").visible = false
 
 	# Force solid black background
-	get_viewport().get_window().set_flag(Window.FLAG_TRANSPARENT, false)
 	RenderingServer.set_default_clear_color(Color.BLACK)
 
 	create_start_menu()
