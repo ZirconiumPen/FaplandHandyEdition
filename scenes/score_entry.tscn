@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://cep7vbmgdtwhh"]
+
+[node name="ScoreEntry" type="Label"]
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_outline_size = 1
+theme_override_font_sizes/font_size = 14
+text = "💀 1. Round 92"

@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://bcan4ssdl6xe8"]
+[gd_scene load_steps=8 format=3 uid="uid://bcan4ssdl6xe8"]
 
 [ext_resource type="StyleBox" uid="uid://cgxu8klvvwq83" path="res://ui/rounded_panel_orange.tres" id="1_0bs6e"]
 [ext_resource type="Script" uid="uid://cy0hf7drjmhq0" path="res://scenes/main_container.gd" id="1_ksq0p"]
@@ -6,6 +6,7 @@
 [ext_resource type="StyleBox" uid="uid://bq1egb14cda57" path="res://ui/rounded_panel_purple.tres" id="3_mrdy1"]
 [ext_resource type="StyleBox" uid="uid://bqa2nytr2ods4" path="res://ui/title_panel.tres" id="4_082gr"]
 [ext_resource type="PackedScene" uid="uid://cj1mom8fj17ap" path="res://scenes/handy_config_box.tscn" id="4_e4hg6"]
+[ext_resource type="PackedScene" uid="uid://dttds3kuq88d3" path="res://scenes/highscore_container.tscn" id="6_mgukb"]
 
 [node name="MainContainer" type="Control"]
 layout_mode = 3
@@ -120,6 +121,20 @@ theme_override_font_sizes/font_size = 28
 text = "🎲 Handy Edition 🎲"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="HighscoreContainer" parent="." instance=ExtResource("6_mgukb")]
+layout_mode = 0
+anchors_preset = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 832.0
+offset_top = 328.0
+offset_right = 1132.0
+offset_bottom = 628.0
+grow_horizontal = 1
+grow_vertical = 1
 
 [node name="VersionLabel" type="Label" parent="."]
 layout_mode = 1
