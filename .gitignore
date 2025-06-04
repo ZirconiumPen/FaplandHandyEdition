@@ -2,6 +2,9 @@
 .godot/
 /android/
 
+# Local media
+media/
+
 # Local config/save files
 highscores.json
 handy_config.json
