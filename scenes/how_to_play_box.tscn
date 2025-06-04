@@ -1,0 +1,103 @@
+[gd_scene load_steps=4 format=3 uid="uid://dwesryglekge2"]
+
+[ext_resource type="StyleBox" uid="uid://c2xykhgfvwbhb" path="res://ui/howtoplay_panel.tres" id="1_sw3j7"]
+[ext_resource type="Script" uid="uid://b5frnugs8ngwa" path="res://scenes/how_to_play_box.gd" id="2_88dis"]
+[ext_resource type="StyleBox" uid="uid://c4gwh1mia1q3h" path="res://ui/close_button.tres" id="2_x5e1w"]
+
+[node name="HowToPlayBox" type="Panel"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -400.0
+offset_top = -250.0
+offset_right = 400.0
+offset_bottom = 250.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = ExtResource("1_sw3j7")
+script = ExtResource("2_88dis")
+
+[node name="Title" type="Label" parent="."]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -205.0
+offset_top = 20.0
+offset_right = 205.0
+offset_bottom = 65.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 0.843, 0, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_outline_size = 4
+theme_override_font_sizes/font_size = 32
+text = "🎯 HOW TO PLAY FAPLAND"
+horizontal_alignment = 1
+
+[node name="LeftColumn" type="Label" parent="."]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 80.0
+offset_right = 380.0
+offset_bottom = 430.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_outline_size = 2
+theme_override_font_sizes/font_size = 15
+text = "🎮 OBJECTIVE:
+Reach Round 100 without ejaculating!
+
+🎲 GAMEPLAY:
+• Click PLAY to watch video
+• Roll dice when video ends
+• Move forward 1-6 rounds
+
+⏸️ PAUSES:
+• Get pause tokens for videos
+• Use SPACE in VLC to pause
+• Press E if you ejaculate
+
+🌟 PERKS:
+• Earn perks with a chance each round
+• Click perks window to use
+• Get special advantages"
+autowrap_mode = 3
+
+[node name="RightColumn" type="Label" parent="."]
+layout_mode = 0
+offset_left = 400.0
+offset_top = 80.0
+offset_right = 760.0
+offset_bottom = 452.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_outline_size = 2
+theme_override_font_sizes/font_size = 15
+text = "🎬 VLC CONTROLS:
+• SPACE = Pause
+• R = Resync Handy
+• E = Ejaculate (game over)
+• Q/ESC = Quit video
+
+💡 STRATEGY TIPS:
+• Use pauses strategically
+• Save perks for hard rounds
+• Videos get more challenging
+• Plan your perk usage
+• Don't waste early pauses
+
+🏆 WIN CONDITION:
+Complete all 100 rounds!"
+autowrap_mode = 3
+
+[node name="CloseButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 300.0
+offset_top = 440.0
+offset_right = 500.0
+offset_bottom = 480.0
+theme_override_styles/normal = ExtResource("2_x5e1w")
+text = "✓ GOT IT!"
+
+[connection signal="pressed" from="CloseButton" to="." method="_on_close_button_pressed"]

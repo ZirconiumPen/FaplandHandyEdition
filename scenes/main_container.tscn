@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://bcan4ssdl6xe8"]
+[gd_scene load_steps=15 format=3 uid="uid://bcan4ssdl6xe8"]
 
 [ext_resource type="StyleBox" uid="uid://cgxu8klvvwq83" path="res://ui/rounded_panel_orange.tres" id="1_0bs6e"]
 [ext_resource type="Script" uid="uid://cy0hf7drjmhq0" path="res://scenes/main_container.gd" id="1_ksq0p"]
@@ -6,7 +6,14 @@
 [ext_resource type="StyleBox" uid="uid://bq1egb14cda57" path="res://ui/rounded_panel_purple.tres" id="3_mrdy1"]
 [ext_resource type="StyleBox" uid="uid://bqa2nytr2ods4" path="res://ui/title_panel.tres" id="4_082gr"]
 [ext_resource type="PackedScene" uid="uid://cj1mom8fj17ap" path="res://scenes/handy_config_box.tscn" id="4_e4hg6"]
+[ext_resource type="StyleBox" uid="uid://dp6i4l2kqejq5" path="res://ui/rounded_panel_start_hover.tres" id="6_jor4d"]
 [ext_resource type="PackedScene" uid="uid://dttds3kuq88d3" path="res://scenes/highscore_container.tscn" id="6_mgukb"]
+[ext_resource type="StyleBox" uid="uid://ts12ubcn6ne" path="res://ui/rounded_panel_start.tres" id="7_5olki"]
+[ext_resource type="StyleBox" uid="uid://cgp5rrh0fi5pf" path="res://ui/rounded_panel_howtoplay.tres" id="8_5olki"]
+[ext_resource type="StyleBox" uid="uid://cyishuq76faoc" path="res://ui/rounded_panel_howtoplay_hover.tres" id="8_ectsu"]
+[ext_resource type="StyleBox" uid="uid://ectt20ddfq2f" path="res://ui/rounded_panel_exit_hover.tres" id="9_dktcb"]
+[ext_resource type="StyleBox" uid="uid://pq10vctlkt37" path="res://ui/rounded_panel_exit.tres" id="10_ectsu"]
+[ext_resource type="PackedScene" uid="uid://dwesryglekge2" path="res://scenes/how_to_play_box.tscn" id="14_tvm32"]
 
 [node name="MainContainer" type="Control"]
 layout_mode = 3
@@ -122,6 +129,49 @@ text = "🎲 Handy Edition 🎲"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="MenuContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -200.0
+offset_top = -300.0
+offset_right = 200.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 20
+alignment = 2
+
+[node name="StartButton" type="Button" parent="MenuContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 80)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+theme_override_styles/hover = ExtResource("6_jor4d")
+theme_override_styles/normal = ExtResource("7_5olki")
+text = "🚀 START GAME"
+
+[node name="HowToPlayButton" type="Button" parent="MenuContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 60)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+theme_override_styles/hover = ExtResource("8_ectsu")
+theme_override_styles/normal = ExtResource("8_5olki")
+text = "❓ HOW TO PLAY"
+
+[node name="ExitButton" type="Button" parent="MenuContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_styles/hover = ExtResource("9_dktcb")
+theme_override_styles/normal = ExtResource("10_ectsu")
+text = "🚪 EXIT"
+
 [node name="HighscoreContainer" parent="." instance=ExtResource("6_mgukb")]
 layout_mode = 0
 anchors_preset = 0
@@ -178,6 +228,14 @@ grow_horizontal = 2
 grow_vertical = 2
 overlay = NodePath("../Overlay")
 
+[node name="HowToPlayBox" parent="." node_paths=PackedStringArray("overlay") instance=ExtResource("14_tvm32")]
+visible = false
+layout_mode = 1
+overlay = NodePath("../Overlay")
+
 [connection signal="pressed" from="FullscreenButton" to="." method="_on_fullscreen_button_pressed"]
 [connection signal="pressed" from="InstallButton" to="." method="_on_install_button_pressed"]
 [connection signal="pressed" from="HandyButton" to="." method="_on_handy_button_pressed"]
+[connection signal="pressed" from="MenuContainer/StartButton" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="MenuContainer/HowToPlayButton" to="." method="_on_how_to_play_button_pressed"]
+[connection signal="pressed" from="MenuContainer/ExitButton" to="." method="_on_exit_button_pressed"]
