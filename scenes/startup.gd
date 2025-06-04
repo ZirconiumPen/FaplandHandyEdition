@@ -11,6 +11,8 @@ var particle_timer: Timer
 var floating_emojis = ["🎮", "🎲", "🎬", "⭐", "💎", "🔥", "✨", "🌟"]
 var current_emoji_index = 0
 
+@onready var main_container: Control = $MainContainer
+
 
 func _ready():
 	print("🎮 Creating Premium FapLand Start Menu...")
@@ -31,14 +33,7 @@ func _ready():
 func create_start_menu():
 	"""Create the premium start menu interface"""
 
-	# Main container
-	var main_container = Control.new()
-	main_container.name = "MainContainer"
-	main_container.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	add_child(main_container)
-	ui_elements["main_container"] = main_container
-
-	create_fullscreen_toggle()
+	main_container.get_node("FullscreenButton").pressed.connect(_on_fullscreen_button_pressed)
 
 	# Background gradient panel
 	var bg_panel = Panel.new()
@@ -74,7 +69,6 @@ func create_start_menu():
 	install_button.add_theme_color_override("font_color", Color.WHITE)
 
 	main_container.add_child(install_button)
-	#ui_elements["main_container"].add_child(install_button)
 	install_button.pressed.connect(_on_install_deps_pressed)
 
 	# HANDY CONFIG button
@@ -587,12 +581,11 @@ func play_entrance_animation():
 	"""Play premium entrance animation for all elements"""
 
 	# Start everything invisible
-	if ui_elements.has("main_container"):
-		ui_elements["main_container"].modulate = Color.TRANSPARENT
+	main_container.modulate = Color.TRANSPARENT
 
 	# Fade in background
 	var bg_tween = create_tween()
-	bg_tween.tween_property(ui_elements["main_container"], "modulate", Color.WHITE, 1.5)
+	bg_tween.tween_property(main_container, "modulate", Color.WHITE, 1.5)
 
 	# Title container entrance
 	if ui_elements.has("title_container"):
@@ -853,7 +846,7 @@ func _on_clear_scores_pressed():
 		if ui_elements.has("highscore_container"):
 			ui_elements["highscore_container"].queue_free()
 			ui_elements.erase("highscore_container")
-			create_highscore_panel(ui_elements["main_container"])
+			create_highscore_panel(main_container)
 
 
 func show_how_to_play_popup():
@@ -999,15 +992,12 @@ Complete all 100 rounds!"""
 func play_exit_animation():
 	"""Play premium exit animation"""
 
-	if ui_elements.has("main_container"):
-		var main_container = ui_elements["main_container"]
+	# Fade out with scale down
+	var exit_tween = create_tween()
+	exit_tween.parallel().tween_property(main_container, "modulate", Color.TRANSPARENT, 1.0)
+	exit_tween.parallel().tween_property(main_container, "scale", Vector2(0.8, 0.8), 1.0)
 
-		# Fade out with scale down
-		var exit_tween = create_tween()
-		exit_tween.parallel().tween_property(main_container, "modulate", Color.TRANSPARENT, 1.0)
-		exit_tween.parallel().tween_property(main_container, "scale", Vector2(0.8, 0.8), 1.0)
-
-		await exit_tween.finished
+	await exit_tween.finished
 
 
 func show_premium_popup(message: String, color: Color = Color.YELLOW):
@@ -1058,17 +1048,7 @@ func show_premium_popup(message: String, color: Color = Color.YELLOW):
 	popup_tween.tween_callback(func(): popup_container.visible = false)
 
 
-func create_fullscreen_toggle():
-	var fullscreen_button = Button.new()
-	fullscreen_button.text = "⛶ Fullscreen"
-	fullscreen_button.position = Vector2(20, 20)
-	fullscreen_button.size = Vector2(150, 40)
-	fullscreen_button.add_theme_font_size_override("font_size", 14)
-	fullscreen_button.pressed.connect(_on_fullscreen_toggle)
-	ui_elements["main_container"].add_child(fullscreen_button)
-
-
-func _on_fullscreen_toggle():
+func _on_fullscreen_button_pressed():
 	if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 	else:

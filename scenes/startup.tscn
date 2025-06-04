@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://bu2fo76f4grju"]
+[gd_scene load_steps=3 format=3 uid="uid://bu2fo76f4grju"]
 
 [ext_resource type="Script" uid="uid://bc8a2rncq61kw" path="res://scenes/startup.gd" id="1_t87yh"]
+[ext_resource type="PackedScene" uid="uid://bcan4ssdl6xe8" path="res://scenes/main_container.tscn" id="2_tpfpu"]
 
 [node name="Startup" type="Control"]
 layout_mode = 3
@@ -29,3 +30,6 @@ offset_left = 297.0
 offset_top = 12.0
 offset_right = 897.0
 offset_bottom = 92.0
+
+[node name="MainContainer" parent="." instance=ExtResource("2_tpfpu")]
+layout_mode = 1
