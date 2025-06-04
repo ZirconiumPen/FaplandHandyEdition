@@ -57,6 +57,19 @@ grow_vertical = 0
 theme_override_styles/normal = ExtResource("3_mrdy1")
 text = "🎮 HANDY CONFIG"
 
+[node name="InfoLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -334.0
+offset_top = 25.0
+offset_right = 334.0
+offset_bottom = 48.0
+grow_horizontal = 2
+text = "🎯 Reach Round 100 without ejaculating • 🎲 Roll dice to advance • ⏸️ Use pauses wisely"
+horizontal_alignment = 1
+
 [node name="TitleContainer" type="Panel" parent="."]
 custom_minimum_size = Vector2(800, 200)
 layout_mode = 1
@@ -103,6 +116,22 @@ theme_override_constants/shadow_outline_size = 3
 theme_override_font_sizes/font_size = 28
 text = "🎲 Handy Edition 🎲"
 horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VersionLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 17.0
+offset_top = -39.0
+offset_right = 241.0
+offset_bottom = -16.0
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.6, 0.6, 0.8, 0.7)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_outline_size = 1
+text = "FapLand v1.0 • Handy Edition"
 vertical_alignment = 1
 
 [node name="Overlay" type="ColorRect" parent="."]

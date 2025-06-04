@@ -39,9 +39,6 @@ func create_start_menu():
 	create_menu_section(main_container)
 	create_highscore_panel(main_container)
 
-	# Footer info
-	create_footer_section(main_container)
-
 
 func create_background_particles(parent: Control):
 	"""Create floating background particles for atmosphere"""
@@ -197,40 +194,6 @@ func create_menu_section(parent: Control):
 
 	# Connect exit button signal
 	exit_button.pressed.connect(_on_exit_pressed)
-
-
-func create_footer_section(parent: Control):
-	"""Create footer with game info and credits"""
-
-	var footer_container = Control.new()
-	footer_container.name = "FooterContainer"
-	footer_container.position = Vector2(0, get_viewport().size.y - 100)
-	footer_container.size = Vector2(get_viewport().size.x, 50)
-	parent.add_child(footer_container)
-
-	# Game info
-	var info_label = Label.new()
-	info_label.text = "🎯 Reach Round 100 without ejaculating • 🎲 Roll dice to advance • ⏸️ Use pauses wisely"
-	info_label.position = Vector2(0, -520)
-	info_label.size = Vector2(get_viewport().size.x, 30)
-	info_label.add_theme_font_size_override("font_size", 16)
-	info_label.add_theme_color_override("font_color", Color(0.8, 0.8, 0.6, 0.9))
-	info_label.add_theme_color_override("font_shadow_color", Color.BLACK)
-	info_label.add_theme_constant_override("shadow_outline_size", 2)
-	info_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	footer_container.add_child(info_label)
-
-	# Version info
-	var version_label = Label.new()
-	version_label.text = "FapLand v1.0 • Handy Edition"
-	version_label.position = Vector2(-460, 70)
-	version_label.size = Vector2(get_viewport().size.x, 25)
-	version_label.add_theme_font_size_override("font_size", 14)
-	version_label.add_theme_color_override("font_color", Color(0.6, 0.6, 0.8, 0.7))
-	version_label.add_theme_color_override("font_shadow_color", Color.BLACK)
-	version_label.add_theme_constant_override("shadow_outline_size", 1)
-	version_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	footer_container.add_child(version_label)
 
 
 func start_background_animations():
