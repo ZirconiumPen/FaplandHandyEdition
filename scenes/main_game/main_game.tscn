@@ -1,8 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://c4ei5qhvpx1qf"]
+[gd_scene load_steps=2 format=3 uid="uid://c4ei5qhvpx1qf"]
 
 [ext_resource type="Script" uid="uid://owskp6hxgtge" path="res://scenes/main_game/main_game.gd" id="1_s3esy"]
-
-[sub_resource type="GDScript" id="GDScript_o5qli"]
 
 [node name="MainGame" type="Control"]
 layout_mode = 3
@@ -15,7 +13,6 @@ script = ExtResource("1_s3esy")
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
-script = SubResource("GDScript_o5qli")
 
 [node name="Background" type="ColorRect" parent="UI"]
 layout_mode = 0
