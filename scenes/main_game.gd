@@ -1,4 +1,4 @@
-# FapLandEnhancedUI.gd - AAA Quality UI with black theme, session timer, and water animation
+class_name MainGame
 extends Control
 
 # Game State Variables
