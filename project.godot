@@ -19,3 +19,7 @@ config/icon="uid://da1tpn3no06xw"
 
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
+
+[gui]
+
+theme/custom="uid://nkn3f4kxv200"

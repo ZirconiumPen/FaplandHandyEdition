@@ -35,20 +35,6 @@ func create_start_menu():
 
 	main_container.get_node("FullscreenButton").pressed.connect(_on_fullscreen_button_pressed)
 
-	# Background gradient panel
-	var bg_panel = Panel.new()
-	bg_panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-
-	var bg_style = StyleBoxFlat.new()
-	bg_style.bg_color = Color(0.02, 0.02, 0.08, 1.0)
-	# Create gradient effect
-	var gradient = Gradient.new()
-	gradient.add_point(0.0, Color(0.05, 0.05, 0.15, 1.0))
-	gradient.add_point(0.5, Color(0.02, 0.02, 0.08, 1.0))
-	gradient.add_point(1.0, Color(0.08, 0.05, 0.15, 1.0))
-	bg_panel.add_theme_stylebox_override("panel", bg_style)
-	main_container.add_child(bg_panel)
-
 	# INSTALL DEPENDENCIES button
 	var install_button = Button.new()
 	install_button.name = "InstallButton"

@@ -1,0 +1,6 @@
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://nkn3f4kxv200"]
+
+[ext_resource type="StyleBox" uid="uid://chb1r2iulj62h" path="res://ui/gradient_panel.tres" id="1_vos2p"]
+
+[resource]
+Panel/styles/panel = ExtResource("1_vos2p")
