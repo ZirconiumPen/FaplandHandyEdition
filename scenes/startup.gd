@@ -35,9 +35,6 @@ func create_start_menu():
 	# Create animated background particles
 	create_background_particles(main_container)
 
-	# Title section
-	create_title_section(main_container)
-
 	# Menu buttons section
 	create_menu_section(main_container)
 	create_highscore_panel(main_container)
@@ -84,63 +81,6 @@ func animate_particle(particle: Label):
 	fade_tween.set_loops()
 	fade_tween.tween_property(particle, "modulate:a", randf_range(0.05, 0.4), randf_range(3.0, 6.0))
 	fade_tween.tween_property(particle, "modulate:a", randf_range(0.1, 0.2), randf_range(3.0, 6.0))
-
-
-func create_title_section(parent: Control):
-	"""Create the premium game title section"""
-
-	var title_container = Panel.new()
-	title_container.name = "TitleContainer"
-	title_container.position = Vector2(get_viewport().size.x / 2 - 400, 100)
-	title_container.size = Vector2(800, 200)
-
-	# Premium title container styling
-	var title_style = StyleBoxFlat.new()
-	title_style.bg_color = Color(0.05, 0.05, 0.15, 0.8)
-	title_style.border_width_left = 4
-	title_style.border_width_right = 4
-	title_style.border_width_top = 4
-	title_style.border_width_bottom = 4
-	title_style.border_color = Color(0.3, 0.6, 1.0, 0.9)
-	title_style.corner_radius_top_left = 30
-	title_style.corner_radius_top_right = 30
-	title_style.corner_radius_bottom_left = 30
-	title_style.corner_radius_bottom_right = 30
-	title_style.shadow_color = Color(0.3, 0.6, 1.0, 0.5)
-	title_style.shadow_size = 20
-	title_container.add_theme_stylebox_override("panel", title_style)
-	parent.add_child(title_container)
-	ui_elements["title_container"] = title_container
-
-	# Main game title
-	var game_title = Label.new()
-	game_title.name = "GameTitle"
-	game_title.text = "🎮 FAPLAND 🎮"
-	game_title.position = Vector2(0, 30)
-	game_title.size = Vector2(800, 80)
-	game_title.add_theme_font_size_override("font_size", 64)
-	game_title.add_theme_color_override("font_color", Color.WHITE)
-	game_title.add_theme_color_override("font_shadow_color", Color(0.3, 0.6, 1.0, 1.0))
-	game_title.add_theme_constant_override("shadow_outline_size", 8)
-	game_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	game_title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	title_container.add_child(game_title)
-	ui_elements["game_title"] = game_title
-
-	# Subtitle
-	var subtitle = Label.new()
-	subtitle.name = "Subtitle"
-	subtitle.text = "🎲 Handy Edition 🎲"
-	subtitle.position = Vector2(0, 120)
-	subtitle.size = Vector2(800, 50)
-	subtitle.add_theme_font_size_override("font_size", 28)
-	subtitle.add_theme_color_override("font_color", Color(1.0, 0.8, 0.0, 1.0))
-	subtitle.add_theme_color_override("font_shadow_color", Color.BLACK)
-	subtitle.add_theme_constant_override("shadow_outline_size", 4)
-	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	subtitle.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	title_container.add_child(subtitle)
-	ui_elements["subtitle"] = subtitle
 
 
 func create_menu_section(parent: Control):
