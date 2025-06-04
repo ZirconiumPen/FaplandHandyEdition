@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://cj1mom8fj17ap"]
 
 [ext_resource type="StyleBox" uid="uid://nu8i5bfbnvvs" path="res://ui/purple_border_panel.tres" id="1_s22kl"]
-[ext_resource type="Script" uid="uid://ctv8a1xaxpv8b" path="res://scenes/handy_config_box.gd" id="2_l28ul"]
+[ext_resource type="Script" uid="uid://ctv8a1xaxpv8b" path="res://scenes/title_screen/handy_config_box.gd" id="2_l28ul"]
 
 [node name="HandyConfigBox" type="Panel"]
 offset_left = 294.0

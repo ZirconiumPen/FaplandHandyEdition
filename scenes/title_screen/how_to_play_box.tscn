@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://dwesryglekge2"]
 
 [ext_resource type="StyleBox" uid="uid://c2xykhgfvwbhb" path="res://ui/howtoplay_panel.tres" id="1_sw3j7"]
-[ext_resource type="Script" uid="uid://b5frnugs8ngwa" path="res://scenes/how_to_play_box.gd" id="2_88dis"]
+[ext_resource type="Script" uid="uid://b5frnugs8ngwa" path="res://scenes/title_screen/how_to_play_box.gd" id="2_88dis"]
 [ext_resource type="StyleBox" uid="uid://c4gwh1mia1q3h" path="res://ui/close_button.tres" id="2_x5e1w"]
 
 [node name="HowToPlayBox" type="Panel"]

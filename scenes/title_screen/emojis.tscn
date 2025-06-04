@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://chp646yq2krhh"]
 
-[ext_resource type="Script" uid="uid://dqlmins03rm6f" path="res://scenes/emojis.gd" id="1_85tbq"]
+[ext_resource type="Script" uid="uid://dqlmins03rm6f" path="res://scenes/title_screen/emojis.gd" id="1_85tbq"]
 
 [node name="Emojis" type="CanvasGroup"]
 script = ExtResource("1_85tbq")

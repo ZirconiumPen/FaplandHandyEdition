@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=3 uid="uid://dttds3kuq88d3"]
 
 [ext_resource type="StyleBox" uid="uid://y56qw17jb8rn" path="res://ui/highscore_panel.tres" id="1_7irao"]
-[ext_resource type="Script" uid="uid://bqm8i0ffkax10" path="res://scenes/highscore_container.gd" id="2_kqk74"]
-[ext_resource type="PackedScene" uid="uid://cep7vbmgdtwhh" path="res://scenes/score_entry.tscn" id="3_v8tva"]
+[ext_resource type="Script" uid="uid://bqm8i0ffkax10" path="res://scenes/title_screen/highscore_container.gd" id="2_kqk74"]
+[ext_resource type="PackedScene" uid="uid://cep7vbmgdtwhh" path="res://scenes/title_screen/score_entry.tscn" id="3_v8tva"]
 [ext_resource type="StyleBox" uid="uid://c56bh4exdoxdl" path="res://ui/clear_button_panel.tres" id="4_2j68b"]
 
 [node name="HighscoreContainer" type="PanelContainer"]
