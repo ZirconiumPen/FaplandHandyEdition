@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://cu1vpt1sr4fs2"]
+
+[ext_resource type="Script" uid="uid://c33dnxhhmikpw" path="res://scenes/emoji_particle.gd" id="1_tusik"]
+
+[node name="EmojiParticle" type="Label"]
+offset_right = 40.0
+offset_bottom = 23.0
+theme_override_font_sizes/font_size = 48
+text = "✅️"
+script = ExtResource("1_tusik")

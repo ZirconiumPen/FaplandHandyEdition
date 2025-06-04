@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://bcan4ssdl6xe8"]
+[gd_scene load_steps=7 format=3 uid="uid://bcan4ssdl6xe8"]
 
 [ext_resource type="StyleBox" uid="uid://cgxu8klvvwq83" path="res://ui/rounded_panel_orange.tres" id="1_0bs6e"]
 [ext_resource type="Script" uid="uid://cy0hf7drjmhq0" path="res://scenes/main_container.gd" id="1_ksq0p"]
+[ext_resource type="PackedScene" uid="uid://chp646yq2krhh" path="res://scenes/emojis.tscn" id="2_atygf"]
 [ext_resource type="StyleBox" uid="uid://bq1egb14cda57" path="res://ui/rounded_panel_purple.tres" id="3_mrdy1"]
 [ext_resource type="StyleBox" uid="uid://bqa2nytr2ods4" path="res://ui/title_panel.tres" id="4_082gr"]
 [ext_resource type="PackedScene" uid="uid://cj1mom8fj17ap" path="res://scenes/handy_config_box.tscn" id="4_e4hg6"]
@@ -22,6 +23,8 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="Emojis" parent="." instance=ExtResource("2_atygf")]
 
 [node name="FullscreenButton" type="Button" parent="."]
 layout_mode = 0

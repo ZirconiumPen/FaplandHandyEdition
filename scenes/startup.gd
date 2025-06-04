@@ -3,13 +3,7 @@ extends Control
 
 # UI References
 var ui_elements = {}
-var background_particles = []
 var title_animation_tween: Tween
-var particle_timer: Timer
-
-# Animation variables
-var floating_emojis = ["🎮", "🎲", "🎬", "⭐", "💎", "🔥", "✨", "🌟"]
-var current_emoji_index = 0
 
 @onready var main_container: Control = $MainContainer
 
@@ -25,52 +19,11 @@ func _ready():
 	create_menu_section(main_container)
 	create_highscore_panel(main_container)
 
-	create_background_particles(main_container)
 	start_background_animations()
 
 	play_entrance_animation()
 
 	print("✅ Premium Start Menu ready!")
-
-
-func create_background_particles(parent: Control):
-	"""Create floating background particles for atmosphere"""
-
-	for i in range(20):
-		var particle = Label.new()
-		particle.text = floating_emojis[i % floating_emojis.size()]
-		particle.add_theme_font_size_override("font_size", randi_range(24, 48))
-		particle.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, randf_range(0.1, 0.3)))
-		particle.position = Vector2(
-			randf() * get_viewport().size.x, randf() * get_viewport().size.y
-		)
-		parent.add_child(particle)
-		background_particles.append(particle)
-
-		# Start individual particle animation
-		animate_particle(particle)
-
-
-func animate_particle(particle: Label):
-	"""Animate individual background particle"""
-	var move_tween = create_tween()
-	move_tween.set_loops()
-
-	var start_pos = particle.position
-	var target_pos = Vector2(
-		start_pos.x + randf_range(-100, 100), start_pos.y + randf_range(-50, 50)
-	)
-
-	var duration = randf_range(8.0, 15.0)
-
-	move_tween.tween_property(particle, "position", target_pos, duration)
-	move_tween.tween_property(particle, "position", start_pos, duration)
-
-	# Fade animation
-	var fade_tween = create_tween()
-	fade_tween.set_loops()
-	fade_tween.tween_property(particle, "modulate:a", randf_range(0.05, 0.4), randf_range(3.0, 6.0))
-	fade_tween.tween_property(particle, "modulate:a", randf_range(0.1, 0.2), randf_range(3.0, 6.0))
 
 
 func create_menu_section(parent: Control):
@@ -207,35 +160,6 @@ func start_background_animations():
 		glow_tween.set_loops()
 		glow_tween.tween_property(start_btn, "modulate", Color(1.15, 1.15, 1.15, 1.0), 1.5)
 		glow_tween.tween_property(start_btn, "modulate", Color.WHITE, 1.5)
-
-	# Floating emoji timer
-	particle_timer = Timer.new()
-	particle_timer.wait_time = 3.0
-	particle_timer.timeout.connect(_on_spawn_floating_emoji)
-	add_child(particle_timer)
-	particle_timer.start()
-
-
-func _on_spawn_floating_emoji():
-	"""Spawn floating emojis periodically"""
-	var emoji = Label.new()
-	emoji.text = floating_emojis[current_emoji_index]
-	current_emoji_index = (current_emoji_index + 1) % floating_emojis.size()
-
-	emoji.add_theme_font_size_override("font_size", 32)
-	emoji.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.8))
-	emoji.add_theme_color_override("font_shadow_color", Color.BLACK)
-	emoji.add_theme_constant_override("shadow_outline_size", 2)
-
-	# Start from bottom, float up
-	emoji.position = Vector2(randf() * get_viewport().size.x, get_viewport().size.y + 50)
-	add_child(emoji)
-
-	# Float up animation
-	var float_tween = create_tween()
-	float_tween.parallel().tween_property(emoji, "position:y", -100, 8.0)
-	float_tween.parallel().tween_property(emoji, "modulate:a", 0.0, 8.0)
-	float_tween.tween_callback(emoji.queue_free)
 
 
 func play_entrance_animation():
