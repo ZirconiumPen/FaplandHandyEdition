@@ -12,7 +12,7 @@ func _ready() -> void:
 
 
 func refresh() -> void:
-	var highscores = load_highscores()
+	var highscores = Config.load_highscores()
 	if not highscores:
 		score_list.hide()
 		no_scores.show()
@@ -44,34 +44,6 @@ func refresh() -> void:
 				score_color = Color.WHITE
 		score_label.add_theme_color_override("font_color", score_color)
 		score_list.add_child(score_label)
-
-
-func load_highscores() -> Array:
-	# TODO: util function for json
-	print("Checking for highscores.json...")
-	if not FileAccess.file_exists("highscores.json"):
-		return []
-
-	print("Found highscores.json, opening...")
-	var file = FileAccess.open("highscores.json", FileAccess.READ)
-	if not file:
-		return []
-
-	var json_text = file.get_as_text()
-	file.close()
-
-	var json = JSON.new()
-	if json.parse(json_text) != OK:
-		print("JSON parse failed!")
-		return []
-
-	print("Parsed JSON: ", json.data)
-
-	var data = json.data
-	if data.has("scores"):
-		return data["scores"]
-	else:
-		return []
 
 
 func _on_clear_button_pressed():

@@ -1260,7 +1260,7 @@ func save_highscore(round_reached: int, reason: String):
 	var session_time = session_elapsed_time
 
 	# Load existing highscores
-	var highscores = load_highscores()
+	var highscores = Config.load_highscores()
 
 	# Add new entry
 	var new_entry = {
@@ -1287,38 +1287,6 @@ func save_highscore(round_reached: int, reason: String):
 		print("💾 Saved highscore: Round ", round_reached, " (", reason, ")")
 	else:
 		print("❌ Could not save highscore file")
-
-
-func load_highscores() -> Array:
-	"""Load highscores from file"""
-	if not FileAccess.file_exists("highscores.json"):
-		return []
-
-	var file = FileAccess.open("highscores.json", FileAccess.READ)
-	if not file:
-		return []
-
-	var json_text = file.get_as_text()
-	file.close()
-
-	var json = JSON.new()
-	if json.parse(json_text) != OK:
-		return []
-
-	var data = json.data
-	if data.has("scores"):
-		return data["scores"]
-	else:
-		return []
-
-
-func get_best_round() -> int:
-	"""Get the highest round reached"""
-	var highscores = load_highscores()
-	if highscores.size() > 0:
-		return highscores[0]["round"]
-	else:
-		return 0
 
 
 func advance_to_round(next_round: int):
