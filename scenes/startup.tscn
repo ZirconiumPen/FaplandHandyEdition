@@ -1,0 +1,31 @@
+[gd_scene load_steps=2 format=3 uid="uid://bu2fo76f4grju"]
+
+[ext_resource type="Script" uid="uid://bc8a2rncq61kw" path="res://startup.gd" id="1_t87yh"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_t87yh")
+
+[node name="HandyConfigBox" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 294.0
+offset_top = 124.0
+offset_right = 894.0
+offset_bottom = 524.0
+
+[node name="HowToPlayBox" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 188.0
+offset_top = 94.0
+offset_right = 988.0
+offset_bottom = 594.0
+
+[node name="PopupBox" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 297.0
+offset_top = 12.0
+offset_right = 897.0
+offset_bottom = 92.0
