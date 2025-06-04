@@ -22,22 +22,15 @@ func _ready():
 	# Force solid black background
 	RenderingServer.set_default_clear_color(Color.BLACK)
 
-	create_start_menu()
+	create_menu_section(main_container)
+	create_highscore_panel(main_container)
+
+	create_background_particles(main_container)
 	start_background_animations()
+
 	play_entrance_animation()
 
 	print("✅ Premium Start Menu ready!")
-
-
-func create_start_menu():
-	"""Create the premium start menu interface"""
-
-	# Create animated background particles
-	create_background_particles(main_container)
-
-	# Menu buttons section
-	create_menu_section(main_container)
-	create_highscore_panel(main_container)
 
 
 func create_background_particles(parent: Control):
