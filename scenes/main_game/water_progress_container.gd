@@ -7,6 +7,7 @@ var current_round: int = 1:
 		current_round = value
 		if not is_node_ready():
 			await ready
+		progress_text.text = "Round %s / %s" % [current_round, max_rounds]
 		var progress_ratio = float(current_round) / float(max_rounds)
 		var target_width = max(1, progress_ratio * 784)  # 784 is the full progress bar width, minimum 1px
 
@@ -23,6 +24,7 @@ var current_round: int = 1:
 		# FIXME: setting color in code
 		water_progress.get_theme_stylebox("normal").bg_color = base_water_color
 
+@onready var progress_text: Label = %ProgressText
 @onready var water_progress: Panel = %WaterProgress
 
 

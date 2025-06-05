@@ -250,7 +250,7 @@ func save_pause_config_timestamped(max_pauses_val: int, reason: String):
 		file.store_string(JSON.stringify(pause_data))
 		file.close()
 
-	print("💾 Saved pause config entry: ", new_entry)
+	print("💾 Saved pause config entry: %s" % new_entry)
 
 
 func load_pause_config_timestamped() -> int:
@@ -289,7 +289,7 @@ func load_pause_config_timestamped() -> int:
 
 	if latest_entry:
 		print("🔍 DEBUG: Found ", pause_data["entries"].size(), " entries in pause config")
-		print("🔍 DEBUG: Latest entry: ", latest_entry)
+		print("🔍 DEBUG: Latest entry: %s" % latest_entry)
 
 		# Log the full history for debugging
 		print("📜 PAUSE CONFIG HISTORY:")
@@ -336,14 +336,11 @@ func start_round(round_num: int):
 	roll_button.disabled = true
 
 	update_all_ui_animated()
-	print("🎯 Round ", current_round, " ready - Pauses: ", pause_count, "/1")
+	print("🎯 Round %s ready - Pauses: %s/1" % [current_round, pause_count])
 	show_aaa_popup(
 		(
-			"🎮 Round "
-			+ str(current_round)
-			+ " ready! You have "
-			+ str(pause_count)
-			+ " pause available."
+			"🎮 Round %s ready! You have %s pause%s available."
+			% [current_round, pause_count, "" if pause_count == 1 else "s"]
 		),
 		Color.CYAN
 	)
@@ -356,7 +353,7 @@ func _on_play_button_pressed():
 
 	previous_round = current_round
 
-	print("🎬 PLAY PRESSED - Starting Round ", current_round)
+	print("🎬 PLAY PRESSED - Starting Round %s" % current_round)
 	coming_up_box.close()
 
 	# Premium button state changes with animation
@@ -386,27 +383,27 @@ func launch_video_with_handy_sync():
 	var video_name = str(current_round)
 	var python_script = "scripts/sync_handy.py"
 
-	print("🚀 Launching Python script: ", python_script, " with video: ", video_name)
+	print("🚀 Launching Python script: %s with video: %s" % [python_script, video_name])
 
 	# Check if files exist before launching
-	var video_path = "media/" + video_name + ".mp4"
-	var funscript_path = "media/" + video_name + ".funscript"
+	var video_path = "media/%s.mp4" % video_name
+	var funscript_path = "media/%s.funscript" % video_name
 
 	if not FileAccess.file_exists(video_path):
-		print("❌ ERROR: Video file not found: ", video_path)
-		show_aaa_popup("❌ ERROR: Video file " + video_name + ".mp4 not found!", Color.RED)
+		print("❌ ERROR: Video file not found: %s" % video_path)
+		show_aaa_popup("❌ ERROR: Video file %s.mp4 not found!" % video_name, Color.RED)
 		reset_play_button()
 		return
 
 	if not FileAccess.file_exists(funscript_path):
-		print("❌ ERROR: Funscript file not found: ", funscript_path)
-		show_aaa_popup("❌ ERROR: Funscript file " + video_name + ".funscript not found!", Color.RED)
+		print("❌ ERROR: Funscript file not found: %s" % funscript_path)
+		show_aaa_popup("❌ ERROR: Funscript file %s.funscript not found!" % video_name, Color.RED)
 		reset_play_button()
 		return
 
 	if not FileAccess.file_exists(python_script):
-		print("❌ ERROR: Python script not found: ", python_script)
-		show_aaa_popup("❌ ERROR: sync_handy.py not found in scripts folder!", Color.RED)
+		print("❌ ERROR: Python script not found: %s" % python_script)
+		show_aaa_popup("❌ ERROR: Script file %s not found!" % python_script, Color.RED)
 		reset_play_button()
 		return
 
@@ -417,26 +414,23 @@ func launch_video_with_handy_sync():
 	var process_id = -1
 
 	for python_cmd in python_commands:
-		print("🐍 Trying Python command: ", python_cmd)
+		print("🐍 Trying Python command: %s" % python_cmd)
 		var args = [python_script, video_name]
 		process_id = OS.create_process(python_cmd, args)
 
 		if process_id > 0:
-			print("✅ Success with ", python_cmd)
+			print("✅ Success with %s" % python_cmd)
 			break
 		else:
-			print("❌ Failed with ", python_cmd)
+			print("❌ Failed with %s" % python_cmd)
 
 	if process_id > 0:
 		video_process_id = process_id
-		print("✅ Python VLC+Handy script started with PID: ", video_process_id)
+		print("✅ Python VLC+Handy script started with PID: %s" % video_process_id)
 		show_aaa_popup(
 			(
-				"🎬 VLC Player launched in FULLSCREEN! Pauses: "
-				+ str(pause_count)
-				+ " ("
-				+ str(pause_time)
-				+ "s each)"
+				"🎬 VLC Player launched in FULLSCREEN! Pauses: %s (%ss each)"
+				% [pause_count, pause_time]
 			),
 			Color.GREEN
 		)
@@ -517,7 +511,7 @@ func on_video_completed():
 	update_pause_count_from_file()
 	perk_system.update_perk_timers()
 
-	print("✅ Video completed for Round ", current_round)
+	print("✅ Video completed for Round %s" % current_round)
 	if current_round == max_rounds:
 		victory()
 		return
@@ -572,7 +566,7 @@ func _on_countdown_timer_timeout():
 	# Move player back rounds as penalty
 	var penalty_rounds = 5
 	current_round = max(1, current_round - penalty_rounds)
-	show_aaa_popup("⏰ TIME'S UP! Penalty: -" + str(penalty_rounds) + " rounds!", Color.RED)
+	show_aaa_popup("⏰ TIME'S UP! Penalty: -%s rounds!" % penalty_rounds, Color.RED)
 	update_all_ui_animated()
 
 
@@ -588,7 +582,7 @@ func _on_perk_earned(perk_id: String):
 
 func _on_perk_used(perk_id: String):
 	"""Handle perk used signal"""
-	print("🎯 Perk used in main game: ", perk_id)
+	print("🎯 Perk used in main game: %s" % perk_id)
 
 
 func make_perk_label_clickable():
@@ -648,9 +642,9 @@ func _on_roll_button_pressed():
 	result_tween.tween_property(dice_result, "modulate", Color.TRANSPARENT, 2.5)
 
 	if next_round >= max_rounds:
-		show_aaa_popup("🎲 Rolled " + str(roll) + "! Moving to FINAL ROUND", Color.GOLD)
+		show_aaa_popup("🎲 Rolled %s! Moving to FINAL ROUND" % roll, Color.GOLD)
 	else:
-		show_aaa_popup("🎲 Rolled " + str(roll) + "! Moving to round " + str(next_round), Color.GOLD)
+		show_aaa_popup("🎲 Rolled %s! Moving to round %s" % [roll, next_round], Color.GOLD)
 	next_round = min(next_round, max_rounds)
 
 	# Wait for animations
@@ -667,24 +661,17 @@ func _on_roll_button_pressed():
 
 
 func animate_dice_roll():
-	"""Create premium visual dice rolling animation"""
-	if not ui_elements.has("dice_result"):
-		return
-
-	var dice_label = ui_elements["dice_result"]
-	dice_label.modulate = Color.WHITE
+	dice_result.modulate = Color.WHITE
 
 	# Animate dice numbers rapidly with premium effects
 	for i in range(20):  # More frames for smoother animation
-		var random_num = randi_range(1, 6)
-		dice_label.text = "🎲 " + str(random_num)
+		dice_result.text = "🎲 %s" % randi_range(1, 6)
 
-		# Premium bounce effect
-		var bounce_tween = create_tween()
-		bounce_tween.tween_property(dice_label, "scale", 1.3 * Vector2.ONE, 0.04)
-		bounce_tween.tween_property(dice_label, "scale", Vector2.ONE, 0.04)
+		var bounce_tween := create_tween()
+		bounce_tween.tween_property(dice_result, "scale", 1.3 * Vector2.ONE, 0.04)
+		bounce_tween.tween_property(dice_result, "scale", Vector2.ONE, 0.04)
 
-		await get_tree().create_timer(0.08)
+		await bounce_tween.finished
 
 
 func save_highscore(round_reached: int, reason: String):
@@ -736,13 +723,11 @@ func advance_to_round(next_round: int):
 	glow_tween.tween_property(play_button, "modulate", Color.WHITE, 1.2)
 
 	update_all_ui_animated()
-	print("🎯 Advanced to Round: ", current_round)
+	print("🎯 Advanced to Round: %s" % current_round)
 	if current_round == max_rounds:
 		show_aaa_popup("🎮 FINAL ROUND - Click Play to watch video!", Color.CYAN)
 	else:
-		show_aaa_popup(
-			"🎮 Round " + str(current_round) + " - Click Play to watch video!", Color.CYAN
-		)
+		show_aaa_popup("🎮 Round %s - Click Play to watch video!" % current_round, Color.CYAN)
 
 
 func get_active_perks_display_text() -> String:
@@ -754,10 +739,6 @@ func update_all_ui_animated():
 	"""Update all UI elements with premium smooth animations"""
 	water_progress_container.current_round = current_round
 
-	# Update progress text
-	if ui_elements.has("progress_text"):
-		ui_elements["progress_text"].text = "Round " + str(current_round) + " / " + str(max_rounds)
-
 	var scale_tween = create_tween()
 	scale_tween.tween_property(round_label, "scale", 1.3 * Vector2.ONE, 0.4)
 	scale_tween.tween_property(round_label, "scale", Vector2.ONE, 0.4)
@@ -765,17 +746,14 @@ func update_all_ui_animated():
 	if current_round == max_rounds:
 		round_label.text = "FINAL ROUND"
 	else:
-		round_label.text = "Round " + str(current_round)
+		round_label.text = "Round %s" % current_round
 
 	# Update other UI elements with premium animations
 	var ui_updates = [
 		{"element": "active_perks_label", "value": get_active_perks_display_text()},
-		{
-			"element": "dice_range_label",
-			"value": "🎲\nDice Range\n" + str(dice_min) + "-" + str(dice_max)
-		},
-		{"element": "pause_count_label", "value": "⏸️\nPauses Left\n" + str(pause_count)},
-		{"element": "pause_time_label", "value": "⏱️\nPause Duration\n" + str(pause_time) + "s"},
+		{"element": "dice_range_label", "value": "🎲\nDice Range\n%s-%s" % [dice_min, dice_max]},
+		{"element": "pause_count_label", "value": "⏸️\nPauses Left\n%s" % pause_count},
+		{"element": "pause_time_label", "value": "⏱️\nPause Duration\n%ss" % pause_time},
 		{"element": "perk_label", "value": perk_system.get_perk_display_text()}
 	]
 
@@ -789,18 +767,9 @@ func update_all_ui_animated():
 			flash_tween.tween_property(label, "modulate", Color.GOLD, 0.3)
 			flash_tween.tween_property(label, "modulate", Color.WHITE, 0.4)
 
-	print("📊 UI Updated with premium animations - Round:", current_round, "Pauses:", pause_count)
-
-
-func update_timer_display():
-	if ui_elements.has("timer_label"):
-		if is_paused:
-			# Timer shows pause countdown (handled in trigger_pause)
-			pass
-		else:
-			ui_elements["timer_label"].text = "Game Time: 0:00"
-
-	# Update session timer is handled automatically by _on_session_timer_update()
+	print(
+		"📊 UI Updated with premium animations - Round: %s Pauses: %s" % [current_round, pause_count]
+	)
 
 
 func victory():
@@ -975,9 +944,7 @@ func show_aaa_game_over_popup():
 
 	# Premium failure message
 	var failure_label = Label.new()
-	failure_label.text = (
-		"You reached round " + str(current_round) + " before failing the challenge!"
-	)
+	failure_label.text = "You reached round %s before failing the challenge!" % current_round
 	failure_label.position = Vector2(0, 120)
 	failure_label.size = Vector2(700, 50)
 	failure_label.add_theme_font_size_override("font_size", 22)
