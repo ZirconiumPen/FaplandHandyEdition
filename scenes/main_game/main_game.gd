@@ -20,10 +20,6 @@ var is_paused = false
 var game_active = true
 var video_process_id = -1
 
-# Session Timer Variables
-var session_start_time: float = 0.0
-var session_elapsed_time: float = 0.0
-
 var countdown_time_left: float = countdown_time:
 	set(value):
 		countdown_time_left = value
@@ -52,6 +48,8 @@ var dice_rolling = false
 @onready var countdown_label: Label = %CountdownLabel
 @onready var countdown_timer: Timer = $CountdownTimer
 
+@onready var start_time: float = Time.get_unix_time_from_system()
+
 
 func update_pause_count_from_file():
 	"""Read back the updated pause count from the Python script"""
@@ -78,12 +76,6 @@ func _ready():
 	else:
 		print("📁 No pause config file found to clear")
 
-	# Initialize session timer
-	var current_time = Time.get_time_dict_from_system()
-	session_start_time = (
-		current_time["hour"] * 3600 + current_time["minute"] * 60 + current_time["second"]
-	)
-
 	# Initialize perk system
 	perk_system = PerkSystem.new(self)
 	perk_system.perk_earned.connect(_on_perk_earned)
@@ -101,27 +93,14 @@ func _ready():
 
 
 func _on_session_timer_timeout() -> void:
-	"""Update session elapsed time and UI display"""
-	var current_time = Time.get_time_dict_from_system()
-	var current_seconds = (
-		current_time["hour"] * 3600 + current_time["minute"] * 60 + current_time["second"]
-	)
-	session_elapsed_time = current_seconds - session_start_time
+	var current_time = Time.get_unix_time_from_system()
+	var elapsed_time = current_time - start_time
 
-	# Handle day rollover
-	if session_elapsed_time < 0:
-		session_elapsed_time += 86400  # 24 hours in seconds
-
-	update_session_timer_display()
-
-
-func update_session_timer_display():
-	"""Update the session timer display with premium formatting"""
 	@warning_ignore("INTEGER_DIVISION")
-	var hours = int(session_elapsed_time) / 3600
+	var hours = int(elapsed_time) / 3600
 	@warning_ignore("INTEGER_DIVISION")
-	var minutes = (int(session_elapsed_time) % 3600) / 60
-	var seconds = int(session_elapsed_time) % 60
+	var minutes = (int(elapsed_time) / 60) % 60
+	var seconds = int(elapsed_time) % 60
 
 	var time_text = ""
 	if hours > 0:
@@ -676,7 +655,7 @@ func animate_dice_roll():
 func save_highscore(round_reached: int, reason: String):
 	"""Save the highscore with timestamp"""
 	var timestamp = Time.get_datetime_string_from_system(true)
-	var session_time = session_elapsed_time
+	var session_time = Time.get_unix_time_from_system() - start_time
 
 	# Load existing highscores
 	var highscores = Config.load_highscores()
