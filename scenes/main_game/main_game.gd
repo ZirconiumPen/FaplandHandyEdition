@@ -50,6 +50,7 @@ var dice_rolling = false
 @onready var countdown_label: Label = %CountdownLabel
 @onready var countdown_timer: Timer = $CountdownTimer
 @onready var victory_popup: VictoryPopup = %VictoryPopup
+@onready var game_over_popup: GameOverPopup = %GameOverPopup
 
 @onready var start_time: float = Time.get_unix_time_from_system()
 
@@ -408,8 +409,7 @@ func handle_ejaculation_from_video():
 		OS.kill(video_process_id)
 		print("🛑 Killed video process")
 
-	# Show premium game over popup
-	show_aaa_game_over_popup()
+	game_over_popup.open(current_round)
 
 	# Disable all game controls
 	game_active = false
@@ -699,104 +699,6 @@ func victory():
 
 	show_aaa_popup("🏆 VICTORY! You reached round 100 without ejaculating!", Color.GOLD)
 	print("🏆 VICTORY! Player completed the challenge!")
-
-
-func show_aaa_game_over_popup():
-	"""Premium game over screen with dramatic effects"""
-
-	# Premium game over background with fade-in
-	var game_over_bg = ColorRect.new()
-	game_over_bg.color = Color(0.05, 0, 0, 0.98)
-	game_over_bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	add_child(game_over_bg)
-
-	# Premium game over container
-	var game_over_container = Panel.new()
-	game_over_container.position = Vector2(
-		get_viewport().size.x / 2 - 350, get_viewport().size.y / 2 - 150
-	)
-	game_over_container.size = Vector2(700, 300)
-
-	var game_over_style = StyleBoxFlat.new()
-	game_over_style.bg_color = Color(0.1, 0.02, 0.02, 0.98)
-	game_over_style.border_width_left = 4
-	game_over_style.border_width_right = 4
-	game_over_style.border_width_top = 4
-	game_over_style.border_width_bottom = 4
-	game_over_style.border_color = Color.RED
-	game_over_style.corner_radius_top_left = 25
-	game_over_style.corner_radius_top_right = 25
-	game_over_style.corner_radius_bottom_left = 25
-	game_over_style.corner_radius_bottom_right = 25
-	game_over_style.shadow_color = Color(1.0, 0.0, 0.0, 0.6)
-	game_over_style.shadow_size = 15
-	game_over_container.add_theme_stylebox_override("panel", game_over_style)
-	add_child(game_over_container)
-
-	# Premium Game Over title
-	var game_over_label = Label.new()
-	game_over_label.text = "💀 GAME OVER! 💀"
-	game_over_label.position = Vector2(0, 40)
-	game_over_label.size = Vector2(700, 80)
-	game_over_label.add_theme_font_size_override("font_size", 46)
-	game_over_label.add_theme_color_override("font_color", Color.RED)
-	game_over_label.add_theme_color_override("font_shadow_color", Color.BLACK)
-	game_over_label.add_theme_constant_override("shadow_outline_size", 5)
-	game_over_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	game_over_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	game_over_container.add_child(game_over_label)
-
-	# Premium failure message
-	var failure_label = Label.new()
-	failure_label.text = "You reached round %s before failing the challenge!" % current_round
-	failure_label.position = Vector2(0, 120)
-	failure_label.size = Vector2(700, 50)
-	failure_label.add_theme_font_size_override("font_size", 22)
-	failure_label.add_theme_color_override("font_color", Color.WHITE)
-	failure_label.add_theme_color_override("font_shadow_color", Color.BLACK)
-	failure_label.add_theme_constant_override("shadow_outline_size", 3)
-	failure_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	failure_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	game_over_container.add_child(failure_label)
-
-	# Premium exit message
-	var exit_label = Label.new()
-	exit_label.text = "Returning to title in 3 seconds..."
-	exit_label.position = Vector2(0, 200)
-	exit_label.size = Vector2(700, 40)
-	exit_label.add_theme_font_size_override("font_size", 18)
-	exit_label.add_theme_color_override("font_color", Color.YELLOW)
-	exit_label.add_theme_color_override("font_shadow_color", Color.BLACK)
-	exit_label.add_theme_constant_override("shadow_outline_size", 2)
-	exit_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	game_over_container.add_child(exit_label)
-
-	# Premium dramatic entrance animation
-	game_over_bg.modulate = Color.TRANSPARENT
-	game_over_container.modulate = Color.TRANSPARENT
-	game_over_container.scale = 0.2 * Vector2.ONE
-
-	var entrance_tween = create_tween()
-	entrance_tween.parallel().tween_property(game_over_bg, "modulate", Color.WHITE, 0.6)
-	entrance_tween.parallel().tween_property(game_over_container, "modulate", Color.WHITE, 1.0)
-	entrance_tween.parallel().tween_property(game_over_container, "scale", Vector2.ONE, 1.0)
-
-	# Premium screen shake effect
-	var shake_tween = create_tween()
-	shake_tween.set_loops(8)
-	shake_tween.tween_property(
-		game_over_container, "position", game_over_container.position + Vector2(8, 0), 0.04
-	)
-	shake_tween.tween_property(
-		game_over_container, "position", game_over_container.position + Vector2(-8, 0), 0.04
-	)
-	shake_tween.tween_property(game_over_container, "position", game_over_container.position, 0.04)
-
-	# Premium pulsing game over text
-	var pulse_tween = create_tween()
-	pulse_tween.set_loops()
-	pulse_tween.tween_property(game_over_label, "modulate", Color.WHITE, 0.5)
-	pulse_tween.tween_property(game_over_label, "modulate", Color.RED, 0.5)
 
 
 func show_aaa_popup(message: String, color: Color = Color.YELLOW):
