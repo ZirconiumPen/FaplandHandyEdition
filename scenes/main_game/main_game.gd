@@ -117,7 +117,9 @@ func _on_session_timer_timeout() -> void:
 
 func update_session_timer_display():
 	"""Update the session timer display with premium formatting"""
+	@warning_ignore("INTEGER_DIVISION")
 	var hours = int(session_elapsed_time) / 3600
+	@warning_ignore("INTEGER_DIVISION")
 	var minutes = (int(session_elapsed_time) % 3600) / 60
 	var seconds = int(session_elapsed_time) % 60
 
@@ -213,10 +215,10 @@ func save_pause_config_timestamped(max_pauses_val: int, reason: String):
 	# Read existing data
 	var pause_data = {"entries": []}
 	if FileAccess.file_exists("pause_config.json"):
-		var file = FileAccess.open("pause_config.json", FileAccess.READ)
-		if file:
-			var json_text = file.get_as_text()
-			file.close()
+		var in_file = FileAccess.open("pause_config.json", FileAccess.READ)
+		if in_file:
+			var json_text = in_file.get_as_text()
+			in_file.close()
 
 			var json = JSON.new()
 			if json.parse(json_text) == OK:
@@ -572,7 +574,7 @@ func remove_countdown_timer():
 	countdown_timer.stop()
 
 
-func _on_perk_earned(perk_id: String):
+func _on_perk_earned(_perk_id: String):
 	"""Handle perk earned signal"""
 	make_perk_label_clickable()
 
@@ -893,7 +895,7 @@ func create_fireworks_effect():
 		firework_tween.parallel().tween_property(firework, "scale", 2.5 * Vector2.ONE, 2.5)
 		firework_tween.tween_callback(firework.queue_free)
 
-		await get_tree().create_timer(0.15)  # Stagger fireworks
+		await get_tree().create_timer(0.15).timeout  # Stagger fireworks
 
 
 func show_aaa_game_over_popup():
@@ -1062,21 +1064,21 @@ func create_screen_flash(color: Color, duration: float = 0.4):
 	flash_tween.tween_callback(flash.queue_free)
 
 
-func create_particle_burst(position: Vector2, color: Color):
+func create_particle_burst(burst_position: Vector2, color: Color):
 	"""Create premium particle burst effect at specified position"""
 	for i in range(12):
 		var particle = Label.new()
 		particle.text = ["●", "✦", "✧", "✨"][i % 4]
 		particle.add_theme_font_size_override("font_size", 20)
 		particle.add_theme_color_override("font_color", color)
-		particle.position = position
+		particle.position = burst_position
 		add_child(particle)
 
 		var angle = i * PI / 6  # 12 directions
-		var target_pos = position + Vector2(cos(angle), sin(angle)) * 120
+		var target_pos = burst_position + Vector2(cos(angle), sin(angle)) * 120
 
 		var particle_tween = create_tween()
-		particle_tween.parallel().tween_property(particle, "position", target_pos, 1.0)
+		particle_tween.parallel().tween_property(particle, "burst_position", target_pos, 1.0)
 		particle_tween.parallel().tween_property(particle, "modulate", Color.TRANSPARENT, 1.0)
 		particle_tween.parallel().tween_property(particle, "scale", 0.1 * Vector2.ONE, 1.0)
 		particle_tween.tween_callback(particle.queue_free)
