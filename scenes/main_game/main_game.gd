@@ -1,6 +1,7 @@
 class_name MainGame
 extends Control
 
+@export var autoskip_videos: bool = false
 @export var countdown_time: float = 30.0
 
 # Game State Variables
@@ -352,6 +353,9 @@ func _on_play_button_pressed():
 
 
 func launch_video_with_handy_sync():
+	if autoskip_videos:
+		print("autoskip enabled, skipping video")
+		return
 	save_pause_config_timestamped(pause_count, "round_start")
 
 	var video_name = str(current_round)
@@ -418,6 +422,10 @@ func launch_video_with_handy_sync():
 
 func monitor_video_completion():
 	print("👀 Starting video completion monitor...")
+
+	if autoskip_videos:
+		on_video_completed()
+		return
 
 	var monitor_attempts = 0
 	var max_attempts = 600
@@ -605,6 +613,8 @@ func _on_roll_button_pressed():
 		# Roll dice and calculate next round
 		roll = randi_range(dice_min, dice_max)
 		next_round = current_round + roll
+
+		roll_button.text = "🎲 ROLL DICE"
 
 		print("🎲 Rolled: ", roll, " | Next Round: ", next_round)
 
