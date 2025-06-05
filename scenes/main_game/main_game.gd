@@ -1,6 +1,8 @@
 class_name MainGame
 extends Control
 
+@export var countdown_time: float = 30.0
+
 # Game State Variables
 var current_round = 1
 var previous_round = 1
@@ -22,6 +24,17 @@ var video_process_id = -1
 var session_start_time: float = 0.0
 var session_elapsed_time: float = 0.0
 
+var countdown_time_left: float = countdown_time:
+	set(value):
+		countdown_time_left = value
+		if not is_instance_valid(countdown_label):
+			return
+		countdown_label.text = "Click PLAY in: %ss" % int(countdown_time_left)
+		if countdown_time_left <= 10:
+			countdown_label.add_theme_color_override("font_color", Color.RED)
+		elif countdown_time_left <= 20:
+			countdown_label.add_theme_color_override("font_color", Color.YELLOW)
+
 # UI References
 var ui_elements = {}
 
@@ -39,6 +52,8 @@ var progress_tween: Tween
 @onready var dice_result: Label = %DiceResult
 @onready var timer_label: Label = %TimerLabel
 @onready var coming_up_box: Panel = %ComingUpBox
+@onready var countdown_label: Label = %CountdownLabel
+@onready var countdown_timer: Timer = $CountdownTimer
 
 
 func update_pause_count_from_file():
@@ -540,100 +555,30 @@ func reset_play_button():
 
 func start_play_countdown_timer():
 	"""Start 30-second countdown timer for clicking play button"""
-	var countdown_time = 30
-
-	# Create countdown display
-	var countdown_label = Label.new()
-	countdown_label.name = "CountdownLabel"
-	countdown_label.text = "Click PLAY in: " + str(countdown_time) + "s"
-	countdown_label.position = Vector2(450, 590)
-	countdown_label.size = Vector2(400, 40)
-	countdown_label.add_theme_font_size_override("font_size", 20)
-	countdown_label.add_theme_color_override("font_color", Color.ORANGE)
-	countdown_label.add_theme_color_override("font_shadow_color", Color.BLACK)
-	countdown_label.add_theme_constant_override("shadow_outline_size", 3)
-	countdown_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	add_child(countdown_label)
-	ui_elements["countdown_label"] = countdown_label
-
-	# Create and store the timer
-	var countdown_timer = Timer.new()
-	countdown_timer.name = "CountdownTimer"
-	countdown_timer.wait_time = 1.0
-	countdown_timer.timeout.connect(
-		func(): update_countdown_timer(countdown_timer, countdown_label, countdown_time)
-	)
-	add_child(countdown_timer)
+	countdown_time_left = countdown_time
+	countdown_label.show()
 	countdown_timer.start()
 
-	# Store timer reference so we can properly clean it up
-	ui_elements["countdown_timer"] = countdown_timer
 
-	print("started countdown with timer: ", countdown_timer.get_instance_id())
-
-
-func update_countdown_timer(timer: Timer, label: Label, time_left: int):
+func _on_countdown_timer_timeout():
 	"""Update countdown timer display"""
-	time_left -= 1
-
-	# Check if timer was already removed (play button pressed)
-	if not is_instance_valid(timer) or not timer.is_inside_tree():
-		print("countdown timer was already cleaned up, stopping")
+	countdown_time_left -= countdown_timer.wait_time
+	if countdown_time_left > 0:
 		return
+	# Time's up - penalize player
+	print("countdown expired, applying penalty")
+	remove_countdown_timer()
 
-	if time_left <= 0:
-		# Time's up - penalize player
-		print("countdown expired, applying penalty")
-		cleanup_countdown_timer()
-
-		# Move player back rounds as penalty
-		var penalty_rounds = 5
-		current_round = max(1, current_round - penalty_rounds)
-		show_aaa_popup("⏰ TIME'S UP! Penalty: -" + str(penalty_rounds) + " rounds!", Color.RED)
-		update_all_ui_animated()
-		return
-
-	# Update display
-	if is_instance_valid(label) and label.is_inside_tree():
-		label.text = "Click PLAY in: " + str(time_left) + "s"
-
-		# Change color as time runs out
-		if time_left <= 10:
-			label.add_theme_color_override("font_color", Color.RED)
-		elif time_left <= 20:
-			label.add_theme_color_override("font_color", Color.YELLOW)
-
-	# Continue countdown with updated time
-	timer.timeout.connect(func(): update_countdown_timer(timer, label, time_left), CONNECT_ONE_SHOT)
+	# Move player back rounds as penalty
+	var penalty_rounds = 5
+	current_round = max(1, current_round - penalty_rounds)
+	show_aaa_popup("⏰ TIME'S UP! Penalty: -" + str(penalty_rounds) + " rounds!", Color.RED)
+	update_all_ui_animated()
 
 
 func remove_countdown_timer():
-	"""Remove countdown timer when play button is clicked"""
-	print("removing countdown timer")
-	cleanup_countdown_timer()
-
-
-func cleanup_countdown_timer():
-	"""Clean up countdown timer and label properly"""
-	# Clean up label
-	if ui_elements.has("countdown_label"):
-		var label = ui_elements["countdown_label"]
-		if is_instance_valid(label):
-			label.queue_free()
-		ui_elements.erase("countdown_label")
-
-	# Clean up timer
-	if ui_elements.has("countdown_timer"):
-		var timer = ui_elements["countdown_timer"]
-		if is_instance_valid(timer):
-			timer.stop()
-			# Remove the timer from the scene tree to break any remaining connections
-			if timer.get_parent():
-				timer.get_parent().remove_child(timer)
-			timer.queue_free()
-		ui_elements.erase("countdown_timer")
-
-	print("countdown timer cleaned up")
+	countdown_label.hide()
+	countdown_timer.stop()
 
 
 func _on_perk_earned(perk_id: String):
