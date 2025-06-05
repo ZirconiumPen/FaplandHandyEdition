@@ -20,15 +20,12 @@ grow_vertical = 2
 script = ExtResource("1_s3esy")
 autoskip_videos = true
 
-[node name="UI" type="Control" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="SessionTimer" type="Timer" parent="."]
+autostart = true
 
-[node name="Background" type="ColorRect" parent="UI"]
+[node name="CountdownTimer" type="Timer" parent="."]
+
+[node name="Background" type="ColorRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -36,84 +33,44 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 1)
+metadata/_edit_lock_ = true
 
-[node name="TopBar" type="Panel" parent="UI"]
-custom_minimum_size = Vector2(0, 80)
+[node name="WaterProgressContainer" parent="." instance=ExtResource("2_mijjq")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(800, 60)
 layout_mode = 1
-anchors_preset = 10
+offset_left = 86.0
+offset_top = 16.0
+offset_right = 886.0
+offset_bottom = 76.0
+
+[node name="TimerLabel" type="Label" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(149, 78)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
 anchor_right = 1.0
-grow_horizontal = 2
-
-[node name="WaterProgressContainer" parent="UI/TopBar" instance=ExtResource("2_mijjq")]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -400.0
-offset_top = -60.0
-offset_right = 400.0
-offset_bottom = 0.0
-grow_horizontal = 2
-grow_vertical = 0
-
-[node name="LeftPanel" type="Control" parent="UI"]
-anchors_preset = 0
-offset_left = 20.0
-offset_top = 100.0
-offset_right = 320.0
-offset_bottom = 700.0
-
-[node name="DiceRangeLabel" type="Label" parent="UI/LeftPanel"]
-unique_name_in_owner = true
-layout_mode = 2
-offset_left = -8.0
-offset_top = 270.0
-offset_right = 143.0
-offset_bottom = 346.0
-theme_override_colors/font_shadow_color = Color(0, 1, 1, 1)
-theme_override_constants/shadow_outline_size = 3
-theme_override_font_sizes/font_size = 18
-theme_override_styles/normal = ExtResource("2_yra6k")
-text = "🎲
-Dice Range
-%s-%s"
+offset_left = -169.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 98.0
+grow_horizontal = 0
+theme_override_colors/font_color = Color(1, 0.843137, 0, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_outline_size = 2
+theme_override_styles/normal = ExtResource("6_6eclk")
+text = "TIMER_LABEL"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="PerkLabel" type="Label" parent="UI/LeftPanel"]
+[node name="PauseCountLabel" type="Label" parent="."]
 unique_name_in_owner = true
 layout_mode = 2
-offset_top = 14.0
-offset_right = 132.0
-offset_bottom = 233.0
-theme_override_colors/font_shadow_color = Color(1, 0, 1, 1)
-theme_override_constants/shadow_outline_size = 3
-theme_override_font_sizes/font_size = 18
-theme_override_styles/normal = ExtResource("3_8ywsm")
-text = "🌟
-Perks
-%s/%s"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="ActivePerks" type="Label" parent="UI/LeftPanel"]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 190.0
-offset_top = 14.0
-offset_right = 322.0
-offset_bottom = 233.0
-
-[node name="PauseCountLabel" type="Label" parent="UI/LeftPanel"]
-unique_name_in_owner = true
-layout_mode = 2
-offset_left = 166.0
-offset_top = 269.0
-offset_right = 317.0
-offset_bottom = 357.0
+offset_left = 980.0
+offset_top = 115.0
+offset_right = 1131.0
+offset_bottom = 203.0
 theme_override_colors/font_shadow_color = Color(0, 1, 0, 1)
 theme_override_constants/shadow_outline_size = 3
 theme_override_font_sizes/font_size = 18
@@ -124,13 +81,55 @@ Pauses Left
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="RoundLabel" type="Label" parent="UI/LeftPanel"]
+[node name="DiceRangeLabel" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+offset_left = 985.0
+offset_top = 218.0
+offset_right = 1136.0
+offset_bottom = 306.0
+theme_override_colors/font_shadow_color = Color(0, 1, 1, 1)
+theme_override_constants/shadow_outline_size = 3
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = ExtResource("2_yra6k")
+text = "🎲
+Dice Range
+%s-%s"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PerkLabel" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+offset_left = 992.0
+offset_top = 326.0
+offset_right = 1124.0
+offset_bottom = 545.0
+theme_override_colors/font_shadow_color = Color(1, 0, 1, 1)
+theme_override_constants/shadow_outline_size = 3
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = ExtResource("3_8ywsm")
+text = "🌟
+Perks
+%s/%s"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ActivePerks" type="Label" parent="."]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 8.0
-offset_top = 404.0
-offset_right = 227.0
-offset_bottom = 528.0
+offset_left = 721.0
+offset_top = 127.0
+offset_right = 853.0
+offset_bottom = 346.0
+
+[node name="RoundLabel" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 715.0
+offset_top = 103.0
+offset_right = 934.0
+offset_bottom = 227.0
 theme_override_colors/font_shadow_color = Color(0, 1, 1, 1)
 theme_override_constants/shadow_outline_size = 6
 theme_override_font_sizes/font_size = 48
@@ -138,79 +137,56 @@ theme_override_styles/normal = ExtResource("2_yra6k")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="CenterArea" type="Control" parent="UI"]
-anchors_preset = 0
-offset_left = 422.0
-offset_top = 344.0
-offset_right = 672.0
-offset_bottom = 644.0
-
-[node name="PlayButton" type="Button" parent="UI/CenterArea"]
+[node name="PlayButton" type="Button" parent="."]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = -98.0
-offset_top = 169.0
-offset_right = 54.0
-offset_bottom = 257.0
+offset_left = 749.0
+offset_top = 270.0
+offset_right = 901.0
+offset_bottom = 358.0
 theme_override_font_sizes/font_size = 20
 theme_override_styles/normal = ExtResource("2_fjyug")
 text = "▶ PLAY"
 
-[node name="RollButton" type="Button" parent="UI/CenterArea"]
+[node name="RollButton" type="Button" parent="."]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 257.0
-offset_top = 169.0
-offset_right = 409.0
-offset_bottom = 257.0
+offset_left = 758.0
+offset_top = 400.0
+offset_right = 910.0
+offset_bottom = 488.0
 theme_override_font_sizes/font_size = 18
 theme_override_styles/normal = ExtResource("3_075iw")
 disabled = true
 text = "🎲 ROLL DICE"
 
-[node name="DiceResult" type="Label" parent="UI/CenterArea"]
+[node name="DiceResult" type="Label" parent="."]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 100.0
-offset_top = 200.0
-offset_right = 300.0
-offset_bottom = 260.0
+offset_left = 522.0
+offset_top = 544.0
+offset_right = 722.0
+offset_bottom = 604.0
 theme_override_colors/font_color = Color(1, 0.843137, 0, 1)
 theme_override_colors/font_shadow_color = Color(1, 0.647, 0, 1)
 theme_override_constants/shadow_outline_size = 4
 theme_override_font_sizes/font_size = 28
+text = "🎲 %s"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="RightPanel" type="Control" parent="UI"]
-anchors_preset = 0
-offset_left = 942.0
-offset_top = 180.0
-offset_right = 1142.0
-offset_bottom = 580.0
-
-[node name="TimerLabel" type="Label" parent="UI/RightPanel"]
-unique_name_in_owner = true
-layout_mode = 2
-offset_left = 14.0
-offset_top = 116.0
-offset_right = 163.0
-offset_bottom = 194.0
-theme_override_colors/font_color = Color(1, 0.843137, 0, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
-theme_override_constants/shadow_outline_size = 2
-theme_override_styles/normal = ExtResource("6_6eclk")
-text = "TIMER_LABEL"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="ComingUpBox" parent="UI" instance=ExtResource("7_i3kwu")]
+[node name="ComingUpBox" parent="." instance=ExtResource("7_i3kwu")]
 unique_name_in_owner = true
 layout_mode = 1
+anchors_preset = 4
+anchor_left = 0.0
+anchor_right = 0.0
+offset_left = 54.0
+offset_right = 454.0
+grow_horizontal = 1
 
-[node name="CountdownLabel" type="Label" parent="UI"]
+[node name="CountdownLabel" type="Label" parent="."]
 unique_name_in_owner = true
-visible = false
 layout_mode = 0
 offset_left = 450.0
 offset_top = 590.0
@@ -223,12 +199,7 @@ theme_override_font_sizes/font_size = 20
 text = "Click PLAY in: %ss"
 horizontal_alignment = 1
 
-[node name="SessionTimer" type="Timer" parent="."]
-autostart = true
-
-[node name="CountdownTimer" type="Timer" parent="."]
-
-[connection signal="pressed" from="UI/CenterArea/PlayButton" to="." method="_on_play_button_pressed"]
-[connection signal="pressed" from="UI/CenterArea/RollButton" to="." method="_on_roll_button_pressed"]
 [connection signal="timeout" from="SessionTimer" to="." method="_on_session_timer_timeout"]
 [connection signal="timeout" from="CountdownTimer" to="." method="_on_countdown_timer_timeout"]
+[connection signal="pressed" from="PlayButton" to="." method="_on_play_button_pressed"]
+[connection signal="pressed" from="RollButton" to="." method="_on_roll_button_pressed"]
