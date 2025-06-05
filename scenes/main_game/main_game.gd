@@ -11,10 +11,7 @@ var perk_system: PerkSystem
 var dice_min = 1
 var dice_max = 6
 var pause_count = 1
-var max_pause_stack = 10
 var pause_time = 5
-var current_perks = 0
-var max_perks = 3
 
 var is_playing = false
 var is_paused = false
@@ -24,133 +21,24 @@ var video_process_id = -1
 # Session Timer Variables
 var session_start_time: float = 0.0
 var session_elapsed_time: float = 0.0
-var timer_update_interval: float = 1.0
 
 # UI References
 var ui_elements = {}
-var character_sprites = []
-var current_sprite_index = 0
 
 # Animation variables
 var dice_rolling = false
 var progress_tween: Tween
 var water_animation_tween: Tween
 
-
-func show_coming_up_next(next_round_num: int):
-	"""Show 'Coming Up Next' animation with hardcoded sprite"""
-
-	# Remove existing coming up display
-	if ui_elements.has("coming_up_container"):
-		ui_elements["coming_up_container"].queue_free()
-		ui_elements.erase("coming_up_container")
-
-	# Create coming up container
-	'''var coming_up_container = Panel.new()
-	coming_up_container.name = "ComingUpContainer"
-	var container_size = Vector2(400, 300)
-	var screen_center = Vector2(get_viewport().size) / 2
-	coming_up_container.position = screen_center - container_size / 2 - Vector2(0, 30)
-	coming_up_container.size = container_size'''
-
-	var coming_up_container = get_node("UI/ComingUpBox")
-	coming_up_container.visible = true
-
-	for child in coming_up_container.get_children():
-		child.queue_free()
-	await get_tree().process_frame
-
-	# Premium styling
-	var coming_up_style = StyleBoxFlat.new()
-	coming_up_style.bg_color = Color(0.02, 0.02, 0.08, 0.95)
-	coming_up_style.border_width_left = 4
-	coming_up_style.border_width_right = 4
-	coming_up_style.border_width_top = 4
-	coming_up_style.border_width_bottom = 4
-	coming_up_style.border_color = Color(1.0, 0.8, 0.0, 1.0)
-	coming_up_style.corner_radius_top_left = 20
-	coming_up_style.corner_radius_top_right = 20
-	coming_up_style.corner_radius_bottom_left = 20
-	coming_up_style.corner_radius_bottom_right = 20
-	coming_up_style.shadow_color = Color(1.0, 0.8, 0.0, 0.5)
-	coming_up_style.shadow_size = 15
-	coming_up_container.add_theme_stylebox_override("panel", coming_up_style)
-
-	#add_child(coming_up_container)
-
-	# "Coming Up Next" title
-	var title_label = Label.new()
-	title_label.text = "COMING UP NEXT"
-	title_label.position = Vector2(0, 10)  # was Vector2(0, 20)
-	title_label.size = Vector2(400, 40)
-	title_label.add_theme_font_size_override("font_size", 24)
-	title_label.add_theme_color_override("font_color", Color.GOLD)
-	title_label.add_theme_color_override("font_shadow_color", Color.BLACK)
-	title_label.add_theme_constant_override("shadow_outline_size", 3)
-	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	coming_up_container.add_child(title_label)
-
-	# Create AnimatedSprite2D with your existing sprite resource (hardcoded for now)
-	var animated_sprite = AnimatedSprite2D.new()
-	var sprite_frames = (
-		load("res://sprites/tres_files/" + str(next_round_num) + ".tres") as SpriteFrames
-	)
-	animated_sprite.speed_scale = 1.0
-
-	if sprite_frames:
-		animated_sprite.sprite_frames = sprite_frames
-		animated_sprite.animation = "animation"
-		animated_sprite.position = Vector2(200, 185)  # Center in container
-		animated_sprite.scale = Vector2(1.25, 1.25)  # Same scale as your existing setup
-		animated_sprite.play()
-
-		coming_up_container.add_child(animated_sprite)
-		print("🎬 Showing hardcoded animated sprite for round ", next_round_num)
-	else:
-		# Fallback if sprite can't load
-		var fallback_label = Label.new()
-		fallback_label.text = "🎬 Round " + str(next_round_num)
-		fallback_label.position = Vector2(0, 120)
-		fallback_label.size = Vector2(400, 150)
-		fallback_label.add_theme_font_size_override("font_size", 48)
-		fallback_label.add_theme_color_override("font_color", Color.CYAN)
-		fallback_label.add_theme_color_override("font_shadow_color", Color.BLACK)
-		fallback_label.add_theme_constant_override("shadow_outline_size", 3)
-		fallback_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		fallback_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		coming_up_container.add_child(fallback_label)
-		print("❌ Failed to load sprite frames, using fallback")
-
-	# Store reference
-	ui_elements["coming_up_container"] = coming_up_container
-
-	# Premium entrance animation
-	coming_up_container.modulate = Color.TRANSPARENT
-	coming_up_container.scale = Vector2(0.3, 0.3)
-
-	var entrance_tween = create_tween()
-	entrance_tween.parallel().tween_property(coming_up_container, "modulate", Color.WHITE, 0.8)
-	entrance_tween.parallel().tween_property(coming_up_container, "scale", Vector2(1.0, 1.0), 0.8)
-
-	# Pulsing animation
-	await entrance_tween.finished
-	var pulse_tween = create_tween()
-	pulse_tween.set_loops()
-	pulse_tween.tween_property(coming_up_container, "modulate", Color(1.15, 1.15, 1.15, 1.0), 1.2)
-	pulse_tween.tween_property(coming_up_container, "modulate", Color.WHITE, 1.2)
-
-	print("🎯 Showing 'Coming Up Next' for Round ", next_round_num)
-
-
-func hide_coming_up_next():
-	"""Hide the coming up next display"""
-	if ui_elements.has("coming_up_container"):
-		var container = ui_elements["coming_up_container"]
-		var fade_tween = create_tween()
-		fade_tween.tween_property(container, "modulate", Color.TRANSPARENT, 0.5)
-		fade_tween.tween_callback(func(): container.visible = false)
-		ui_elements.erase("coming_up_container")
-		print("👋 Hiding 'Coming Up Next' display")
+@onready var dice_range_label: Label = %DiceRangeLabel
+@onready var perk_label: Label = %PerkLabel
+@onready var active_perks: Label = %ActivePerks
+@onready var round_label: Label = %RoundLabel
+@onready var play_button: Button = %PlayButton
+@onready var roll_button: Button = %RollButton
+@onready var dice_result: Label = %DiceResult
+@onready var timer_label: Label = %TimerLabel
+@onready var coming_up_box: Panel = %ComingUpBox
 
 
 func update_pause_count_from_file():
@@ -191,29 +79,17 @@ func _ready():
 	perk_system.ui_update_needed.connect(update_all_ui_animated)
 
 	#clear_ui()
-	create_aaa_ui()
-	connect_ui_signals()
+	create_water_progress_bar()
 	start_round(current_round)
 
 	# Start session timer updates
-	start_session_timer()
-	show_coming_up_next(current_round)
+	coming_up_box.open(current_round)
 	#create_animated_sprite_rect()
 
 	print("✅ AAA Quality UI ready with session tracking!")
 
 
-func start_session_timer():
-	"""Start the session timer that updates every second"""
-	var timer = Timer.new()
-	timer.wait_time = timer_update_interval
-	timer.timeout.connect(_on_session_timer_update)
-	add_child(timer)
-	timer.start()
-	print("⏱️ Session timer started")
-
-
-func _on_session_timer_update():
+func _on_session_timer_timeout() -> void:
 	"""Update session elapsed time and UI display"""
 	var current_time = Time.get_time_dict_from_system()
 	var current_seconds = (
@@ -230,78 +106,23 @@ func _on_session_timer_update():
 
 func update_session_timer_display():
 	"""Update the session timer display with premium formatting"""
-	if ui_elements.has("timer_label"):
-		var hours = int(session_elapsed_time) / 3600
-		var minutes = (int(session_elapsed_time) % 3600) / 60
-		var seconds = int(session_elapsed_time) % 60
+	var hours = int(session_elapsed_time) / 3600
+	var minutes = (int(session_elapsed_time) % 3600) / 60
+	var seconds = int(session_elapsed_time) % 60
 
-		var time_text = ""
-		if hours > 0:
-			time_text = "Session: %02d:%02d:%02d" % [hours, minutes, seconds]
-		else:
-			time_text = "Session: %02d:%02d" % [minutes, seconds]
+	var time_text = ""
+	if hours > 0:
+		time_text = "Session: %02d:%02d:%02d" % [hours, minutes, seconds]
+	else:
+		time_text = "Session: %02d:%02d" % [minutes, seconds]
 
-		ui_elements["timer_label"].text = time_text
+	timer_label.text = time_text
 
 
 func clear_ui():
 	for child in get_children():
 		child.queue_free()
 	await get_tree().process_frame
-
-
-func connect_to_scene_elements():
-	"""Connect ui_elements dictionary to existing scene nodes"""
-
-	# Connect to your existing scene elements - adjust paths as needed
-	ui_elements["round_label"] = get_node("UI/CenterArea/RoundLabel")
-	ui_elements["play_button"] = get_node("UI/CenterArea/PlayButton")
-	ui_elements["roll_button"] = get_node("UI/CenterArea/RollButton")
-
-	# Left panel stats - adjust paths to match your scene structure
-
-	ui_elements["dice_range_label"] = get_node("UI/LeftPanel/DiceRangeLabel")
-	ui_elements["pause_count_label"] = get_node("UI/LeftPanel/PauseSettingsLabel")
-	ui_elements["perk_label"] = get_node("UI/LeftPanel/PerkLabel")
-	ui_elements["active_perks_label"] = get_node("UI/LeftPanel/ActivePerks")  # ADD THIS LINE
-
-	# Right panel elements
-	ui_elements["timer_label"] = get_node("UI/RightPanel/TimerLabel")
-
-	# Create water progress bar (since this is unique to your script)
-	create_water_progress_bar()
-
-	# Create any missing elements that don't exist in scene
-	#create_missing_elements()
-
-	print("🔗 Connected to scene UI elements")
-
-
-func create_missing_elements():
-	"""Create elements that don't exist in the scene"""
-
-	# Session timer (add to right panel)
-	var right_panel = get_node("UI/RightPanel")
-	var session_timer_label = Label.new()
-	session_timer_label.name = "SessionTimerLabel"
-	session_timer_label.text = "Session: 00:00"
-	session_timer_label.position = Vector2(0, 150)  # Adjust position
-	session_timer_label.size = Vector2(200, 30)
-	right_panel.add_child(session_timer_label)
-	ui_elements["session_timer_label"] = session_timer_label
-
-	# Dice result (add to center area)
-	var center_area = get_node("UI/CenterArea")
-	var dice_result = Label.new()
-	dice_result.name = "DiceResult"
-	dice_result.text = ""
-	dice_result.position = Vector2(100, 200)  # Adjust position
-	dice_result.size = Vector2(200, 60)
-	center_area.add_child(dice_result)
-	ui_elements["dice_result"] = dice_result
-
-	# Character display area
-	ui_elements["character_display"] = right_panel
 
 
 func create_water_progress_bar():
@@ -366,192 +187,6 @@ func create_water_progress_bar():
 	progress_text.add_theme_constant_override("shadow_outline_size", 3)
 	progress_container.add_child(progress_text)
 	ui_elements["progress_text"] = progress_text
-
-
-func apply_premium_styling():
-	"""Apply premium styling to all connected elements"""
-
-	# Style buttons
-	if ui_elements.has("play_button"):
-		var play_button = ui_elements["play_button"]
-		play_button.text = "▶ PLAY"
-		play_button.add_theme_font_size_override("font_size", 20)
-
-		var play_style = StyleBoxFlat.new()
-		play_style.bg_color = Color(0.1, 0.7, 0.1, 0.95)
-		play_style.corner_radius_top_left = 20
-		play_style.corner_radius_top_right = 20
-		play_style.corner_radius_bottom_left = 20
-		play_style.corner_radius_bottom_right = 20
-		play_style.shadow_color = Color(0.1, 0.7, 0.1, 0.6)
-		play_style.shadow_size = 10
-		play_button.add_theme_stylebox_override("normal", play_style)
-		play_button.add_theme_color_override("font_color", Color.WHITE)
-		play_button.add_theme_color_override("font_shadow_color", Color.BLACK)
-		play_button.add_theme_constant_override("shadow_outline_size", 3)
-
-	if ui_elements.has("roll_button"):
-		var roll_button = ui_elements["roll_button"]
-		roll_button.text = "🎲 ROLL DICE"
-		roll_button.add_theme_font_size_override("font_size", 18)
-		roll_button.disabled = true
-
-		var roll_style = StyleBoxFlat.new()
-		roll_style.bg_color = Color(0.6, 0.1, 0.6, 0.95)
-		roll_style.corner_radius_top_left = 20
-		roll_style.corner_radius_top_right = 20
-		roll_style.corner_radius_bottom_left = 20
-		roll_style.corner_radius_bottom_right = 20
-		roll_style.shadow_color = Color(0.6, 0.1, 0.6, 0.6)
-		roll_style.shadow_size = 10
-		roll_button.add_theme_stylebox_override("normal", roll_style)
-		roll_button.add_theme_color_override("font_color", Color.WHITE)
-		roll_button.add_theme_color_override("font_shadow_color", Color.BLACK)
-		roll_button.add_theme_constant_override("shadow_outline_size", 3)
-
-	# Style labels
-	if ui_elements.has("round_label"):
-		var round_label = ui_elements["round_label"]
-		round_label.add_theme_font_size_override("font_size", 48)
-		round_label.add_theme_color_override("font_color", Color.WHITE)
-		round_label.add_theme_color_override("font_shadow_color", Color.CYAN)
-		round_label.add_theme_constant_override("shadow_outline_size", 6)
-		round_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		round_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-
-		var label_style = StyleBoxFlat.new()
-		label_style.bg_color = Color(0.02, 0.02, 0.05, 0.95)
-		label_style.border_width_left = 2
-		label_style.border_width_right = 2
-		label_style.border_width_top = 2
-		label_style.border_width_bottom = 2
-		label_style.border_color = Color.CYAN
-		label_style.corner_radius_top_left = 15
-		label_style.corner_radius_top_right = 15
-		label_style.corner_radius_bottom_left = 15
-		label_style.corner_radius_bottom_right = 15
-		label_style.shadow_color = Color(Color.CYAN.r, Color.CYAN.g, Color.CYAN.b, 0.4)
-		label_style.shadow_size = 8
-		round_label.add_theme_stylebox_override("normal", label_style)
-
-	if ui_elements.has("dice_range_label") and ui_elements["dice_range_label"]:
-		var label = ui_elements["dice_range_label"]
-		label.text = "🎲\nDice Range\n" + str(dice_min) + "-" + str(dice_max)
-		label.add_theme_font_size_override("font_size", 18)
-		label.add_theme_color_override("font_color", Color.WHITE)
-		label.add_theme_color_override("font_shadow_color", Color.CYAN)
-		label.add_theme_constant_override("shadow_outline_size", 3)
-		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-
-		var label_style = StyleBoxFlat.new()
-		label_style.bg_color = Color(0.02, 0.02, 0.05, 0.95)
-		label_style.border_width_left = 2
-		label_style.border_width_right = 2
-		label_style.border_width_top = 2
-		label_style.border_width_bottom = 2
-		label_style.border_color = Color.CYAN
-		label_style.corner_radius_top_left = 15
-		label_style.corner_radius_top_right = 15
-		label_style.corner_radius_bottom_left = 15
-		label_style.corner_radius_bottom_right = 15
-		label_style.shadow_color = Color(Color.CYAN.r, Color.CYAN.g, Color.CYAN.b, 0.4)
-		label_style.shadow_size = 8
-		label.add_theme_stylebox_override("normal", label_style)
-
-	if ui_elements.has("pause_count_label") and ui_elements["pause_count_label"]:
-		var label = ui_elements["pause_count_label"]
-		label.text = "⏸️\nPauses Left\n" + str(pause_count)
-		label.add_theme_font_size_override("font_size", 18)
-		label.add_theme_color_override("font_color", Color.WHITE)
-		label.add_theme_color_override("font_shadow_color", Color.GREEN)
-		label.add_theme_constant_override("shadow_outline_size", 3)
-		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-
-		var label_style = StyleBoxFlat.new()
-		label_style.bg_color = Color(0.02, 0.02, 0.05, 0.95)
-		label_style.border_width_left = 2
-		label_style.border_width_right = 2
-		label_style.border_width_top = 2
-		label_style.border_width_bottom = 2
-		label_style.border_color = Color.GREEN
-		label_style.corner_radius_top_left = 15
-		label_style.corner_radius_top_right = 15
-		label_style.corner_radius_bottom_left = 15
-		label_style.corner_radius_bottom_right = 15
-		label_style.shadow_color = Color(Color.GREEN.r, Color.GREEN.g, Color.GREEN.b, 0.4)
-		label_style.shadow_size = 8
-		label.add_theme_stylebox_override("normal", label_style)
-
-	if ui_elements.has("perk_label") and ui_elements["perk_label"]:
-		var label = ui_elements["perk_label"]
-		label.text = "🌟\nPerks\n" + str(current_perks) + "/" + str(max_perks)
-		label.add_theme_font_size_override("font_size", 18)
-		label.add_theme_color_override("font_color", Color.WHITE)
-		label.add_theme_color_override("font_shadow_color", Color.MAGENTA)
-		label.add_theme_constant_override("shadow_outline_size", 3)
-		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-
-		var label_style = StyleBoxFlat.new()
-		label_style.bg_color = Color(0.02, 0.02, 0.05, 0.95)
-		label_style.border_width_left = 2
-		label_style.border_width_right = 2
-		label_style.border_width_top = 2
-		label_style.border_width_bottom = 2
-		label_style.border_color = Color.MAGENTA
-		label_style.corner_radius_top_left = 15
-		label_style.corner_radius_top_right = 15
-		label_style.corner_radius_bottom_left = 15
-		label_style.corner_radius_bottom_right = 15
-		label_style.shadow_color = Color(Color.MAGENTA.r, Color.MAGENTA.g, Color.MAGENTA.b, 0.4)
-		label_style.shadow_size = 8
-		label.add_theme_stylebox_override("normal", label_style)
-
-	# Style other elements
-	if ui_elements.has("timer_label"):
-		var session_label = ui_elements["timer_label"]
-		session_label.add_theme_font_size_override("font_size", 16)
-		session_label.add_theme_color_override("font_color", Color.GOLD)
-		session_label.add_theme_color_override("font_shadow_color", Color.BLACK)
-		session_label.add_theme_constant_override("shadow_outline_size", 2)
-
-		var label_style = StyleBoxFlat.new()
-		label_style.bg_color = Color(0.02, 0.02, 0.05, 0.95)
-		label_style.border_width_left = 2
-		label_style.border_width_right = 2
-		label_style.border_width_top = 2
-		label_style.border_width_bottom = 2
-		label_style.border_color = Color.GOLD
-		label_style.corner_radius_top_left = 15
-		label_style.corner_radius_top_right = 15
-		label_style.corner_radius_bottom_left = 15
-		label_style.corner_radius_bottom_right = 15
-		label_style.shadow_color = Color(Color.GOLD.r, Color.GOLD.g, Color.GOLD.b, 0.4)
-		label_style.shadow_size = 8
-		session_label.add_theme_stylebox_override("normal", label_style)
-
-	if ui_elements.has("dice_result"):
-		var dice_result = ui_elements["dice_result"]
-		dice_result.add_theme_font_size_override("font_size", 28)
-		dice_result.add_theme_color_override("font_color", Color.GOLD)
-		dice_result.add_theme_color_override("font_shadow_color", Color.ORANGE)
-		dice_result.add_theme_constant_override("shadow_outline_size", 4)
-		dice_result.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		dice_result.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-
-
-func create_aaa_ui():
-	print("🎮 Connecting to existing scene UI elements...")
-
-	# Connect to existing scene elements instead of creating new ones
-	connect_to_scene_elements()
-
-	# Apply premium styling to existing elements
-	apply_premium_styling()
-
-	print("✅ Connected to scene UI elements with premium styling!")
 
 
 func create_water_ripple_effect(water_progress: Panel):
@@ -768,19 +403,6 @@ func load_pause_config_timestamped() -> int:
 		return 1
 
 
-func connect_ui_signals():
-	print("🔗 Connecting AAA UI signals...")
-
-	if ui_elements.has("play_button"):
-		ui_elements["play_button"].pressed.connect(_on_play_pressed)
-		print("  ✅ Play button connected")
-
-	if ui_elements.has("roll_button"):
-		ui_elements["roll_button"].pressed.connect(_on_roll_pressed)
-		print("  ✅ Roll button connected")
-
-
-# Enhanced Game Logic with AAA animations
 func start_round(round_num: int):
 	if round_num > max_rounds:
 		current_round = max_rounds
@@ -789,21 +411,15 @@ func start_round(round_num: int):
 	current_round = round_num
 	is_playing = false
 
-	# Set premium button states with animation
-	if ui_elements.has("play_button"):
-		ui_elements["play_button"].disabled = false
-		ui_elements["play_button"].text = "▶ PLAY"
+	play_button.disabled = false
+	play_button.text = "▶ PLAY"
 
-		# Premium button glow animation
-		var button_tween = create_tween()
-		button_tween.set_loops()
-		button_tween.tween_property(
-			ui_elements["play_button"], "modulate", Color(1.3, 1.3, 1.3, 1.0), 1.2
-		)
-		button_tween.tween_property(ui_elements["play_button"], "modulate", Color.WHITE, 1.2)
+	var button_tween := create_tween()
+	button_tween.set_loops()
+	button_tween.tween_property(play_button, "modulate", Color(1.3, 1.3, 1.3), 1.2)
+	button_tween.tween_property(play_button, "modulate", Color.WHITE, 1.2)
 
-	if ui_elements.has("roll_button"):
-		ui_elements["roll_button"].disabled = true
+	roll_button.disabled = true
 
 	update_all_ui_animated()
 	print("🎯 Round ", current_round, " ready - Pauses: ", pause_count, "/1")
@@ -819,7 +435,7 @@ func start_round(round_num: int):
 	)
 
 
-func _on_play_pressed():
+func _on_play_button_pressed():
 	remove_countdown_timer()
 	if not game_active:
 		return
@@ -827,23 +443,19 @@ func _on_play_pressed():
 	previous_round = current_round
 
 	print("🎬 PLAY PRESSED - Starting Round ", current_round)
-	hide_coming_up_next()
+	coming_up_box.close()
 
 	# Premium button state changes with animation
-	if ui_elements.has("play_button"):
-		ui_elements["play_button"].disabled = true
-		ui_elements["play_button"].text = "🎬 PLAYING..."
+	play_button.disabled = true
+	play_button.text = "🎬 PLAYING..."
 
-		# Premium button press animation
-		var press_tween = create_tween()
-		press_tween.tween_property(ui_elements["play_button"], "scale", Vector2(0.92, 0.92), 0.1)
-		press_tween.tween_property(ui_elements["play_button"], "scale", Vector2(1.0, 1.0), 0.15)
-		press_tween.tween_property(
-			ui_elements["play_button"], "modulate", Color(0.6, 0.6, 0.6, 1.0), 0.3
-		)
+	# Premium button press animation
+	var press_tween = create_tween()
+	press_tween.tween_property(play_button, "scale", 0.92 * Vector2.ONE, 0.1)
+	press_tween.tween_property(play_button, "scale", Vector2.ONE, 0.15)
+	press_tween.tween_property(play_button, "modulate", Color(0.6, 0.6, 0.6), 0.3)
 
-	if ui_elements.has("roll_button"):
-		ui_elements["roll_button"].disabled = true
+	roll_button.disabled = true
 
 	is_playing = true
 
@@ -977,17 +589,10 @@ func handle_ejaculation_from_video():
 	# Show premium game over popup
 	show_aaa_game_over_popup()
 
-	# Remove video finished button
-	if ui_elements.has("video_finished_button"):
-		ui_elements["video_finished_button"].queue_free()
-		ui_elements.erase("video_finished_button")
-
 	# Disable all game controls
 	game_active = false
-	if ui_elements.has("play_button"):
-		ui_elements["play_button"].disabled = true
-	if ui_elements.has("roll_button"):
-		ui_elements["roll_button"].disabled = true
+	play_button.disabled = true
+	roll_button.disabled = true
 
 	await get_tree().create_timer(3.0).timeout
 	print("👋 Returning to start menu...")
@@ -1007,36 +612,29 @@ func on_video_completed():
 	is_playing = false
 
 	# Premium button state changes with animation
-	if ui_elements.has("roll_button"):
-		ui_elements["roll_button"].disabled = false
+	roll_button.disabled = false
 
-		# Premium roll button activation animation
-		var activate_tween = create_tween()
-		activate_tween.tween_property(ui_elements["roll_button"], "modulate", Color.WHITE, 0.4)
-		activate_tween.tween_property(ui_elements["roll_button"], "scale", Vector2(1.08, 1.08), 0.3)
-		activate_tween.tween_property(ui_elements["roll_button"], "scale", Vector2(1.0, 1.0), 0.3)
+	var activate_tween := create_tween()
+	activate_tween.tween_property(roll_button, "modulate", Color.WHITE, 0.4)
+	activate_tween.tween_property(roll_button, "scale", 1.08 * Vector2.ONE, 0.3)
+	activate_tween.tween_property(roll_button, "scale", Vector2.ONE, 0.3)
 
-		# Add premium glow effect
-		var glow_tween = create_tween()
-		glow_tween.set_loops()
-		glow_tween.tween_property(
-			ui_elements["roll_button"], "modulate", Color(1.3, 1.3, 1.3, 1.0), 1.2
-		)
-		glow_tween.tween_property(ui_elements["roll_button"], "modulate", Color.WHITE, 1.2)
+	var glow_tween := create_tween()
+	glow_tween.set_loops()
+	glow_tween.tween_property(roll_button, "modulate", Color(1.3, 1.3, 1.3), 1.2)
+	glow_tween.tween_property(roll_button, "modulate", Color.WHITE, 1.2)
 
-	if ui_elements.has("play_button"):
-		ui_elements["play_button"].text = "▶ PLAY"
-		ui_elements["play_button"].modulate = Color(0.6, 0.6, 0.6, 1.0)
+	play_button.text = "▶ PLAY"
+	play_button.modulate = Color(0.6, 0.6, 0.6, 1.0)
 
 	show_aaa_popup("🎬 Video finished! Roll the dice to continue.", Color.YELLOW)
 	video_process_id = -1
 
 
 func reset_play_button():
-	if ui_elements.has("play_button"):
-		ui_elements["play_button"].disabled = false
-		ui_elements["play_button"].text = "▶ PLAY"
-		ui_elements["play_button"].modulate = Color.WHITE
+	play_button.disabled = false
+	play_button.text = "▶ PLAY"
+	play_button.modulate = Color.WHITE
 	is_playing = false
 	video_process_id = -1
 
@@ -1151,16 +749,14 @@ func _on_perk_used(perk_id: String):
 
 func make_perk_label_clickable():
 	"""Make the perk label clickable"""
-	if ui_elements.has("perk_label"):
-		var perk_label = ui_elements["perk_label"]
 
-		# Disconnect existing signals
-		if perk_label.gui_input.is_connected(_on_perk_label_clicked):
-			perk_label.gui_input.disconnect(_on_perk_label_clicked)
+	# Disconnect existing signals
+	if perk_label.gui_input.is_connected(_on_perk_label_clicked):
+		perk_label.gui_input.disconnect(_on_perk_label_clicked)
 
-		# Connect input signal
-		perk_label.gui_input.connect(_on_perk_label_clicked)
-		perk_label.mouse_filter = Control.MOUSE_FILTER_PASS
+	# Connect input signal
+	perk_label.gui_input.connect(_on_perk_label_clicked)
+	perk_label.mouse_filter = Control.MOUSE_FILTER_PASS
 
 
 func _on_perk_label_clicked(event: InputEvent):
@@ -1172,7 +768,7 @@ func _on_perk_label_clicked(event: InputEvent):
 			show_aaa_popup("No perks available!", Color.GRAY)
 
 
-func _on_roll_pressed():
+func _on_roll_button_pressed():
 	if not game_active or is_playing or dice_rolling:
 		return
 
@@ -1188,9 +784,8 @@ func _on_roll_pressed():
 		next_round = current_round + roll
 	else:
 		# Disable roll button and start premium animation
-		if ui_elements.has("roll_button"):
-			ui_elements["roll_button"].disabled = true
-			ui_elements["roll_button"].text = "🎲 ROLLING..."
+		roll_button.disabled = true
+		roll_button.text = "🎲 ROLLING..."
 
 		# Premium dice roll animation
 		await animate_dice_roll()
@@ -1202,12 +797,11 @@ func _on_roll_pressed():
 		print("🎲 Rolled: ", roll, " | Next Round: ", next_round)
 
 	# Show dice result with premium animation
-	if ui_elements.has("dice_result"):
-		ui_elements["dice_result"].text = "Rolled: " + str(roll)
-		var result_tween = create_tween()
-		result_tween.tween_property(ui_elements["dice_result"], "scale", Vector2(1.4, 1.4), 0.4)
-		result_tween.tween_property(ui_elements["dice_result"], "scale", Vector2(1.0, 1.0), 0.4)
-		result_tween.tween_property(ui_elements["dice_result"], "modulate", Color.TRANSPARENT, 2.5)
+	dice_result.text = "Rolled: %s" % roll
+	var result_tween := create_tween()
+	result_tween.tween_property(dice_result, "scale", 1.4 * Vector2.ONE, 0.4)
+	result_tween.tween_property(dice_result, "scale", Vector2.ONE, 0.4)
+	result_tween.tween_property(dice_result, "modulate", Color.TRANSPARENT, 2.5)
 
 	if next_round >= max_rounds:
 		show_aaa_popup("🎲 Rolled " + str(roll) + "! Moving to FINAL ROUND", Color.GOLD)
@@ -1219,7 +813,7 @@ func _on_roll_pressed():
 	await get_tree().create_timer(1.8).timeout
 
 	# Show "Coming Up Next" display
-	show_coming_up_next(next_round)
+	coming_up_box.open(next_round)
 
 	start_play_countdown_timer()
 
@@ -1243,8 +837,8 @@ func animate_dice_roll():
 
 		# Premium bounce effect
 		var bounce_tween = create_tween()
-		bounce_tween.tween_property(dice_label, "scale", Vector2(1.3, 1.3), 0.04)
-		bounce_tween.tween_property(dice_label, "scale", Vector2(1.0, 1.0), 0.04)
+		bounce_tween.tween_property(dice_label, "scale", 1.3 * Vector2.ONE, 0.04)
+		bounce_tween.tween_property(dice_label, "scale", Vector2.ONE, 0.04)
 
 		await get_tree().create_timer(0.08)
 
@@ -1287,18 +881,15 @@ func save_highscore(round_reached: int, reason: String):
 func advance_to_round(next_round: int):
 	current_round = next_round
 	# Premium button state changes
-	if ui_elements.has("play_button"):
-		ui_elements["play_button"].disabled = false
-		ui_elements["play_button"].text = "▶ PLAY"
-		ui_elements["play_button"].modulate = Color.WHITE
+	play_button.disabled = false
+	play_button.text = "▶ PLAY"
+	play_button.modulate = Color.WHITE
 
-		# Re-enable premium play button glow
-		var glow_tween = create_tween()
-		glow_tween.set_loops()
-		glow_tween.tween_property(
-			ui_elements["play_button"], "modulate", Color(1.3, 1.3, 1.3, 1.0), 1.2
-		)
-		glow_tween.tween_property(ui_elements["play_button"], "modulate", Color.WHITE, 1.2)
+	# Re-enable premium play button glow
+	var glow_tween := create_tween()
+	glow_tween.set_loops()
+	glow_tween.tween_property(play_button, "modulate", Color(1.3, 1.3, 1.3), 1.2)
+	glow_tween.tween_property(play_button, "modulate", Color.WHITE, 1.2)
 
 	update_all_ui_animated()
 	print("🎯 Advanced to Round: ", current_round)
@@ -1341,20 +932,14 @@ func update_all_ui_animated():
 	if ui_elements.has("progress_text"):
 		ui_elements["progress_text"].text = "Round " + str(current_round) + " / " + str(max_rounds)
 
-	# Animate round number with premium effects
-	if ui_elements.has("round_label"):
-		var round_label = ui_elements["round_label"]
+	var scale_tween = create_tween()
+	scale_tween.tween_property(round_label, "scale", 1.3 * Vector2.ONE, 0.4)
+	scale_tween.tween_property(round_label, "scale", Vector2.ONE, 0.4)
 
-		# Premium scale animation for round change
-		var scale_tween = create_tween()
-		scale_tween.tween_property(round_label, "scale", Vector2(1.3, 1.3), 0.4)
-		scale_tween.tween_property(round_label, "scale", Vector2(1.0, 1.0), 0.4)
-
-		# Update text
-		if current_round == max_rounds:
-			round_label.text = "FINAL ROUND"
-		else:
-			round_label.text = "Round " + str(current_round)
+	if current_round == max_rounds:
+		round_label.text = "FINAL ROUND"
+	else:
+		round_label.text = "Round " + str(current_round)
 
 	# Update other UI elements with premium animations
 	var ui_updates = [
@@ -1467,11 +1052,11 @@ func victory():
 
 	# Premium victory animations
 	victory_container.modulate = Color.TRANSPARENT
-	victory_container.scale = Vector2(0.2, 0.2)
+	victory_container.scale = 0.2 * Vector2.ONE
 
 	var victory_tween = create_tween()
 	victory_tween.parallel().tween_property(victory_container, "modulate", Color.WHITE, 1.0)
-	victory_tween.parallel().tween_property(victory_container, "scale", Vector2(1.0, 1.0), 1.0)
+	victory_tween.parallel().tween_property(victory_container, "scale", Vector2.ONE, 1.0)
 
 	# Premium fireworks effect
 	create_fireworks_effect()
@@ -1479,8 +1064,8 @@ func victory():
 	# Premium pulsing victory text
 	var pulse_tween = create_tween()
 	pulse_tween.set_loops()
-	pulse_tween.tween_property(victory_label, "scale", Vector2(1.15, 1.15), 1.0)
-	pulse_tween.tween_property(victory_label, "scale", Vector2(1.0, 1.0), 1.0)
+	pulse_tween.tween_property(victory_label, "scale", 1.15 * Vector2.ONE, 1.0)
+	pulse_tween.tween_property(victory_label, "scale", Vector2.ONE, 1.0)
 
 	# Exit after victory
 	await get_tree().create_timer(5.0).timeout
@@ -1511,7 +1096,7 @@ func create_fireworks_effect():
 			2.5
 		)
 		firework_tween.parallel().tween_property(firework, "modulate", Color.TRANSPARENT, 2.5)
-		firework_tween.parallel().tween_property(firework, "scale", Vector2(2.5, 2.5), 2.5)
+		firework_tween.parallel().tween_property(firework, "scale", 2.5 * Vector2.ONE, 2.5)
 		firework_tween.tween_callback(firework.queue_free)
 
 		await get_tree().create_timer(0.15)  # Stagger fireworks
@@ -1592,12 +1177,12 @@ func show_aaa_game_over_popup():
 	# Premium dramatic entrance animation
 	game_over_bg.modulate = Color.TRANSPARENT
 	game_over_container.modulate = Color.TRANSPARENT
-	game_over_container.scale = Vector2(0.2, 0.2)
+	game_over_container.scale = 0.2 * Vector2.ONE
 
 	var entrance_tween = create_tween()
 	entrance_tween.parallel().tween_property(game_over_bg, "modulate", Color.WHITE, 0.6)
 	entrance_tween.parallel().tween_property(game_over_container, "modulate", Color.WHITE, 1.0)
-	entrance_tween.parallel().tween_property(game_over_container, "scale", Vector2(1.0, 1.0), 1.0)
+	entrance_tween.parallel().tween_property(game_over_container, "scale", Vector2.ONE, 1.0)
 
 	# Premium screen shake effect
 	var shake_tween = create_tween()
@@ -1657,11 +1242,11 @@ func show_aaa_popup(message: String, color: Color = Color.YELLOW):
 
 	# Premium popup animation
 	popup_container.modulate = Color.TRANSPARENT
-	popup_container.scale = Vector2(0.4, 0.4)
+	popup_container.scale = 0.4 * Vector2.ONE
 
 	var popup_tween = create_tween()
 	popup_tween.parallel().tween_property(popup_container, "modulate", Color.WHITE, 0.4)
-	popup_tween.parallel().tween_property(popup_container, "scale", Vector2(1.0, 1.0), 0.4)
+	popup_tween.parallel().tween_property(popup_container, "scale", Vector2.ONE, 0.4)
 	popup_tween.tween_interval(2.5)
 	popup_tween.parallel().tween_property(
 		popup_container, "position", popup_container.position + Vector2(0, -120), 1.2
@@ -1701,5 +1286,5 @@ func create_particle_burst(position: Vector2, color: Color):
 		var particle_tween = create_tween()
 		particle_tween.parallel().tween_property(particle, "position", target_pos, 1.0)
 		particle_tween.parallel().tween_property(particle, "modulate", Color.TRANSPARENT, 1.0)
-		particle_tween.parallel().tween_property(particle, "scale", Vector2(0.1, 0.1), 1.0)
+		particle_tween.parallel().tween_property(particle, "scale", 0.1 * Vector2.ONE, 1.0)
 		particle_tween.tween_callback(particle.queue_free)
