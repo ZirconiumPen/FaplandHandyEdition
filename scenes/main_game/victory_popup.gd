@@ -16,12 +16,11 @@ func open() -> void:
 	victory_tween.tween_property(victory_container, "modulate", Color.WHITE, 1.0)
 	victory_tween.tween_property(victory_container, "scale", Vector2.ONE, 1.0)
 
-	# Premium fireworks effect
 	for i in range(15):
 		add_child(Fireworks.new())
 		await get_tree().create_timer(0.15).timeout  # Stagger fireworks
 
-	# Premium pulsing victory text
+	# Pulsing victory text
 	var pulse_tween := create_tween()
 	pulse_tween.set_loops()
 	pulse_tween.tween_property(victory_label, "scale", 1.15 * Vector2.ONE, 1.0)
