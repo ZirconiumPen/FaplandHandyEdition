@@ -35,9 +35,6 @@ var countdown_time_left: float = countdown_time:
 		elif countdown_time_left <= 20:
 			countdown_label.add_theme_color_override("font_color", Color.YELLOW)
 
-# UI References
-var ui_elements = {}
-
 # Animation variables
 var dice_rolling = false
 var progress_tween: Tween
@@ -46,6 +43,7 @@ var progress_tween: Tween
 @onready var dice_range_label: Label = %DiceRangeLabel
 @onready var perk_label: Label = %PerkLabel
 @onready var active_perks: Label = %ActivePerks
+@onready var pause_count_label: Label = %PauseCountLabel
 @onready var round_label: Label = %RoundLabel
 @onready var play_button: Button = %PlayButton
 @onready var roll_button: Button = %RollButton
@@ -748,28 +746,30 @@ func update_all_ui_animated():
 	else:
 		round_label.text = "Round %s" % current_round
 
-	# Update other UI elements with premium animations
-	var ui_updates = [
-		{"element": "active_perks_label", "value": get_active_perks_display_text()},
-		{"element": "dice_range_label", "value": "🎲\nDice Range\n%s-%s" % [dice_min, dice_max]},
-		{"element": "pause_count_label", "value": "⏸️\nPauses Left\n%s" % pause_count},
-		{"element": "pause_time_label", "value": "⏱️\nPause Duration\n%ss" % pause_time},
-		{"element": "perk_label", "value": perk_system.get_perk_display_text()}
-	]
+	active_perks.text = get_active_perks_display_text()
+	flash_component(active_perks)
 
-	for update in ui_updates:
-		if ui_elements.has(update.element):
-			var label = ui_elements[update.element]
-			label.text = update.value
+	dice_range_label.text = "🎲\nDice Range\n%s-%s" % [dice_min, dice_max]
+	flash_component(dice_range_label)
 
-			# Premium flash animation for value change
-			var flash_tween = create_tween()
-			flash_tween.tween_property(label, "modulate", Color.GOLD, 0.3)
-			flash_tween.tween_property(label, "modulate", Color.WHITE, 0.4)
+	pause_count_label.text = "⏸️\nPauses Left\n%s" % pause_count
+	flash_component(pause_count_label)
+
+	# pause_time_label.text = "⏱️\nPause Duration\n%ss" % pause_time
+	# flash_component(pause_time_label)
+
+	perk_label.text = perk_system.get_perk_display_text()
+	flash_component(perk_label)
 
 	print(
 		"📊 UI Updated with premium animations - Round: %s Pauses: %s" % [current_round, pause_count]
 	)
+
+
+func flash_component(component: CanvasItem) -> void:
+	var flash_tween := create_tween()
+	flash_tween.tween_property(component, "modulate", Color.GOLD, 0.3)
+	flash_tween.tween_property(component, "modulate", Color.WHITE, 0.4)
 
 
 func victory():
