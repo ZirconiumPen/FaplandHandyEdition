@@ -752,38 +752,3 @@ func show_aaa_popup(message: String, color: Color = Color.YELLOW):
 	)
 	popup_tween.parallel().tween_property(popup_container, "modulate", Color.TRANSPARENT, 1.2)
 	popup_tween.tween_callback(popup_container.queue_free)
-
-
-# Premium helper functions for AAA effects
-
-
-func create_screen_flash(color: Color, duration: float = 0.4):
-	"""Create premium screen flash effect"""
-	var flash = ColorRect.new()
-	flash.color = color
-	flash.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	add_child(flash)
-
-	var flash_tween = create_tween()
-	flash_tween.tween_property(flash, "modulate", Color.TRANSPARENT, duration)
-	flash_tween.tween_callback(flash.queue_free)
-
-
-func create_particle_burst(burst_position: Vector2, color: Color):
-	"""Create premium particle burst effect at specified position"""
-	for i in range(12):
-		var particle = Label.new()
-		particle.text = ["●", "✦", "✧", "✨"][i % 4]
-		particle.add_theme_font_size_override("font_size", 20)
-		particle.add_theme_color_override("font_color", color)
-		particle.position = burst_position
-		add_child(particle)
-
-		var angle = i * PI / 6  # 12 directions
-		var target_pos = burst_position + Vector2(cos(angle), sin(angle)) * 120
-
-		var particle_tween = create_tween()
-		particle_tween.parallel().tween_property(particle, "burst_position", target_pos, 1.0)
-		particle_tween.parallel().tween_property(particle, "modulate", Color.TRANSPARENT, 1.0)
-		particle_tween.parallel().tween_property(particle, "scale", 0.1 * Vector2.ONE, 1.0)
-		particle_tween.tween_callback(particle.queue_free)
