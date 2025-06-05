@@ -59,7 +59,7 @@ func update_pause_count_from_file():
 	var current_pauses = load_pause_config_timestamped()
 
 	pause_count = current_pauses + 1  # Apply the +1 stacking bonus
-	print("📝 Pauses set to: ", pause_count, " (", current_pauses, " + 1 bonus)")
+	print("📝 Pauses set to: %s (%s + 1 bonus)" % [pause_count, current_pauses])
 
 
 func _ready():
