@@ -118,26 +118,26 @@ Dice Range
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="CenterArea" type="Control" parent="UI"]
-anchors_preset = 0
-offset_left = 500.0
-offset_top = 300.0
-offset_right = 750.0
-offset_bottom = 600.0
-
-[node name="RoundLabel" type="Label" parent="UI/CenterArea"]
+[node name="RoundLabel" type="Label" parent="UI/LeftPanel"]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = -472.0
-offset_top = 204.0
-offset_right = -253.0
-offset_bottom = 328.0
+offset_left = 8.0
+offset_top = 404.0
+offset_right = 227.0
+offset_bottom = 528.0
 theme_override_colors/font_shadow_color = Color(0, 1, 1, 1)
 theme_override_constants/shadow_outline_size = 6
 theme_override_font_sizes/font_size = 48
 theme_override_styles/normal = ExtResource("2_yra6k")
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="CenterArea" type="Control" parent="UI"]
+anchors_preset = 0
+offset_left = 422.0
+offset_top = 344.0
+offset_right = 672.0
+offset_bottom = 644.0
 
 [node name="PlayButton" type="Button" parent="UI/CenterArea"]
 unique_name_in_owner = true
