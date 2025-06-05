@@ -418,7 +418,7 @@ func handle_ejaculation_from_video():
 
 	await get_tree().create_timer(3.0).timeout
 	print("👋 Returning to start menu...")
-	get_tree().change_scene_to_file("res://scenes/startup.tscn")
+	get_tree().change_scene_to_file("uid://bcan4ssdl6xe8")
 
 
 func on_video_completed():
