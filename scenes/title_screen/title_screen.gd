@@ -18,9 +18,6 @@ const MainScene = preload("uid://c4ei5qhvpx1qf")
 
 
 func _ready() -> void:
-	# Force solid black background
-	RenderingServer.set_default_clear_color(Color.BLACK)
-
 	# Title pulsing animation
 	var title_animation_tween := create_tween()
 	title_animation_tween.set_loops()
