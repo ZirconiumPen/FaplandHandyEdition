@@ -19,13 +19,13 @@ func refresh() -> void:
 		best_score_label.text = "No scores yet"
 		return
 
-	best_score_label.text = "Best: Round %s" % highscores[0]["round"]
+	best_score_label.text = "Best: Round %d" % highscores[0]["round"]
 
 	# Scores list
 	for i in range(min(6, highscores.size())):
 		var score = highscores[i]
 		var rank_text = (
-			"%s %s. Round %s"
+			"%s %d. Round %d"
 			% ["💀" if score["reason"] == "ejaculation" else "🏆", i + 1, score["round"]]
 		)
 
