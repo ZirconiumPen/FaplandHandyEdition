@@ -43,8 +43,22 @@ class LoggingWriter:
 sys.stderr = LoggingWriter(logger.error)
 
 # Configuration
-HANDY_API = "https://www.handyfeeling.com/api/handy-rest/v3"
+# Load firmware version from config and set appropriate API
+def get_handy_api():
+    try:
+        with open("handy_config.json", "r") as f:
+            config = json.load(f)
+        firmware = config.get("firmware", 4)
+        if firmware == 3:
+            return "https://www.handyfeeling.com/api/handy/v2", firmware
+        else:
+            return "https://www.handyfeeling.com/api/handy-rest/v3", firmware
+    except:
+        return "https://www.handyfeeling.com/api/handy-rest/v3", 4  # Default to v3
+
+HANDY_API, FIRMWARE_VERSION = get_handy_api()
 estimated_offset_ms = 0
+round_trip_time = 0
 
 # Load from config file only - no defaults
 def load_handy_config():
@@ -54,11 +68,11 @@ def load_handy_config():
         access_token = config.get("access_token", "")
         app_id = config.get("app_id", "")
         if not access_token or not app_id:
-            print("❌ Please configure your Handy API keys using the game menu first!")
+            logger.info("❌ Please configure your Handy API keys using the game menu first!")
             sys.exit(1)
         return access_token, app_id
     except FileNotFoundError:
-        print("❌ No Handy configuration found! Use the game menu to set up your API keys.")
+        logger.info("❌ No Handy configuration found! Use the game menu to set up your API keys.")
         sys.exit(1)
 
 ACCESS_TOKEN, APP_ID = load_handy_config()
@@ -238,7 +252,7 @@ def get_server_time():
 
 def sync_server_time(tries=10):
     """Sync with Handy server time"""
-    global estimated_offset_ms
+    global estimated_offset_ms, round_trip_time
     try:
         logger.info(f"Syncing server time with {tries} attempts...")
         total_offset = 0
@@ -250,6 +264,7 @@ def sync_server_time(tries=10):
                 t_server = get_server_time()
                 t_end = int(time.time() * 1000)
                 rtd = t_end - t_start
+                round_trip_time += rtd
                 offset = (t_server + rtd / 2) - t_end
                 total_offset += offset
                 successful_syncs += 1
@@ -262,6 +277,7 @@ def sync_server_time(tries=10):
             raise Exception("All server time sync attempts failed")
         
         estimated_offset_ms = round(total_offset / successful_syncs)
+        round_trip_time = round(round_trip_time / successful_syncs)
         logger.info(f"⏱️ Server time synced successfully: {estimated_offset_ms}ms offset ({successful_syncs}/{tries} attempts succeeded)")
         return True
         
@@ -366,12 +382,20 @@ def play_hssp(headers, video_ms):
         server_time = get_estimated_server_time()
         logger.info(f"🔁 Starting HSSP playback at {video_ms}ms, server time: {server_time}")
 
-        play_payload = {
-            "start_time": video_ms,
-            "server_time": server_time,
-            "playback_rate": 1.0,
-            "loop": False
-        }
+        if FIRMWARE_VERSION == 3:
+            # Firmware 3 payload format
+            play_payload = {
+                "estimatedServerTime": server_time,
+                "startTime": video_ms + round_trip_time//2
+            }
+        else:
+            # Firmware 4 payload format
+            play_payload = {
+                "start_time": video_ms + round_trip_time//2,
+                "server_time": server_time,
+                "playback_rate": 1.0,
+                "loop": False
+            }
 
         play_url = f"{HANDY_API}/hssp/play?timeout=5000"
         play_resp = requests.put(play_url, headers=headers, json=play_payload, timeout=10)

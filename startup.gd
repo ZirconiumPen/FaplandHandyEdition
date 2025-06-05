@@ -41,6 +41,7 @@ func create_start_menu():
 	ui_elements["main_container"] = main_container
 	
 	create_fullscreen_toggle()
+	create_menu_section(main_container)
 	
 	# Background gradient panel
 	var bg_panel = Panel.new()
@@ -80,6 +81,30 @@ func create_start_menu():
 	install_button.pressed.connect(_on_install_deps_pressed)
 	
 	
+	# RANDOMIZE ROUNDS button
+	var randomize_button = Button.new()
+	randomize_button.name = "RandomizeButton" 
+	randomize_button.text = "🎲 RANDOMIZE ROUNDS"
+	randomize_button.position = Vector2(50, 400)
+	randomize_button.size = Vector2(300, 50)
+	randomize_button.add_theme_font_size_override("font_size", 18)
+
+	var randomize_style = StyleBoxFlat.new()
+	randomize_style.bg_color = Color(0.2, 0.7, 0.9, 0.95)
+	randomize_style.corner_radius_top_left = 15
+	randomize_style.corner_radius_top_right = 15
+	randomize_style.corner_radius_bottom_left = 15
+	randomize_style.corner_radius_bottom_right = 15
+	randomize_style.shadow_color = Color(0.2, 0.7, 0.9, 0.5)
+	randomize_style.shadow_size = 8
+	randomize_button.add_theme_stylebox_override("normal", randomize_style)
+	randomize_button.add_theme_color_override("font_color", Color.WHITE)
+
+	main_container.add_child(randomize_button)
+	ui_elements["randomize_button"] = randomize_button
+	randomize_button.pressed.connect(_on_randomize_rounds_pressed)
+	
+	
 	
 	# HANDY CONFIG button
 	var handy_button = Button.new()
@@ -111,13 +136,43 @@ func create_start_menu():
 	create_title_section(main_container)
 	
 	# Menu buttons section
-	create_menu_section(main_container)
 	create_highscore_panel(main_container)
 
 
 	
 	# Footer info
 	create_footer_section(main_container)
+
+
+
+func _on_randomize_rounds_pressed():
+	"""Handle randomize rounds button press"""
+	print("🎲 Randomize Rounds pressed")
+	
+	show_premium_popup("🔄 Randomizing rounds... Please wait.", Color.CYAN)
+	
+	# Execute the Python script
+	var output = []
+	var python_commands = ["py", "python", "python3"]
+	var success = false
+
+	for python_cmd in python_commands:
+		var result = OS.execute(python_cmd, ["./scripts/randomize_rounds.py"], output, true)
+		if result == 0:
+			success = true
+			show_premium_popup("✅ Rounds randomized successfully!", Color.GREEN)
+			print("🎲 Randomize script completed successfully with: ", python_cmd)
+			if output.size() > 0:
+				print("Script output: ", output)
+			break
+
+	if not success:
+		show_premium_popup("❌ Failed to execute randomize script. Check console for details.", Color.RED)
+		print("❌ Failed to execute randomize_rounds.py with any Python command")
+		print("Script output: ", output)
+
+
+
 
 
 func _on_handy_config_pressed():
@@ -191,10 +246,20 @@ func _on_handy_config_pressed():
 	app_input.placeholder_text = "Enter your Handy app ID"
 	config_container.add_child(app_input)
 	
+	# Firmware version checkbox
+	var firmware_checkbox = CheckBox.new()
+	firmware_checkbox.text = "Firmware 3 (uncheck for Firmware 4)"
+	firmware_checkbox.position = Vector2(20, 180)
+	firmware_checkbox.size = Vector2(300, 30)
+	firmware_checkbox.add_theme_color_override("font_color", Color.WHITE)
+	firmware_checkbox.add_theme_font_size_override("font_size", 16)
+	config_container.add_child(firmware_checkbox)
+	
 	# Load existing config
 	var config = load_handy_config()
 	token_input.text = config.get("access_token", "")
 	app_input.text = config.get("app_id", "")
+	firmware_checkbox.button_pressed = config.get("firmware", 4) == 3
 	
 	# Buttons
 	var save_button = Button.new()
@@ -213,7 +278,8 @@ func _on_handy_config_pressed():
 	
 	# Save functionality
 	save_button.pressed.connect(func():
-		save_handy_config(token_input.text, app_input.text)
+		var firmware_version = 3 if firmware_checkbox.button_pressed else 4
+		save_handy_config(token_input.text, app_input.text, firmware_version)
 		show_premium_popup("✅ Handy configuration saved!", Color.GREEN)
 		overlay.queue_free()
 		config_container.visible = false
@@ -243,11 +309,12 @@ func load_handy_config() -> Dictionary:
 	
 	return json.data
 
-func save_handy_config(access_token: String, app_id: String):
+func save_handy_config(access_token: String, app_id: String, firmware: int = 4):
 	"""Save Handy configuration to file"""
 	var config = {
 		"access_token": access_token,
-		"app_id": app_id
+		"app_id": app_id,
+		"firmware": firmware
 	}
 	
 	var file = FileAccess.open("handy_config.json", FileAccess.WRITE)
@@ -271,6 +338,7 @@ func create_background_particles(parent: Control):
 			randf() * get_viewport().size.x,
 			randf() * get_viewport().size.y
 		)
+		
 		parent.add_child(particle)
 		background_particles.append(particle)
 		
@@ -479,7 +547,7 @@ func _on_install_deps_pressed():
 	print("⚙️ Install Dependencies pressed")
 	
 	# Check if Python is installed first
-	var python_commands = ["python", "python3", "py"]
+	var python_commands = ["py", "python", "python3"]
 	var python_found = false
 	
 	for python_cmd in python_commands:
@@ -495,14 +563,13 @@ func _on_install_deps_pressed():
 	show_premium_popup("🔄 Installing Python dependencies... This may take a moment.", Color.YELLOW)
 	
 	# Install required packages
-	var packages = ["requests", "python-vlc", "keyboard"]
-	
+	var packages = ["requests", "python-vlc", "keyboard", "pandas"]
+
 	for package in packages:
-		print("Installing: " + package)
-		var pip_process = OS.create_process("pip", ["install", package])
-		# You could also try "pip3" if pip fails
+		var pip_commands = ["py", "-m", "pip", "install", package]
+		var pip_process = OS.create_process("py", ["-m", "pip", "install", package])
 		if pip_process <= 0:
-			OS.create_process("pip3", ["install", package])
+			OS.create_process("pip", ["install", package])
 	
 	await get_tree().create_timer(3.0).timeout
 	show_premium_popup("✅ Dependencies installation completed!", Color.GREEN)
@@ -531,7 +598,7 @@ func create_footer_section(parent: Control):
 	
 	# Version info
 	var version_label = Label.new()
-	version_label.text = "FapLand v1.0 • Handy Edition"
+	version_label.text = "FapLand v1.1 • Handy Edition"
 	version_label.position = Vector2(-460, 70)
 	version_label.size = Vector2(get_viewport().size.x, 25)
 	version_label.add_theme_font_size_override("font_size", 14)

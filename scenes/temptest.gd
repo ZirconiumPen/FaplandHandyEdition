@@ -96,20 +96,46 @@ func show_coming_up_next(next_round_num: int):
 	
 	
 	
-	# Create AnimatedSprite2D with your existing sprite resource (hardcoded for now)
-	var animated_sprite = AnimatedSprite2D.new()
-	var sprite_frames = load("res://sprites/tres_files/" + str(next_round_num) + ".tres") as SpriteFrames
-	animated_sprite.speed_scale=1.0
-	
-	if sprite_frames:
+	var image = Image.new()
+	var error = image.load("res://sprite_sheets/" + str(next_round_num) + ".png")
+
+	if error == OK:
+		var texture = ImageTexture.new()
+		texture.set_image(image)
+		
+		# Create SpriteFrames and animation at runtime
+		var sprite_frames = SpriteFrames.new()
+		sprite_frames.add_animation("animation")
+		sprite_frames.set_animation_speed("animation", 24.0)
+		
+		# Your sprite sheet dimensions (from the .tres file)
+		var frame_width = 302
+		var frame_height = 170
+		var cols = 10  # MAX_FRAMES_PER_ROW from your script
+		var rows = texture.get_height() / frame_height
+		
+		# Create frames from sprite sheet
+		for row in range(rows):
+			for col in range(cols):
+				# Don't create frames beyond the sprite sheet
+				if (row * cols + col) >= (texture.get_width() / frame_width) * (texture.get_height() / frame_height):
+					break
+					
+				var atlas_texture = AtlasTexture.new()
+				atlas_texture.atlas = texture
+				atlas_texture.region = Rect2(col * frame_width, row * frame_height, frame_width, frame_height)
+				sprite_frames.add_frame("animation", atlas_texture)
+		
+		# Create animated sprite
+		var animated_sprite = AnimatedSprite2D.new()
 		animated_sprite.sprite_frames = sprite_frames
 		animated_sprite.animation = "animation"
-		animated_sprite.position = Vector2(200, 185)  # Center in container
-		animated_sprite.scale = Vector2(1.25, 1.25)  # Same scale as your existing setup
+		animated_sprite.position = Vector2(200, 185)
+		animated_sprite.scale = Vector2(1.25, 1.25)
 		animated_sprite.play()
 		
 		coming_up_container.add_child(animated_sprite)
-		print("🎬 Showing hardcoded animated sprite for round ", next_round_num)
+		print("🎬 Showing animated sprite for round ", next_round_num)
 	else:
 		# Fallback if sprite can't load
 		var fallback_label = Label.new()
@@ -870,7 +896,7 @@ func launch_video_with_handy_sync():
 	print("✅ All files found, launching Python script...")
 	
 	# Try different Python commands
-	var python_commands = ["python", "python3", "py"]
+	var python_commands = ["py", "python", "python3"]
 	var process_id = -1
 	
 	for python_cmd in python_commands:
