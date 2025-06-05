@@ -1,0 +1,114 @@
+[gd_scene load_steps=4 format=3 uid="uid://bdmnjdt7ws4p2"]
+
+[ext_resource type="Script" uid="uid://yjp56efqxrdd" path="res://scenes/main_game/victory_popup.gd" id="1_qgcwc"]
+[ext_resource type="PackedScene" uid="uid://c34n5llucw6v0" path="res://scenes/main_game/fireworks.tscn" id="2_qgcwc"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_20qfk"]
+bg_color = Color(0.05, 0.2, 0.05, 0.98)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(1, 0.843137, 0, 1)
+corner_radius_top_left = 30
+corner_radius_top_right = 30
+corner_radius_bottom_right = 30
+corner_radius_bottom_left = 30
+shadow_color = Color(1, 0.8, 0, 0.7)
+shadow_size = 20
+
+[node name="VictoryPopup" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_qgcwc")
+
+[node name="Overlay" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0.2, 0, 0.95)
+metadata/_edit_lock_ = true
+
+[node name="VictoryContainer" type="Panel" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(800, 300)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_20qfk")
+
+[node name="VictoryLabel" type="Label" parent="VictoryContainer"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -180.5
+offset_top = 50.0
+offset_right = 180.5
+offset_bottom = 122.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 0.843137, 0, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_outline_size = 5
+theme_override_font_sizes/font_size = 52
+text = "🏆 VICTORY! 🏆"
+horizontal_alignment = 1
+
+[node name="VictoryMessage" type="Label" parent="VictoryContainer"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -155.5
+offset_top = -20.0
+offset_right = 155.5
+offset_bottom = 3.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_outline_size = 3
+theme_override_font_sizes/font_size = 26
+text = "You completed the 100 round challenge!"
+horizontal_alignment = 1
+
+[node name="ExitMessage" type="Label" parent="VictoryContainer"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -138.5
+offset_top = -71.0
+offset_right = 138.5
+offset_bottom = -43.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(1, 1, 0, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_outline_size = 2
+theme_override_font_sizes/font_size = 20
+text = "Game will exit in 5 seconds..."
+horizontal_alignment = 1
+
+[node name="Fireworks" parent="." instance=ExtResource("2_qgcwc")]
+layout_mode = 0

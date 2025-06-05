@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://c34n5llucw6v0"]
+
+[ext_resource type="Script" uid="uid://gtkhcojn02gd" path="res://scenes/main_game/fireworks.gd" id="1_7jvrd"]
+
+[node name="Fireworks" type="Label"]
+theme_override_font_sizes/font_size = 36
+text = "✨️"
+script = ExtResource("1_7jvrd")

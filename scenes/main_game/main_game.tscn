@@ -9,7 +9,7 @@
 [ext_resource type="StyleBox" uid="uid://c1np35mqim0ny" path="res://ui/green_glow_panel.tres" id="5_ldk84"]
 [ext_resource type="StyleBox" uid="uid://bs25uje6bi5w6" path="res://ui/gold_glow_panel.tres" id="6_6eclk"]
 [ext_resource type="PackedScene" uid="uid://cf2jn6ksi38ak" path="res://scenes/main_game/coming_up_box.tscn" id="7_i3kwu"]
-[ext_resource type="PackedScene" uid="uid://37cvyhxsvsgu" path="res://scenes/main_game/checkpoint_container.tscn" id="10_r81kp"]
+[ext_resource type="PackedScene" uid="uid://bdmnjdt7ws4p2" path="res://scenes/main_game/victory_popup.tscn" id="10_r81kp"]
 
 [node name="MainGame" type="Control"]
 layout_mode = 3
@@ -214,12 +214,10 @@ theme_override_font_sizes/font_size = 20
 text = "Click PLAY in: %ss"
 horizontal_alignment = 1
 
-[node name="CheckpointContainer" parent="." instance=ExtResource("10_r81kp")]
-layout_mode = 0
-offset_left = 492.0
-offset_top = 277.0
-offset_right = 612.0
-offset_bottom = 357.0
+[node name="VictoryPopup" parent="." instance=ExtResource("10_r81kp")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
 
 [connection signal="timeout" from="SessionTimer" to="." method="_on_session_timer_timeout"]
 [connection signal="timeout" from="CountdownTimer" to="." method="_on_countdown_timer_timeout"]

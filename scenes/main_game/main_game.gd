@@ -4,7 +4,7 @@ extends Control
 @export var autoskip_videos: bool = false
 @export var countdown_time: float = 30.0
 
-# Game State Variables
+#Game State Variables
 var current_round = 1
 var previous_round = 1
 var max_rounds = 100
@@ -49,6 +49,7 @@ var dice_rolling = false
 @onready var coming_up_box: Panel = %ComingUpBox
 @onready var countdown_label: Label = %CountdownLabel
 @onready var countdown_timer: Timer = $CountdownTimer
+@onready var victory_popup: VictoryPopup = %VictoryPopup
 
 @onready var start_time: float = Time.get_unix_time_from_system()
 
@@ -694,127 +695,10 @@ func flash_component(component: CanvasItem) -> void:
 
 func victory():
 	save_highscore(100, "victory")
+	victory_popup.open()
 
 	show_aaa_popup("🏆 VICTORY! You reached round 100 without ejaculating!", Color.GOLD)
 	print("🏆 VICTORY! Player completed the challenge!")
-
-	# Premium victory screen
-	var victory_bg = ColorRect.new()
-	victory_bg.color = Color(0, 0.2, 0, 0.95)
-	victory_bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	add_child(victory_bg)
-
-	# Premium victory container with glow
-	var victory_container = Panel.new()
-	victory_container.position = Vector2(
-		get_viewport().size.x / 2 - 400, get_viewport().size.y / 2 - 150
-	)
-	victory_container.size = Vector2(800, 300)
-
-	var victory_style = StyleBoxFlat.new()
-	victory_style.bg_color = Color(0.05, 0.2, 0.05, 0.98)
-	victory_style.border_width_left = 5
-	victory_style.border_width_right = 5
-	victory_style.border_width_top = 5
-	victory_style.border_width_bottom = 5
-	victory_style.border_color = Color.GOLD
-	victory_style.corner_radius_top_left = 30
-	victory_style.corner_radius_top_right = 30
-	victory_style.corner_radius_bottom_left = 30
-	victory_style.corner_radius_bottom_right = 30
-	victory_style.shadow_color = Color(1.0, 0.8, 0.0, 0.7)
-	victory_style.shadow_size = 20
-	victory_container.add_theme_stylebox_override("panel", victory_style)
-	add_child(victory_container)
-
-	# Premium victory title
-	var victory_label = Label.new()
-	victory_label.text = "🏆 VICTORY! 🏆"
-	victory_label.position = Vector2(0, 50)
-	victory_label.size = Vector2(800, 80)
-	victory_label.add_theme_font_size_override("font_size", 52)
-	victory_label.add_theme_color_override("font_color", Color.GOLD)
-	victory_label.add_theme_color_override("font_shadow_color", Color.BLACK)
-	victory_label.add_theme_constant_override("shadow_outline_size", 5)
-	victory_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	victory_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	victory_container.add_child(victory_label)
-
-	# Premium victory message
-	var victory_message = Label.new()
-	victory_message.text = "You completed the 100 round challenge!"
-	victory_message.position = Vector2(0, 130)
-	victory_message.size = Vector2(800, 50)
-	victory_message.add_theme_font_size_override("font_size", 26)
-	victory_message.add_theme_color_override("font_color", Color.WHITE)
-	victory_message.add_theme_color_override("font_shadow_color", Color.BLACK)
-	victory_message.add_theme_constant_override("shadow_outline_size", 3)
-	victory_message.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	victory_message.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	victory_container.add_child(victory_message)
-
-	# Premium exit message
-	var exit_message = Label.new()
-	exit_message.text = "Game will exit in 5 seconds..."
-	exit_message.position = Vector2(0, 200)
-	exit_message.size = Vector2(800, 40)
-	exit_message.add_theme_font_size_override("font_size", 20)
-	exit_message.add_theme_color_override("font_color", Color.YELLOW)
-	exit_message.add_theme_color_override("font_shadow_color", Color.BLACK)
-	exit_message.add_theme_constant_override("shadow_outline_size", 2)
-	exit_message.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	victory_container.add_child(exit_message)
-
-	# Premium victory animations
-	victory_container.modulate = Color.TRANSPARENT
-	victory_container.scale = 0.2 * Vector2.ONE
-
-	var victory_tween = create_tween()
-	victory_tween.parallel().tween_property(victory_container, "modulate", Color.WHITE, 1.0)
-	victory_tween.parallel().tween_property(victory_container, "scale", Vector2.ONE, 1.0)
-
-	# Premium fireworks effect
-	create_fireworks_effect()
-
-	# Premium pulsing victory text
-	var pulse_tween = create_tween()
-	pulse_tween.set_loops()
-	pulse_tween.tween_property(victory_label, "scale", 1.15 * Vector2.ONE, 1.0)
-	pulse_tween.tween_property(victory_label, "scale", Vector2.ONE, 1.0)
-
-	# Exit after victory
-	await get_tree().create_timer(5.0).timeout
-	get_tree().quit()
-
-
-func create_fireworks_effect():
-	"""Create premium fireworks visual effect for victory"""
-	for i in range(15):
-		var firework = Label.new()
-		firework.text = ["✨", "🎆", "🎇", "💫", "⭐"][i % 5]
-		firework.add_theme_font_size_override("font_size", 36)
-		firework.add_theme_color_override(
-			"font_color",
-			[Color.GOLD, Color.RED, Color.BLUE, Color.GREEN, Color.PURPLE, Color.CYAN][i % 6]
-		)
-		firework.position = Vector2(
-			randf() * get_viewport().size.x, randf() * get_viewport().size.y
-		)
-		add_child(firework)
-
-		# Premium firework animation
-		var firework_tween = create_tween()
-		firework_tween.parallel().tween_property(
-			firework,
-			"position",
-			firework.position + Vector2(randf_range(-250, 250), randf_range(-250, 250)),
-			2.5
-		)
-		firework_tween.parallel().tween_property(firework, "modulate", Color.TRANSPARENT, 2.5)
-		firework_tween.parallel().tween_property(firework, "scale", 2.5 * Vector2.ONE, 2.5)
-		firework_tween.tween_callback(firework.queue_free)
-
-		await get_tree().create_timer(0.15).timeout  # Stagger fireworks
 
 
 func show_aaa_game_over_popup():
