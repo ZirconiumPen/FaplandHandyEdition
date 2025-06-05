@@ -32,9 +32,6 @@ var countdown_time_left: float = countdown_time:
 		elif countdown_time_left <= 20:
 			countdown_label.add_theme_color_override("font_color", Color.YELLOW)
 
-# Animation variables
-var dice_rolling = false
-
 @onready var water_progress_container: Panel = %WaterProgressContainer
 @onready var dice_range_label: Label = %DiceRangeLabel
 @onready var perk_label: Label = %PerkLabel
@@ -522,11 +519,11 @@ func _on_perk_label_clicked(event: InputEvent):
 
 
 func _on_roll_button_pressed():
-	if not game_active or is_playing or dice_rolling:
+	roll_button.disabled = true
+	if not game_active or is_playing:
 		return
 
 	print("🎲 ROLL PRESSED")
-	dice_rolling = true
 	var roll
 	var next_round
 	# Check for lucky 7 perk
@@ -536,11 +533,8 @@ func _on_roll_button_pressed():
 		show_aaa_popup("🍀 Lucky 7 activated! Rolled: 7", Color.GOLD)
 		next_round = current_round + roll
 	else:
-		# Disable roll button and start premium animation
-		roll_button.disabled = true
 		roll_button.text = "🎲 ROLLING..."
 
-		# Premium dice roll animation
 		await animate_dice_roll()
 
 		# Roll dice and calculate next round
@@ -548,10 +542,10 @@ func _on_roll_button_pressed():
 		next_round = current_round + roll
 
 		roll_button.text = "🎲 ROLL DICE"
-		roll_button.hide()
-		play_button.show()
-
 		print("🎲 Rolled: ", roll, " | Next Round: ", next_round)
+
+	roll_button.hide()
+	play_button.show()
 
 	# Show dice result with premium animation
 	dice_result.text = "Rolled: %s" % roll
@@ -576,7 +570,6 @@ func _on_roll_button_pressed():
 
 	# Move to next round
 	advance_to_round(next_round)
-	dice_rolling = false
 
 
 func animate_dice_roll():
