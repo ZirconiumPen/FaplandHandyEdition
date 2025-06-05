@@ -2,6 +2,7 @@ extends Panel
 
 @export var overlay: Control
 
+@onready var handy_toggle: CheckButton = %HandyToggle
 @onready var connection_key_field: LineEdit = %ConnectionKeyField
 @onready var app_id_field: LineEdit = %AppIDField
 
@@ -10,6 +11,7 @@ func open() -> void:
 	overlay.show()
 	show()
 	var config = load_handy_config()
+	handy_toggle.button_pressed = config.get("use_handy", true)
 	connection_key_field.text = config.get("access_token", "")
 	app_id_field.text = config.get("app_id", "")
 
@@ -30,7 +32,6 @@ func _on_save_button_pressed() -> void:
 
 
 func load_handy_config() -> Dictionary:
-	"""Load Handy configuration from file"""
 	if not FileAccess.file_exists("handy_config.json"):
 		return {}
 
@@ -49,11 +50,17 @@ func load_handy_config() -> Dictionary:
 
 
 func save_handy_config(access_token: String, app_id: String) -> void:
-	"""Save Handy configuration to file"""
 	var file = FileAccess.open("handy_config.json", FileAccess.WRITE)
 	if not file:
 		return
-	var config = {"access_token": access_token, "app_id": app_id}
+	var config = {"use_handy": handy_toggle.button_pressed}
+	config["access_token"] = access_token
+	config["app_id"] = app_id
 	file.store_string(JSON.stringify(config))
 	file.close()
 	print("💾 Saved Handy configuration")
+
+
+func _on_check_button_toggled(toggled_on: bool) -> void:
+	%ConnectionKey.visible = toggled_on
+	%AppID.visible = toggled_on
