@@ -61,8 +61,19 @@ func update_pause_count_from_file():
 
 
 func _ready():
-	print("🎮 Creating AAA Quality FapLand UI with Session Timer...")
+	clear_pause_config()
 
+	# Initialize perk system
+	perk_system = PerkSystem.new(self)
+	perk_system.perk_earned.connect(_on_perk_earned)
+	perk_system.perk_used.connect(_on_perk_used)
+	perk_system.ui_update_needed.connect(update_all_ui_animated)
+
+	coming_up_box.open(current_round)
+	start_round(current_round)
+
+
+func clear_pause_config() -> void:
 	if FileAccess.file_exists("pause_config.json"):
 		var file = FileAccess.open("pause_config.json", FileAccess.WRITE)
 		if file:
@@ -75,21 +86,6 @@ func _ready():
 			print("❌ Could not clear pause config file")
 	else:
 		print("📁 No pause config file found to clear")
-
-	# Initialize perk system
-	perk_system = PerkSystem.new(self)
-	perk_system.perk_earned.connect(_on_perk_earned)
-	perk_system.perk_used.connect(_on_perk_used)
-	perk_system.ui_update_needed.connect(update_all_ui_animated)
-
-	#clear_ui()
-	start_round(current_round)
-
-	# Start session timer updates
-	coming_up_box.open(current_round)
-	#create_animated_sprite_rect()
-
-	print("✅ AAA Quality UI ready with session tracking!")
 
 
 func _on_session_timer_timeout() -> void:
