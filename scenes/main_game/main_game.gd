@@ -37,7 +37,6 @@ var countdown_time_left: float = countdown_time:
 
 # Animation variables
 var dice_rolling = false
-var progress_tween: Tween
 
 @onready var water_progress_container: Panel = %WaterProgressContainer
 @onready var dice_range_label: Label = %DiceRangeLabel
