@@ -222,6 +222,7 @@ autostart = true
 
 [node name="CountdownTimer" type="Timer" parent="."]
 
+[connection signal="pressed" from="UI/CenterArea/PlayButton" to="." method="_on_play_button_pressed"]
 [connection signal="pressed" from="UI/CenterArea/RollButton" to="." method="_on_roll_button_pressed"]
 [connection signal="timeout" from="SessionTimer" to="." method="_on_session_timer_timeout"]
 [connection signal="timeout" from="CountdownTimer" to="." method="_on_countdown_timer_timeout"]
