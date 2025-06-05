@@ -28,8 +28,8 @@ var ui_elements = {}
 # Animation variables
 var dice_rolling = false
 var progress_tween: Tween
-var water_animation_tween: Tween
 
+@onready var water_progress_container: Panel = %WaterProgressContainer
 @onready var dice_range_label: Label = %DiceRangeLabel
 @onready var perk_label: Label = %PerkLabel
 @onready var active_perks: Label = %ActivePerks
@@ -79,7 +79,6 @@ func _ready():
 	perk_system.ui_update_needed.connect(update_all_ui_animated)
 
 	#clear_ui()
-	create_water_progress_bar()
 	start_round(current_round)
 
 	# Start session timer updates
@@ -123,106 +122,6 @@ func clear_ui():
 	for child in get_children():
 		child.queue_free()
 	await get_tree().process_frame
-
-
-func create_water_progress_bar():
-	"""Create the premium water progress bar"""
-	var top_container = get_node("UI/TopBar")
-
-	# Main progress bar container with premium glow
-	var progress_container = Panel.new()
-	progress_container.name = "WaterProgressContainer"
-	progress_container.position = Vector2(200, 20)
-	progress_container.size = Vector2(800, 60)
-
-	# Premium glow effect style
-	var glow_style = StyleBoxFlat.new()
-	glow_style.bg_color = Color(0.05, 0.05, 0.1, 0.95)
-	glow_style.border_width_left = 3
-	glow_style.border_width_right = 3
-	glow_style.border_width_top = 3
-	glow_style.border_width_bottom = 3
-	glow_style.border_color = Color(0.2, 0.4, 0.8, 0.9)
-	glow_style.corner_radius_top_left = 30
-	glow_style.corner_radius_top_right = 30
-	glow_style.corner_radius_bottom_left = 30
-	glow_style.corner_radius_bottom_right = 30
-	glow_style.shadow_color = Color(0.2, 0.4, 0.8, 0.4)
-	glow_style.shadow_size = 15
-	progress_container.add_theme_stylebox_override("panel", glow_style)
-	top_container.add_child(progress_container)
-
-	# Create curved water-style progress bar
-	var water_progress = Panel.new()
-	water_progress.name = "WaterProgress"
-	water_progress.position = Vector2(8, 8)
-	water_progress.size = Vector2(1, 44)
-
-	var water_style = StyleBoxFlat.new()
-	water_style.bg_color = Color(0.2, 0.6, 1.0, 0.8)
-	water_style.corner_radius_top_left = 22
-	water_style.corner_radius_top_right = 22
-	water_style.corner_radius_bottom_left = 22
-	water_style.corner_radius_bottom_right = 22
-	water_progress.add_theme_stylebox_override("panel", water_style)
-
-	progress_container.add_child(water_progress)
-	ui_elements["water_progress"] = water_progress
-	ui_elements["water_style"] = water_style
-
-	# Start water ripple effect
-	create_water_ripple_effect(water_progress)
-
-	# Progress text overlay
-	var progress_text = Label.new()
-	progress_text.name = "ProgressText"
-	progress_text.position = Vector2(8, 8)
-	progress_text.size = Vector2(784, 44)
-	progress_text.text = "Round 1 / 100"
-	progress_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	progress_text.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	progress_text.add_theme_font_size_override("font_size", 18)
-	progress_text.add_theme_color_override("font_color", Color.WHITE)
-	progress_text.add_theme_color_override("font_shadow_color", Color.BLACK)
-	progress_text.add_theme_constant_override("shadow_outline_size", 3)
-	progress_container.add_child(progress_text)
-	ui_elements["progress_text"] = progress_text
-
-
-func create_water_ripple_effect(water_progress: Panel):
-	"""Create animated water ripple effect on the progress bar"""
-	var ripple_timer = Timer.new()
-	ripple_timer.wait_time = 0.1  # Update every 100ms for smooth animation
-	ripple_timer.timeout.connect(func(): animate_water_ripples(water_progress))
-	add_child(ripple_timer)
-	ripple_timer.start()
-
-
-func animate_water_ripples(water_panel: Panel):
-	"""Animate water ripples using StyleBoxFlat color modulation"""
-	if not ui_elements.has("water_style"):
-		return
-
-	var time = Time.get_ticks_msec() * 0.001  # Convert milliseconds to seconds
-	var water_style = ui_elements["water_style"]
-
-	# Create ripple effect using sine waves
-	var ripple1 = sin(time * 3.0) * 0.1 + 1.0
-	var ripple2 = sin(time * 4.5 + 1.5) * 0.08 + 1.0
-	var ripple3 = sin(time * 2.0 + 3.0) * 0.05 + 1.0
-
-	var combined_ripple = ripple1 * ripple2 * ripple3
-
-	# Apply ripple to color brightness and alpha
-	var base_color = Color(0.2, 0.6, 1.0, 0.8)
-	var rippled_color = Color(
-		base_color.r * combined_ripple,
-		base_color.g * combined_ripple,
-		base_color.b * (1.0 + sin(time * 5.0) * 0.15),  # Extra blue ripple
-		base_color.a * (0.7 + sin(time * 2.5) * 0.15)  # Alpha wave
-	)
-
-	water_style.bg_color = rippled_color
 
 
 func create_checkpoint_marker(parent: Control, checkpoint: Dictionary):
@@ -908,25 +807,7 @@ func get_active_perks_display_text() -> String:
 
 func update_all_ui_animated():
 	"""Update all UI elements with premium smooth animations"""
-
-	# Animate water progress bar with premium fluid effects
-	if ui_elements.has("water_progress") and ui_elements.has("water_style"):
-		var water_progress = ui_elements["water_progress"]
-		var water_style = ui_elements["water_style"]
-		var progress_ratio = float(current_round) / float(max_rounds)
-		var target_width = max(1, progress_ratio * 784)  # 784 is the full progress bar width, minimum 1px
-
-		# Premium smooth water progress animation
-		if water_animation_tween:
-			water_animation_tween.kill()
-		water_animation_tween = create_tween()
-		water_animation_tween.tween_property(water_progress, "size:x", target_width, 1.5)
-
-		# Premium color transition based on progress (water style)
-		var base_water_color = Color(0.2, 0.6, 1.0, 0.8).lerp(
-			Color(1.0, 0.3, 0.2, 0.8), progress_ratio
-		)
-		water_style.bg_color = base_water_color
+	water_progress_container.current_round = current_round
 
 	# Update progress text
 	if ui_elements.has("progress_text"):
