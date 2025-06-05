@@ -118,10 +118,10 @@ vertical_alignment = 1
 [node name="ActivePerks" type="Label" parent="."]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 721.0
-offset_top = 127.0
-offset_right = 853.0
-offset_bottom = 346.0
+offset_left = 833.0
+offset_top = 325.0
+offset_right = 965.0
+offset_bottom = 544.0
 
 [node name="RoundLabel" type="Label" parent="."]
 unique_name_in_owner = true
@@ -137,28 +137,40 @@ theme_override_styles/normal = ExtResource("2_yra6k")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="PlayButton" type="Button" parent="."]
+[node name="ActionButton" type="Control" parent="."]
 unique_name_in_owner = true
-layout_mode = 0
-offset_left = 749.0
-offset_top = 270.0
-offset_right = 901.0
-offset_bottom = 358.0
+custom_minimum_size = Vector2(152, 88)
+anchors_preset = 0
+offset_left = 54.0
+offset_top = 500.0
+offset_right = 269.0
+offset_bottom = 622.0
+metadata/_edit_group_ = true
+
+[node name="RollButton" type="Button" parent="ActionButton"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = ExtResource("3_075iw")
+text = "🎲 ROLL DICE"
+
+[node name="PlayButton" type="Button" parent="ActionButton"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 theme_override_font_sizes/font_size = 20
 theme_override_styles/normal = ExtResource("2_fjyug")
 text = "▶ PLAY"
-
-[node name="RollButton" type="Button" parent="."]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 758.0
-offset_top = 400.0
-offset_right = 910.0
-offset_bottom = 488.0
-theme_override_font_sizes/font_size = 18
-theme_override_styles/normal = ExtResource("3_075iw")
-disabled = true
-text = "🎲 ROLL DICE"
 
 [node name="DiceResult" type="Label" parent="."]
 unique_name_in_owner = true
@@ -181,8 +193,10 @@ layout_mode = 1
 anchors_preset = 4
 anchor_left = 0.0
 anchor_right = 0.0
-offset_left = 54.0
-offset_right = 454.0
+offset_left = 44.0
+offset_top = -217.0
+offset_right = 444.0
+offset_bottom = 83.0
 grow_horizontal = 1
 
 [node name="CountdownLabel" type="Label" parent="."]
@@ -201,5 +215,5 @@ horizontal_alignment = 1
 
 [connection signal="timeout" from="SessionTimer" to="." method="_on_session_timer_timeout"]
 [connection signal="timeout" from="CountdownTimer" to="." method="_on_countdown_timer_timeout"]
-[connection signal="pressed" from="PlayButton" to="." method="_on_play_button_pressed"]
-[connection signal="pressed" from="RollButton" to="." method="_on_roll_button_pressed"]
+[connection signal="pressed" from="ActionButton/RollButton" to="." method="_on_roll_button_pressed"]
+[connection signal="pressed" from="ActionButton/PlayButton" to="." method="_on_play_button_pressed"]
