@@ -33,6 +33,17 @@ theme_override_font_sizes/font_size = 24
 text = "🎮 HANDY CONFIGURATION"
 horizontal_alignment = 1
 
+[node name="FirmwareDropdown" type="OptionButton" parent="MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+selected = 1
+item_count = 2
+popup/item_0/text = "Firmware 3"
+popup/item_0/id = 0
+popup/item_1/text = "Firmware 4"
+popup/item_1/id = 1
+
 [node name="ConnectionKey" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 alignment = 1
