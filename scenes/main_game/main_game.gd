@@ -318,7 +318,7 @@ func launch_video_with_handy_sync():
 	print("✅ All files found, launching Python script...")
 
 	# Try different Python commands
-	var python_commands = ["python", "python3", "py"]
+	var python_commands = ["py", "python", "python3"]
 	var process_id = -1
 
 	for python_cmd in python_commands:

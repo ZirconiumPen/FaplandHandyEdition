@@ -91,7 +91,7 @@ func _on_install_button_pressed() -> void:
 	print("⚙️ Install Dependencies pressed")
 
 	# Check if Python is installed first
-	var python_commands = ["python", "python3", "py"]
+	var python_commands = ["py", "python", "python3"]
 	var python_found = false
 
 	for python_cmd in python_commands:
@@ -107,14 +107,13 @@ func _on_install_button_pressed() -> void:
 	popup_box.open("🔄 Installing Python dependencies... This may take a moment.", Color.YELLOW)
 
 	# Install required packages
-	var packages = ["requests", "python-vlc", "keyboard"]
+	var packages = ["requests", "python-vlc", "keyboard", "pandas"]
 
 	for package in packages:
-		print("Installing: " + package)
-		var pip_process = OS.create_process("pip", ["install", package])
-		# You could also try "pip3" if pip fails
+		var pip_commands = ["py", "-m", "pip", "install", package]
+		var pip_process = OS.create_process(pip_commands[0], pip_commands.slice(1))
 		if pip_process <= 0:
-			OS.create_process("pip3", ["install", package])
+			OS.create_process("pip", ["install", package])
 
 	await get_tree().create_timer(3.0).timeout
 	popup_box.open("✅ Dependencies installation completed!", Color.GREEN)
@@ -162,3 +161,28 @@ func _on_exit_button_pressed() -> void:
 
 	await popup_box.done
 	get_tree().quit()
+
+
+func _on_randomize_button_pressed() -> void:
+	popup_box.open("🔁 Randomizing rounds... Please wait.", Color.CYAN)
+
+	# Execute the Python script
+	var output = []
+	var python_commands = ["py", "python", "python3"]
+	var success = false
+
+	for python_cmd in python_commands:
+		var result = OS.execute(python_cmd, ["./scripts/randomize_rounds.py"], output, true)
+		if result != 0:
+			continue
+		success = true
+		popup_box.open("✅️ Rounds randomized successfully!", Color.GREEN)
+		if not output.is_empty():
+			print("Script output: ", output)
+
+	if not success:
+		popup_box.open(
+			"❌️ Failed to execute randomize script. Check console for details.", Color.RED
+		)
+		print("❌️ Failed to execute randomize_rounds.py with any Python command")
+		print("Script output: ", output)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://bcan4ssdl6xe8"]
+[gd_scene load_steps=18 format=3 uid="uid://bcan4ssdl6xe8"]
 
 [ext_resource type="StyleBox" uid="uid://cgxu8klvvwq83" path="res://ui/rounded_panel_orange.tres" id="1_0bs6e"]
 [ext_resource type="Script" uid="uid://cy0hf7drjmhq0" path="res://scenes/title_screen/title_screen.gd" id="1_ksq0p"]
@@ -16,6 +16,15 @@
 [ext_resource type="PackedScene" uid="uid://dwesryglekge2" path="res://scenes/title_screen/how_to_play_box.tscn" id="14_tvm32"]
 [ext_resource type="PackedScene" uid="uid://b4keb3q83utsv" path="res://scenes/popup_box.tscn" id="15_xholb"]
 [ext_resource type="Script" uid="uid://d4msg6xtekugj" path="res://scenes/popup_box.gd" id="16_ktl6d"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_aihkd"]
+bg_color = Color(0.2, 0.7, 0.9, 0.95)
+corner_radius_top_left = 15
+corner_radius_top_right = 15
+corner_radius_bottom_right = 15
+corner_radius_bottom_left = 15
+shadow_color = Color(0.2, 0.7, 0.9, 0.5)
+shadow_size = 8
 
 [node name="TitleScreen" type="Control"]
 layout_mode = 3
@@ -44,18 +53,16 @@ offset_right = 170.0
 offset_bottom = 60.0
 text = "⛶ Fullscreen"
 
-[node name="InstallButton" type="Button" parent="."]
-layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
+[node name="RandomizeButton" type="Button" parent="."]
+custom_minimum_size = Vector2(300, 50)
+layout_mode = 0
 offset_left = 50.0
-offset_top = -148.0
+offset_top = 400.0
 offset_right = 350.0
-offset_bottom = -98.0
-grow_vertical = 0
-theme_override_styles/normal = ExtResource("1_0bs6e")
-text = "⚙️ INSTALL DEPS"
+offset_bottom = 450.0
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_aihkd")
+text = "🎲 RANDOMIZE ROUNDS"
 
 [node name="HandyButton" type="Button" parent="."]
 layout_mode = 1
@@ -69,6 +76,19 @@ offset_bottom = -148.0
 grow_vertical = 0
 theme_override_styles/normal = ExtResource("3_mrdy1")
 text = "🎮 HANDY CONFIG"
+
+[node name="InstallButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 50.0
+offset_top = -148.0
+offset_right = 350.0
+offset_bottom = -98.0
+grow_vertical = 0
+theme_override_styles/normal = ExtResource("1_0bs6e")
+text = "⚙️ INSTALL DEPS"
 
 [node name="InfoLabel" type="Label" parent="."]
 layout_mode = 1
@@ -252,8 +272,9 @@ grow_horizontal = 2
 script = ExtResource("16_ktl6d")
 
 [connection signal="pressed" from="FullscreenButton" to="." method="_on_fullscreen_button_pressed"]
-[connection signal="pressed" from="InstallButton" to="." method="_on_install_button_pressed"]
+[connection signal="pressed" from="RandomizeButton" to="." method="_on_randomize_button_pressed"]
 [connection signal="pressed" from="HandyButton" to="." method="_on_handy_button_pressed"]
+[connection signal="pressed" from="InstallButton" to="." method="_on_install_button_pressed"]
 [connection signal="pressed" from="MenuContainer/StartButton" to="." method="_on_start_button_pressed"]
 [connection signal="pressed" from="MenuContainer/HowToPlayButton" to="." method="_on_how_to_play_button_pressed"]
 [connection signal="pressed" from="MenuContainer/ExitButton" to="." method="_on_exit_button_pressed"]
