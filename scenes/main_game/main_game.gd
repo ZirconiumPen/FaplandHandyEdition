@@ -37,7 +37,6 @@ var countdown_time_left: float = countdown_time:
 @onready var perk_label: Label = %PerkLabel
 @onready var active_perks: Label = %ActivePerks
 @onready var pause_count_label: Label = %PauseCountLabel
-@onready var round_label: Label = %RoundLabel
 @onready var action_button: Control = %ActionButton
 @onready var play_button: Button = %PlayButton
 @onready var roll_button: Button = %RollButton
@@ -650,15 +649,6 @@ func get_active_perks_display_text() -> String:
 func update_all_ui_animated():
 	"""Update all UI elements with premium smooth animations"""
 	water_progress_container.current_round = current_round
-
-	var scale_tween = create_tween()
-	scale_tween.tween_property(round_label, "scale", 1.3 * Vector2.ONE, 0.4)
-	scale_tween.tween_property(round_label, "scale", Vector2.ONE, 0.4)
-
-	if current_round == max_rounds:
-		round_label.text = "FINAL ROUND"
-	else:
-		round_label.text = "Round %s" % current_round
 
 	active_perks.text = get_active_perks_display_text()
 	flash_component(active_perks)
