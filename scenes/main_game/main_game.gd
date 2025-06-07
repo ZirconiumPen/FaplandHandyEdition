@@ -7,6 +7,7 @@ extends Control
 var max_rounds = 100
 var current_round = 1:
 	set(value):
+		previous_round = current_round
 		current_round = clampi(value, 1, max_rounds)
 var previous_round = 1
 
@@ -249,7 +250,6 @@ func animate_dice_roll():
 
 
 func advance_to_round(next_round: int):
-	previous_round = current_round
 	current_round = next_round
 	action_button.switch_to_play()
 
@@ -325,7 +325,6 @@ func defeat():
 
 func _on_action_button_play_pressed() -> void:
 	countdown_bar.stop()
-	previous_round = current_round
 	coming_up_box.close()
 	launch_video_with_handy_sync()
 	monitor_video_completion()
