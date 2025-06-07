@@ -45,26 +45,22 @@ func _ready():
 	perk_system.perk_used.connect(_on_perk_used)
 	perk_system.ui_update_needed.connect(update_all_ui_animated)
 
+	advance_to_round(current_round)
+
+
+func advance_to_round(next_round: int):
+	current_round = next_round
 	coming_up_box.open(current_round)
-	start_round(current_round)
-
-
-func start_round(round_num: int):
-	current_round = round_num
-
 	action_button.switch_to_play()
 
 	update_all_ui_animated()
-	print("🎯 Round %s ready - Pauses: %s/1" % [current_round, pause_count])
-	Events.notified.emit(
-		Message.new(
-			(
-				"🎮 Round %s ready! You have %s pause%s available."
-				% [current_round, pause_count, "" if pause_count == 1 else "s"]
-			),
-			Color.CYAN
+	print("🎯 Advanced to Round: %s" % current_round)
+	if current_round == max_rounds:
+		Events.notified.emit(Message.new("🎮 FINAL ROUND - Click Play to watch video!", Color.CYAN))
+	else:
+		Events.notified.emit(
+			Message.new("🎮 Round %s - Click Play to watch video!" % current_round, Color.CYAN)
 		)
-	)
 
 
 func launch_video_with_handy_sync():
@@ -249,20 +245,6 @@ func animate_dice_roll():
 		await bounce_tween.finished
 
 
-func advance_to_round(next_round: int):
-	current_round = next_round
-	action_button.switch_to_play()
-
-	update_all_ui_animated()
-	print("🎯 Advanced to Round: %s" % current_round)
-	if current_round == max_rounds:
-		Events.notified.emit(Message.new("🎮 FINAL ROUND - Click Play to watch video!", Color.CYAN))
-	else:
-		Events.notified.emit(
-			Message.new("🎮 Round %s - Click Play to watch video!" % current_round, Color.CYAN)
-		)
-
-
 # TODO: make UI elements update themselves
 func update_all_ui_animated():
 	"""Update all UI elements with premium smooth animations"""
@@ -364,9 +346,6 @@ func _on_action_button_roll_pressed() -> void:
 
 	# Wait for animations
 	await get_tree().create_timer(1.8).timeout
-
-	# Show "Coming Up Next" display
-	coming_up_box.open(next_round)
 
 	countdown_bar.start()
 
