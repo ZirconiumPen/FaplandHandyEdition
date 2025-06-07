@@ -54,7 +54,7 @@ var countdown_time_left: float = countdown_time:
 func update_pause_count_from_file():
 	"""Read back the updated pause count from the Python script"""
 
-	var current_pauses = load_pause_config_timestamped()
+	var current_pauses = Config.load_pause_config_timestamped()
 
 	pause_count = current_pauses + 1  # Apply the +1 stacking bonus
 	print("📝 Pauses set to: %s (%s + 1 bonus)" % [pause_count, current_pauses])
@@ -149,64 +149,6 @@ func save_pause_config_timestamped(max_pauses_val: int, reason: String):
 		file.close()
 
 	print("💾 Saved pause config entry: %s" % new_entry)
-
-
-func load_pause_config_timestamped() -> int:
-	"""Load the latest pause config from timestamped entries"""
-	if not FileAccess.file_exists("pause_config.json"):
-		print("⚠️ No pause config file found, using default")
-		return 1
-
-	var file = FileAccess.open("pause_config.json", FileAccess.READ)
-	if not file:
-		print("❌ Could not open pause config file")
-		return 1
-
-	var json_text = file.get_as_text()
-	file.close()
-
-	var json = JSON.new()
-	if json.parse(json_text) != OK:
-		print("❌ Could not parse pause config JSON")
-		return 1
-
-	var pause_data = json.data
-
-	if not pause_data.has("entries") or pause_data["entries"].size() == 0:
-		print("⚠️ No entries found in pause config")
-		return 1
-
-	# Find the most recent entry
-	var latest_entry = null
-	var latest_timestamp = ""
-
-	for entry in pause_data["entries"]:
-		if entry["timestamp"] > latest_timestamp:
-			latest_timestamp = entry["timestamp"]
-			latest_entry = entry
-
-	if not latest_entry:
-		print("❌ Could not find latest entry")
-		return 1
-
-	print("🔍 DEBUG: Found ", pause_data["entries"].size(), " entries in pause config")
-	print("🔍 DEBUG: Latest entry: %s" % latest_entry)
-
-	# Log the full history for debugging
-	print("📜 PAUSE CONFIG HISTORY:")
-	var entries_sorted = pause_data["entries"].duplicate()
-	entries_sorted.sort_custom(func(a, b): return a["timestamp"] < b["timestamp"])
-
-	for i in range(entries_sorted.size()):
-		var entry = entries_sorted[i]
-		print(
-			(
-				"  %s. {timestamp} | {writer} | pauses={max_pauses} | reason={reason}".format(entry)
-				% (i + 1)
-			)
-		)
-
-	return int(latest_entry["max_pauses"])
 
 
 func start_round(round_num: int):
