@@ -134,7 +134,7 @@ func launch_video_with_handy_sync():
 		action_button.switch_to_play()
 
 
-func monitor_video_completion():
+func monitor_video_completion(max_attempts: int = 600):
 	print("👀 Starting video completion monitor...")
 
 	if autoskip_videos:
@@ -142,34 +142,30 @@ func monitor_video_completion():
 		return
 
 	var monitor_attempts = 0
-	var max_attempts = 600
 
-	while video_process_id > 0 and is_playing and monitor_attempts < max_attempts:
+	while video_process_id > 0 and monitor_attempts < max_attempts:
 		await get_tree().create_timer(2.0).timeout
 		monitor_attempts += 1
+		if monitor_attempts % 15 == 0:
+			print("⏳ Video still playing...")
 
 		# Try to check if process is still alive
-		if OS.has_method("is_process_running"):
-			var process_still_running = OS.is_process_running(video_process_id)
-			if not process_still_running:
-				print("🎬 Video script finished! (Auto-detected)")
+		if OS.is_process_running(video_process_id):
+			continue
+		print("🎬 Video script finished! (Auto-detected)")
 
-				# Check for ejaculation file
-				if FileAccess.file_exists("iejaculated.txt"):
-					print("💀 Ejaculation file found - GAME OVER!")
-					defeat()
-					return
-				else:
-					print("✅ Normal video completion")
-					on_video_completed()
-					break
+		# Check for ejaculation file
+		if Config.cum_exists():
+			print("💀 Ejaculation file found - GAME OVER!")
+			defeat()
+			return
+		else:
+			print("✅ Normal video completion")
+			on_video_completed()
+			return
 
-		if monitor_attempts % 15 == 0:
-			print("⏳ Video still playing... Click 'Video Finished' when done.")
-
-	if monitor_attempts >= max_attempts:
-		print("⏰ Monitor timeout - assuming video finished")
-		on_video_completed()
+	print("⏰ Monitor timeout - assuming video finished")
+	on_video_completed()
 
 
 func on_video_completed():

@@ -180,9 +180,13 @@ func load_pause_config_timestamped() -> int:
 	return int(latest_entry["max_pauses"])
 
 
+func cum_exists() -> bool:
+	return FileAccess.file_exists(PATH_TO_CUM)
+
+
 func clean_up_cum() -> void:
 	# Clean up ejaculation file
-	if not FileAccess.file_exists(PATH_TO_CUM):
+	if not cum_exists():
 		return
 	var file = FileAccess.open(PATH_TO_CUM, FileAccess.READ)
 	if file:
