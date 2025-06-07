@@ -17,7 +17,6 @@ var pause_count = 1
 var pause_time = 5
 
 var is_playing = false
-var is_paused = false
 var video_process_id = -1
 
 var countdown_time_left: float = countdown_time:
