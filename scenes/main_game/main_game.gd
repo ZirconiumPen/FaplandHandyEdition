@@ -451,16 +451,11 @@ func advance_to_round(next_round: int):
 		)
 
 
-func get_active_perks_display_text() -> String:
-	"""Get display text for active perks"""
-	return perk_system.get_active_perks_display_text()
-
-
 func update_all_ui_animated():
 	"""Update all UI elements with premium smooth animations"""
 	water_progress_container.current_round = current_round
 
-	active_perks.text = get_active_perks_display_text()
+	active_perks.text = perk_system.get_active_perks_display_text()
 	flash_component(active_perks)
 
 	dice_range_label.text = "🎲\nDice Range\n%s-%s" % [dice_min, dice_max]
