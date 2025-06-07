@@ -5,9 +5,12 @@ extends Control
 @export var countdown_time: float = 30.0
 
 #Game State Variables
-var current_round = 1
-var previous_round = 1
 var max_rounds = 100
+var current_round = 1:
+	set(value):
+		current_round = clampi(value, 1, max_rounds)
+var previous_round = 1
+
 var perk_system: PerkSystem
 
 var dice_min = 1
@@ -34,9 +37,7 @@ var countdown_time_left: float = countdown_time:
 @onready var perk_label: Label = %PerkLabel
 @onready var active_perks: Label = %ActivePerks
 @onready var pause_count_label: Label = %PauseCountLabel
-@onready var action_button: Control = %ActionButton
-@onready var play_button: Button = %PlayButton
-@onready var roll_button: Button = %RollButton
+@onready var action_button: ActionButton = %ActionButton
 @onready var dice_result: Label = %DiceResult
 @onready var coming_up_box: Panel = %ComingUpBox
 @onready var countdown_label: Label = %CountdownLabel
@@ -61,22 +62,9 @@ func _ready():
 
 
 func start_round(round_num: int):
-	if round_num > max_rounds:
-		current_round = max_rounds
-		round_num = max_rounds
-
 	current_round = round_num
-	is_playing = false
 
-	play_button.disabled = false
-	play_button.text = "▶ PLAY"
-
-	var button_tween := create_tween()
-	button_tween.set_loops()
-	button_tween.tween_property(action_button, "modulate", Color(1.3, 1.3, 1.3), 1.2)
-	button_tween.tween_property(action_button, "modulate", Color.WHITE, 1.2)
-
-	roll_button.disabled = true
+	action_button.switch_to_play()
 
 	update_all_ui_animated()
 	print("🎯 Round %s ready - Pauses: %s/1" % [current_round, pause_count])
@@ -111,7 +99,7 @@ func launch_video_with_handy_sync():
 		Events.notified.emit(
 			Message.new("❌ ERROR: Video file %s.mp4 not found!" % video_name, Color.RED)
 		)
-		reset_play_button()
+		action_button.switch_to_play()
 		return
 
 	if not FileAccess.file_exists(funscript_path):
@@ -119,7 +107,7 @@ func launch_video_with_handy_sync():
 		Events.notified.emit(
 			Message.new("❌ ERROR: Funscript file %s.funscript not found!" % video_name, Color.RED)
 		)
-		reset_play_button()
+		action_button.switch_to_play()
 		return
 
 	if not FileAccess.file_exists(python_script):
@@ -127,7 +115,7 @@ func launch_video_with_handy_sync():
 		Events.notified.emit(
 			Message.new("❌ ERROR: Script file %s not found!" % python_script, Color.RED)
 		)
-		reset_play_button()
+		action_button.switch_to_play()
 		return
 
 	print("✅ All files found, launching Python script...")
@@ -154,11 +142,12 @@ func launch_video_with_handy_sync():
 			"🎬 VLC Player launched in FULLSCREEN! Pauses: %s (%ss each)" % [pause_count, pause_time]
 		)
 		Events.notified.emit(Message.new(notif, Color.GREEN))
+		is_playing = true
 	else:
 		print("❌ Failed to start Python script with any Python command")
 		var notif := "❌ ERROR: Could not launch Python script! Make sure Python is installed."
 		Events.notified.emit(Message.new(notif, Color.RED))
-		reset_play_button()
+		action_button.switch_to_play()
 
 
 func monitor_video_completion():
@@ -211,23 +200,7 @@ func on_video_completed():
 
 	is_playing = false
 
-	play_button.hide()
-	roll_button.show()
-	roll_button.disabled = false
-
-	var activate_tween := create_tween()
-	activate_tween.tween_property(action_button, "modulate", Color.WHITE, 0.4)
-	activate_tween.tween_property(action_button, "scale", 1.08 * Vector2.ONE, 0.3)
-	activate_tween.tween_property(action_button, "scale", Vector2.ONE, 0.3)
-
-	var glow_tween := create_tween()
-	glow_tween.set_loops()
-	glow_tween.tween_property(action_button, "modulate", Color(1.3, 1.3, 1.3), 1.2)
-	glow_tween.tween_property(action_button, "modulate", Color.WHITE, 1.2)
-
-	play_button.text = "▶ PLAY"
-	play_button.modulate = Color(0.6, 0.6, 0.6, 1.0)
-
+	action_button.switch_to_roll()
 	Events.notified.emit(Message.new("🎬 Video finished! Roll the dice to continue.", Color.YELLOW))
 	video_process_id = -1
 
@@ -239,14 +212,6 @@ func update_pause_count_from_file():
 
 	pause_count = current_pauses + 1  # Apply the +1 stacking bonus
 	print("📝 Pauses set to: %s (%s + 1 bonus)" % [pause_count, current_pauses])
-
-
-func reset_play_button():
-	play_button.disabled = false
-	play_button.text = "▶ PLAY"
-	play_button.modulate = Color.WHITE
-	is_playing = false
-	video_process_id = -1
 
 
 # TODO: separate countdown to its own scene
@@ -312,91 +277,6 @@ func _on_perk_label_clicked(event: InputEvent):
 			Events.notified.emit(Message.new("No perks available!", Color.GRAY))
 
 
-func _on_play_button_pressed():
-	remove_countdown_timer()
-
-	previous_round = current_round
-
-	print("🎬 PLAY PRESSED - Starting Round %s" % current_round)
-	coming_up_box.close()
-
-	# Premium button state changes with animation
-	play_button.disabled = true
-	play_button.text = "🎬 PLAYING..."
-
-	# Premium button press animation
-	var press_tween = create_tween()
-	press_tween.tween_property(action_button, "scale", 0.92 * Vector2.ONE, 0.1)
-	press_tween.tween_property(action_button, "scale", Vector2.ONE, 0.15)
-	press_tween.tween_property(action_button, "modulate", Color(0.6, 0.6, 0.6), 0.3)
-
-	roll_button.disabled = true
-
-	is_playing = true
-
-	# Launch Python VLC script with handy sync
-	launch_video_with_handy_sync()
-
-	# Start monitoring for video completion
-	monitor_video_completion()
-
-
-func _on_roll_button_pressed():
-	roll_button.disabled = true
-	if is_playing:
-		return
-
-	print("🎲 ROLL PRESSED")
-	var roll
-	var next_round
-	# Check for lucky 7 perk
-	if perk_system.has_active_perk("lucky_7"):
-		roll = 7
-		perk_system.consume_active_perk("lucky_7")
-		Events.notified.emit(Message.new("🍀 Lucky 7 activated! Rolled: 7", Color.GOLD))
-		next_round = current_round + roll
-	else:
-		roll_button.text = "🎲 ROLLING..."
-
-		await animate_dice_roll()
-
-		# Roll dice and calculate next round
-		roll = randi_range(dice_min, dice_max)
-		next_round = current_round + roll
-
-		roll_button.text = "🎲 ROLL DICE"
-		print("🎲 Rolled: ", roll, " | Next Round: ", next_round)
-
-	roll_button.hide()
-	play_button.show()
-
-	# Show dice result with premium animation
-	dice_result.text = "Rolled: %s" % roll
-	var result_tween := create_tween()
-	result_tween.tween_property(dice_result, "scale", 1.4 * Vector2.ONE, 0.4)
-	result_tween.tween_property(dice_result, "scale", Vector2.ONE, 0.4)
-	result_tween.tween_property(dice_result, "modulate", Color.TRANSPARENT, 2.5)
-
-	if next_round >= max_rounds:
-		Events.notified.emit(Message.new("🎲 Rolled %s! Moving to FINAL ROUND" % roll, Color.GOLD))
-	else:
-		Events.notified.emit(
-			Message.new("🎲 Rolled %s! Moving to round %s" % [roll, next_round], Color.GOLD)
-		)
-	next_round = min(next_round, max_rounds)
-
-	# Wait for animations
-	await get_tree().create_timer(1.8).timeout
-
-	# Show "Coming Up Next" display
-	coming_up_box.open(next_round)
-
-	start_play_countdown_timer()
-
-	# Move to next round
-	advance_to_round(next_round)
-
-
 # TODO: separate dice animation into its own scene
 func animate_dice_roll():
 	dice_result.modulate = Color.WHITE
@@ -413,17 +293,9 @@ func animate_dice_roll():
 
 
 func advance_to_round(next_round: int):
+	previous_round = current_round
 	current_round = next_round
-	# Premium button state changes
-	play_button.disabled = false
-	play_button.text = "▶ PLAY"
-	play_button.modulate = Color.WHITE
-
-	# Re-enable premium play button glow
-	var glow_tween := create_tween()
-	glow_tween.set_loops()
-	glow_tween.tween_property(action_button, "modulate", Color(1.3, 1.3, 1.3), 1.2)
-	glow_tween.tween_property(action_button, "modulate", Color.WHITE, 1.2)
+	action_button.switch_to_play()
 
 	update_all_ui_animated()
 	print("🎯 Advanced to Round: %s" % current_round)
@@ -493,3 +365,55 @@ func defeat():
 	await get_tree().create_timer(3.0).timeout
 	print("👋 Returning to start menu...")
 	get_tree().change_scene_to_file("uid://bcan4ssdl6xe8")
+
+
+func _on_action_button_play_pressed() -> void:
+	remove_countdown_timer()
+	previous_round = current_round
+	coming_up_box.close()
+	launch_video_with_handy_sync()
+	monitor_video_completion()
+
+
+func _on_action_button_roll_pressed() -> void:
+	if is_playing:
+		push_warning("Button should not be active while playing")
+		return
+
+	var roll: int
+	# Check for lucky 7 perk
+	if perk_system.has_active_perk("lucky_7"):
+		roll = 7
+		perk_system.consume_active_perk("lucky_7")
+		Events.notified.emit(Message.new("🍀 Lucky 7 activated! Rolled: 7", Color.GOLD))
+	else:
+		await animate_dice_roll()
+		roll = randi_range(dice_min, dice_max)
+
+	# TODO: separate out
+	dice_result.text = "Rolled: %s" % roll
+	var result_tween := create_tween()
+	result_tween.tween_property(dice_result, "scale", 1.4 * Vector2.ONE, 0.4)
+	result_tween.tween_property(dice_result, "scale", Vector2.ONE, 0.4)
+	result_tween.tween_property(dice_result, "modulate", Color.TRANSPARENT, 2.5)
+
+	var next_round: int = current_round + roll
+	print("🎲 Rolled: ", roll, " | Next Round: ", next_round)
+	if next_round >= max_rounds:
+		Events.notified.emit(Message.new("🎲 Rolled %s! Moving to FINAL ROUND" % roll, Color.GOLD))
+		next_round = max_rounds
+	else:
+		Events.notified.emit(
+			Message.new("🎲 Rolled %s! Moving to round %s" % [roll, next_round], Color.GOLD)
+		)
+
+	# Wait for animations
+	await get_tree().create_timer(1.8).timeout
+
+	# Show "Coming Up Next" display
+	coming_up_box.open(next_round)
+
+	start_play_countdown_timer()
+
+	# Move to next round
+	advance_to_round(next_round)

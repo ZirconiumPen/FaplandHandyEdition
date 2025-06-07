@@ -1,0 +1,39 @@
+[gd_scene load_steps=4 format=3 uid="uid://doc30k6ibnxt0"]
+
+[ext_resource type="Script" uid="uid://bli84lxlrt1hq" path="res://scenes/main_game/action_button.gd" id="1_a0v65"]
+[ext_resource type="StyleBox" uid="uid://bhc6uxlkhuoul" path="res://ui/roll_button.tres" id="2_j7l38"]
+[ext_resource type="StyleBox" uid="uid://clc0wb81hpndo" path="res://ui/play_video_button.tres" id="3_kra44"]
+
+[node name="ActionButton" type="Control"]
+custom_minimum_size = Vector2(152, 88)
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_a0v65")
+metadata/_edit_group_ = true
+
+[node name="RollButton" type="Button" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = ExtResource("2_j7l38")
+text = "🎲 ROLL DICE"
+
+[node name="PlayButton" type="Button" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = ExtResource("3_kra44")
+text = "▶ PLAY"
+
+[connection signal="pressed" from="RollButton" to="." method="_on_roll_button_pressed"]
+[connection signal="pressed" from="PlayButton" to="." method="_on_play_button_pressed"]
