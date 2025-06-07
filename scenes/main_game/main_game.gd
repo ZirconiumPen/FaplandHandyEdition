@@ -107,50 +107,6 @@ func _on_session_timer_timeout() -> void:
 	timer_label.text = time_text
 
 
-func save_pause_config_timestamped(max_pauses_val: int, reason: String):
-	"""Save pause config with timestamp and writer info"""
-	var timestamp = Time.get_datetime_string_from_system(true) + "Z"
-
-	# Read existing data
-	var pause_data = {"entries": []}
-	if FileAccess.file_exists("pause_config.json"):
-		var in_file = FileAccess.open("pause_config.json", FileAccess.READ)
-		if in_file:
-			var json_text = in_file.get_as_text()
-			in_file.close()
-
-			var json = JSON.new()
-			if json.parse(json_text) == OK:
-				pause_data = json.data
-
-	# Ensure entries array exists
-	if not pause_data.has("entries"):
-		pause_data["entries"] = []
-
-	# Add new entry
-	var new_entry = {
-		"timestamp": timestamp,
-		"max_pauses": max_pauses_val,
-		"pause_duration": pause_time,
-		"writer": "godot",
-		"reason": reason
-	}
-
-	pause_data["entries"].append(new_entry)
-
-	# Keep only last 50 entries
-	if pause_data["entries"].size() > 50:
-		pause_data["entries"] = pause_data["entries"].slice(-50)
-
-	# Write back to file
-	var file = FileAccess.open("pause_config.json", FileAccess.WRITE)
-	if file:
-		file.store_string(JSON.stringify(pause_data))
-		file.close()
-
-	print("💾 Saved pause config entry: %s" % new_entry)
-
-
 func start_round(round_num: int):
 	if round_num > max_rounds:
 		current_round = max_rounds
@@ -215,7 +171,7 @@ func launch_video_with_handy_sync():
 	if autoskip_videos:
 		print("autoskip enabled, skipping video")
 		return
-	save_pause_config_timestamped(pause_count, "round_start")
+	Config.save_pause_config_timestamped(pause_count, "round_start", pause_time)
 
 	var video_name = str(current_round)
 	var python_script = "scripts/sync_handy.py"
