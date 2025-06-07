@@ -7,7 +7,7 @@
 [ext_resource type="StyleBox" uid="uid://dlw7a7p2p7oyl" path="res://ui/magenta_glow_panel.tres" id="3_8ywsm"]
 [ext_resource type="StyleBox" uid="uid://bhc6uxlkhuoul" path="res://ui/roll_button.tres" id="3_075iw"]
 [ext_resource type="StyleBox" uid="uid://c1np35mqim0ny" path="res://ui/green_glow_panel.tres" id="5_ldk84"]
-[ext_resource type="StyleBox" uid="uid://bs25uje6bi5w6" path="res://ui/gold_glow_panel.tres" id="6_6eclk"]
+[ext_resource type="PackedScene" uid="uid://bvevkwkdto7hn" path="res://scenes/main_game/timer_label.tscn" id="6_fetp2"]
 [ext_resource type="PackedScene" uid="uid://cf2jn6ksi38ak" path="res://scenes/main_game/coming_up_box.tscn" id="7_i3kwu"]
 [ext_resource type="PackedScene" uid="uid://bdmnjdt7ws4p2" path="res://scenes/main_game/victory_popup.tscn" id="10_r81kp"]
 [ext_resource type="PackedScene" path="res://scenes/main_game/game_over_popup.tscn" id="11_fetp2"]
@@ -21,9 +21,6 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_s3esy")
 autoskip_videos = true
-
-[node name="SessionTimer" type="Timer" parent="."]
-autostart = true
 
 [node name="CountdownTimer" type="Timer" parent="."]
 
@@ -140,17 +137,9 @@ offset_bottom = 553.0
 grow_horizontal = 0
 theme_override_constants/separation = 15
 
-[node name="TimerLabel" type="Label" parent="RightPanel"]
+[node name="TimerLabel" parent="RightPanel" instance=ExtResource("6_fetp2")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(150, 60)
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.843137, 0, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
-theme_override_constants/shadow_outline_size = 2
-theme_override_styles/normal = ExtResource("6_6eclk")
-text = "TIMER_LABEL"
-horizontal_alignment = 1
-vertical_alignment = 1
 
 [node name="PauseCountLabel" type="Label" parent="RightPanel"]
 unique_name_in_owner = true
@@ -204,7 +193,6 @@ unique_name_in_owner = true
 visible = false
 layout_mode = 1
 
-[connection signal="timeout" from="SessionTimer" to="." method="_on_session_timer_timeout"]
 [connection signal="timeout" from="CountdownTimer" to="." method="_on_countdown_timer_timeout"]
 [connection signal="pressed" from="MidPanel/ActionButton/RollButton" to="." method="_on_roll_button_pressed"]
 [connection signal="pressed" from="MidPanel/ActionButton/PlayButton" to="." method="_on_play_button_pressed"]

@@ -41,7 +41,6 @@ var countdown_time_left: float = countdown_time:
 @onready var play_button: Button = %PlayButton
 @onready var roll_button: Button = %RollButton
 @onready var dice_result: Label = %DiceResult
-@onready var timer_label: Label = %TimerLabel
 @onready var coming_up_box: Panel = %ComingUpBox
 @onready var countdown_label: Label = %CountdownLabel
 @onready var countdown_timer: Timer = $CountdownTimer
@@ -77,25 +76,6 @@ func clear_pause_config() -> void:
 			print("❌ Could not clear pause config file")
 	else:
 		print("📁 No pause config file found to clear")
-
-
-func _on_session_timer_timeout() -> void:
-	var current_time = Time.get_unix_time_from_system()
-	var elapsed_time = current_time - start_time
-
-	@warning_ignore("INTEGER_DIVISION")
-	var hours = int(elapsed_time) / 3600
-	@warning_ignore("INTEGER_DIVISION")
-	var minutes = (int(elapsed_time) / 60) % 60
-	var seconds = int(elapsed_time) % 60
-
-	var time_text = ""
-	if hours > 0:
-		time_text = "Session: %02d:%02d:%02d" % [hours, minutes, seconds]
-	else:
-		time_text = "Session: %02d:%02d" % [minutes, seconds]
-
-	timer_label.text = time_text
 
 
 func start_round(round_num: int):
