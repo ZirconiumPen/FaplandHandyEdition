@@ -191,34 +191,28 @@ func load_pause_config_timestamped() -> int:
 			latest_timestamp = entry["timestamp"]
 			latest_entry = entry
 
-	if latest_entry:
-		print("🔍 DEBUG: Found ", pause_data["entries"].size(), " entries in pause config")
-		print("🔍 DEBUG: Latest entry: %s" % latest_entry)
-
-		# Log the full history for debugging
-		print("📜 PAUSE CONFIG HISTORY:")
-		var entries_sorted = pause_data["entries"].duplicate()
-		entries_sorted.sort_custom(func(a, b): return a["timestamp"] < b["timestamp"])
-
-		for i in range(entries_sorted.size()):
-			var entry = entries_sorted[i]
-			print(
-				"  ",
-				i + 1,
-				". ",
-				entry["timestamp"],
-				" | ",
-				entry["writer"],
-				" | pauses=",
-				entry["max_pauses"],
-				" | reason=",
-				entry.get("reason", "unknown")
-			)
-
-		return int(latest_entry["max_pauses"])
-	else:
+	if not latest_entry:
 		print("❌ Could not find latest entry")
 		return 1
+
+	print("🔍 DEBUG: Found ", pause_data["entries"].size(), " entries in pause config")
+	print("🔍 DEBUG: Latest entry: %s" % latest_entry)
+
+	# Log the full history for debugging
+	print("📜 PAUSE CONFIG HISTORY:")
+	var entries_sorted = pause_data["entries"].duplicate()
+	entries_sorted.sort_custom(func(a, b): return a["timestamp"] < b["timestamp"])
+
+	for i in range(entries_sorted.size()):
+		var entry = entries_sorted[i]
+		print(
+			(
+				"  %s. {timestamp} | {writer} | pauses={max_pauses} | reason={reason}".format(entry)
+				% (i + 1)
+			)
+		)
+
+	return int(latest_entry["max_pauses"])
 
 
 func start_round(round_num: int):
