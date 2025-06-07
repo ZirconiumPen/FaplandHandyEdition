@@ -384,7 +384,7 @@ func monitor_video_completion():
 func handle_ejaculation_from_video():
 	print("💀 EJACULATION DETECTED FROM VIDEO!")
 
-	save_highscore(current_round, "ejaculation")
+	Config.save_highscore(current_round, "ejaculation", start_time)
 
 	# Clean up ejaculation file
 	if FileAccess.file_exists("iejaculated.txt"):
@@ -579,41 +579,6 @@ func animate_dice_roll():
 		await bounce_tween.finished
 
 
-func save_highscore(round_reached: int, reason: String):
-	"""Save the highscore with timestamp"""
-	var timestamp = Time.get_datetime_string_from_system(true)
-	var session_time = Time.get_unix_time_from_system() - start_time
-
-	# Load existing highscores
-	var highscores = Config.load_highscores()
-
-	# Add new entry
-	var new_entry = {
-		"round": round_reached,
-		"reason": reason,
-		"timestamp": timestamp,
-		"session_time": session_time
-	}
-
-	highscores.append(new_entry)
-
-	# Sort by round (highest first)
-	highscores.sort_custom(func(a, b): return a["round"] > b["round"])
-
-	# Keep only top 10
-	if highscores.size() > 10:
-		highscores = highscores.slice(0, 10)
-
-	# Save to file
-	var file = FileAccess.open("highscores.json", FileAccess.WRITE)
-	if file:
-		file.store_string(JSON.stringify({"scores": highscores}))
-		file.close()
-		print("💾 Saved highscore: Round ", round_reached, " (", reason, ")")
-	else:
-		print("❌ Could not save highscore file")
-
-
 func advance_to_round(next_round: int):
 	current_round = next_round
 	# Premium button state changes
@@ -671,7 +636,7 @@ func flash_component(component: CanvasItem) -> void:
 
 
 func victory():
-	save_highscore(100, "victory")
+	Config.save_highscore(100, "victory", start_time)
 	victory_popup.open()
 
 	show_aaa_popup("🏆 VICTORY! You reached round 100 without ejaculating!", Color.GOLD)
