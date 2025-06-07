@@ -2,7 +2,7 @@ class_name ComingUpBox
 extends Panel
 
 const PATH_TO_SPRITESHEETS = "res://media/"
-const COLS = 24
+const COLS = 10
 const FRAME_RATE = 24
 const FRAME_WIDTH = 320
 const FRAME_HEIGHT = 180
@@ -65,7 +65,6 @@ func _load_spritesheet(num: int) -> void:
 			)
 			sprite_frames.add_frame("default", atlas_texture)
 	animated_sprite.sprite_frames = sprite_frames
-	animated_sprite.scale = 1.25 * Vector2.ONE  # Same scale as your existing setup
 	animated_sprite.show()
 	animated_sprite.play()
 	fallback_label.hide()

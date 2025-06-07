@@ -6,9 +6,9 @@ import sys
 from PIL import Image
 
 FPS = 24
-CLIP_DURATION = 1.0
-NUM_ROWS = 10
-NUM_COLS = int(FPS * CLIP_DURATION)
+NUM_ROWS = 24
+NUM_COLS = 10
+CLIP_DURATION = 2 * NUM_COLS / FPS
 THUMBNAIL_WIDTH = 320
 THUMBNAIL_HEIGHT = 180
 
@@ -46,6 +46,8 @@ def extract_frame_clip(
             video_path,
             "-vframes",
             "1",
+            "-update",
+            "true",
             "-s",
             f"{width}x{height}",
             "-f",
