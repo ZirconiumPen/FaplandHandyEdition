@@ -2,6 +2,7 @@ extends Node
 
 const PATH_TO_HIGHSCORES = "highscores.json"
 const PATH_TO_PAUSE = "pause_config.json"
+const PATH_TO_CUM = "iejaculated.txt"
 
 
 func save_highscore(round_reached: int, reason: String, start_time: float) -> void:
@@ -177,3 +178,15 @@ func load_pause_config_timestamped() -> int:
 		)
 
 	return int(latest_entry["max_pauses"])
+
+
+func clean_up_cum() -> void:
+	# Clean up ejaculation file
+	if not FileAccess.file_exists(PATH_TO_CUM):
+		return
+	var file = FileAccess.open(PATH_TO_CUM, FileAccess.READ)
+	if file:
+		file.close()
+
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(PATH_TO_CUM))
+	print("🗑️ Cleaned up ejaculation signal file")

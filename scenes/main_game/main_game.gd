@@ -237,14 +237,7 @@ func handle_ejaculation_from_video():
 	print("💀 EJACULATION DETECTED FROM VIDEO!")
 
 	Config.save_highscore(current_round, "ejaculation", start_time)
-
-	# Clean up ejaculation file
-	if FileAccess.file_exists("iejaculated.txt"):
-		var file = FileAccess.open("iejaculated.txt", FileAccess.READ)
-		if file:
-			file.close()
-		OS.move_to_trash(ProjectSettings.globalize_path("iejaculated.txt"))
-		print("🗑️ Cleaned up ejaculation signal file")
+	Config.clean_up_cum()
 
 	# Kill the video process
 	if video_process_id > 0:
