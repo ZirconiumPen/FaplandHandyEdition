@@ -92,35 +92,6 @@ func start_round(round_num: int):
 	)
 
 
-func _on_play_button_pressed():
-	remove_countdown_timer()
-
-	previous_round = current_round
-
-	print("🎬 PLAY PRESSED - Starting Round %s" % current_round)
-	coming_up_box.close()
-
-	# Premium button state changes with animation
-	play_button.disabled = true
-	play_button.text = "🎬 PLAYING..."
-
-	# Premium button press animation
-	var press_tween = create_tween()
-	press_tween.tween_property(action_button, "scale", 0.92 * Vector2.ONE, 0.1)
-	press_tween.tween_property(action_button, "scale", Vector2.ONE, 0.15)
-	press_tween.tween_property(action_button, "modulate", Color(0.6, 0.6, 0.6), 0.3)
-
-	roll_button.disabled = true
-
-	is_playing = true
-
-	# Launch Python VLC script with handy sync
-	launch_video_with_handy_sync()
-
-	# Start monitoring for video completion
-	monitor_video_completion()
-
-
 func launch_video_with_handy_sync():
 	if autoskip_videos:
 		print("autoskip enabled, skipping video")
@@ -214,7 +185,7 @@ func monitor_video_completion():
 				# Check for ejaculation file
 				if FileAccess.file_exists("iejaculated.txt"):
 					print("💀 Ejaculation file found - GAME OVER!")
-					handle_ejaculation_from_video()
+					defeat()
 					return
 				else:
 					print("✅ Normal video completion")
@@ -227,24 +198,6 @@ func monitor_video_completion():
 	if monitor_attempts >= max_attempts:
 		print("⏰ Monitor timeout - assuming video finished")
 		on_video_completed()
-
-
-func handle_ejaculation_from_video():
-	print("💀 EJACULATION DETECTED FROM VIDEO!")
-
-	Config.save_highscore(current_round, "ejaculation", start_time)
-	Config.clean_up_cum()
-
-	# Kill the video process
-	if video_process_id > 0:
-		OS.kill(video_process_id)
-		print("🛑 Killed video process")
-
-	game_over_popup.open(current_round)
-
-	await get_tree().create_timer(3.0).timeout
-	print("👋 Returning to start menu...")
-	get_tree().change_scene_to_file("uid://bcan4ssdl6xe8")
 
 
 func on_video_completed():
@@ -297,6 +250,7 @@ func reset_play_button():
 	video_process_id = -1
 
 
+# TODO: separate countdown to its own scene
 func start_play_countdown_timer():
 	"""Start 30-second countdown timer for clicking play button"""
 	countdown_time_left = countdown_time
@@ -327,6 +281,7 @@ func remove_countdown_timer():
 	countdown_timer.stop()
 
 
+# TODO: separate perks into their own scene
 func _on_perk_earned(_perk_id: String):
 	"""Handle perk earned signal"""
 	make_perk_label_clickable()
@@ -356,6 +311,35 @@ func _on_perk_label_clicked(event: InputEvent):
 			perk_system.show_perk_selection_popup()
 		else:
 			Events.notified.emit(Message.new("No perks available!", Color.GRAY))
+
+
+func _on_play_button_pressed():
+	remove_countdown_timer()
+
+	previous_round = current_round
+
+	print("🎬 PLAY PRESSED - Starting Round %s" % current_round)
+	coming_up_box.close()
+
+	# Premium button state changes with animation
+	play_button.disabled = true
+	play_button.text = "🎬 PLAYING..."
+
+	# Premium button press animation
+	var press_tween = create_tween()
+	press_tween.tween_property(action_button, "scale", 0.92 * Vector2.ONE, 0.1)
+	press_tween.tween_property(action_button, "scale", Vector2.ONE, 0.15)
+	press_tween.tween_property(action_button, "modulate", Color(0.6, 0.6, 0.6), 0.3)
+
+	roll_button.disabled = true
+
+	is_playing = true
+
+	# Launch Python VLC script with handy sync
+	launch_video_with_handy_sync()
+
+	# Start monitoring for video completion
+	monitor_video_completion()
 
 
 func _on_roll_button_pressed():
@@ -414,6 +398,7 @@ func _on_roll_button_pressed():
 	advance_to_round(next_round)
 
 
+# TODO: separate dice animation into its own scene
 func animate_dice_roll():
 	dice_result.modulate = Color.WHITE
 
@@ -451,6 +436,7 @@ func advance_to_round(next_round: int):
 		)
 
 
+# TODO: make UI elements update themselves
 func update_all_ui_animated():
 	"""Update all UI elements with premium smooth animations"""
 	water_progress_container.current_round = current_round
@@ -475,6 +461,7 @@ func update_all_ui_animated():
 	)
 
 
+# TODO: move to autoload
 func flash_component(component: CanvasItem) -> void:
 	var flash_tween := create_tween()
 	flash_tween.tween_property(component, "modulate", Color.GOLD, 0.3)
@@ -489,3 +476,21 @@ func victory():
 		Message.new("🏆 VICTORY! You reached round 100 without ejaculating!", Color.GOLD)
 	)
 	print("🏆 VICTORY! Player completed the challenge!")
+
+
+func defeat():
+	print("💀 EJACULATION DETECTED FROM VIDEO!")
+
+	Config.save_highscore(current_round, "ejaculation", start_time)
+	Config.clean_up_cum()
+
+	# Kill the video process
+	if video_process_id > 0:
+		OS.kill(video_process_id)
+		print("🛑 Killed video process")
+
+	game_over_popup.open(current_round)
+
+	await get_tree().create_timer(3.0).timeout
+	print("👋 Returning to start menu...")
+	get_tree().change_scene_to_file("uid://bcan4ssdl6xe8")
