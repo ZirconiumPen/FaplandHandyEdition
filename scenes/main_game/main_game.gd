@@ -8,7 +8,6 @@ extends Control
 var current_round = 1
 var previous_round = 1
 var max_rounds = 100
-# Perk System
 var perk_system: PerkSystem
 
 var dice_min = 1
