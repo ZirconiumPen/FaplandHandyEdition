@@ -107,12 +107,6 @@ func _on_session_timer_timeout() -> void:
 	timer_label.text = time_text
 
 
-func clear_ui():
-	for child in get_children():
-		child.queue_free()
-	await get_tree().process_frame
-
-
 func save_pause_config_timestamped(max_pauses_val: int, reason: String):
 	"""Save pause config with timestamp and writer info"""
 	var timestamp = Time.get_datetime_string_from_system(true) + "Z"
