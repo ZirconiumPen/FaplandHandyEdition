@@ -24,7 +24,6 @@ func setup() -> void:
 	)
 	position = Vector2(randf() * get_viewport().size.x, randf() * get_viewport().size.y)
 
-	# Premium firework animation
 	var firework_tween = create_tween()
 	firework_tween.set_parallel()
 	(

@@ -108,7 +108,6 @@ func add_perk(perk_id: String):
 
 
 func show_perk_earned_popup(perk_id: String):
-	"""Show premium popup when perk is earned"""
 	var perk = perk_data[perk_id]
 	var message = "✨ PERK EARNED! " + perk.icon + " " + perk.name + " [" + perk.class + " Class]"
 	Events.notified.emit(Message.new(message, perk.color))
