@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://c4ei5qhvpx1qf"]
+[gd_scene load_steps=13 format=3 uid="uid://c4ei5qhvpx1qf"]
 
 [ext_resource type="Script" uid="uid://owskp6hxgtge" path="res://scenes/main_game/main_game.gd" id="1_s3esy"]
 [ext_resource type="StyleBox" uid="uid://clc0wb81hpndo" path="res://ui/play_video_button.tres" id="2_fjyug"]
@@ -9,6 +9,7 @@
 [ext_resource type="StyleBox" uid="uid://c1np35mqim0ny" path="res://ui/green_glow_panel.tres" id="5_ldk84"]
 [ext_resource type="PackedScene" uid="uid://bvevkwkdto7hn" path="res://scenes/main_game/timer_label.tscn" id="6_fetp2"]
 [ext_resource type="PackedScene" uid="uid://cf2jn6ksi38ak" path="res://scenes/main_game/coming_up_box.tscn" id="7_i3kwu"]
+[ext_resource type="PackedScene" uid="uid://3dufxjmok3fc" path="res://scenes/main_game/notification_tray.tscn" id="10_b4n6q"]
 [ext_resource type="PackedScene" uid="uid://bdmnjdt7ws4p2" path="res://scenes/main_game/victory_popup.tscn" id="10_r81kp"]
 [ext_resource type="PackedScene" path="res://scenes/main_game/game_over_popup.tscn" id="11_fetp2"]
 
@@ -182,6 +183,17 @@ Perks
 %s/%s"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="NotificationTray" parent="." instance=ExtResource("10_b4n6q")]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 31.0
+offset_top = -102.0
+offset_right = 631.0
+offset_bottom = -32.0
+grow_vertical = 0
 
 [node name="VictoryPopup" parent="." instance=ExtResource("10_r81kp")]
 unique_name_in_owner = true
