@@ -7,11 +7,12 @@ extends PanelContainer
 var message_queue: Array[Message]
 var is_showing: bool = false
 
-@onready var label: Label = $Label
+@onready var notification_label: Label = %NotificationLabel
 
 
 func _ready() -> void:
-	label.modulate = Color.TRANSPARENT
+	notification_label.modulate = Color.TRANSPARENT
+	Events.notified.connect(push_message)
 
 
 func push_message(msg: Message) -> void:
@@ -26,20 +27,22 @@ func _show_next_message() -> void:
 	pivot_offset = size / 2
 	is_showing = true
 	var next_msg: Message = message_queue.pop_front()
-	label.text = next_msg.text
+	notification_label.text = next_msg.text
 
 	var tween := create_tween()
 	tween.set_ease(Tween.EASE_OUT)
 	tween.set_trans(Tween.TRANS_QUAD)
 	tween.tween_property(self, "modulate", next_msg.color, fade_duration)
-	tween.parallel().tween_property(label, "modulate", Color.WHITE, fade_duration)
+	tween.parallel().tween_property(notification_label, "modulate", Color.WHITE, fade_duration)
 	tween.parallel().tween_property(self, "scale", 1.1 * Vector2.ONE, fade_duration)
 	tween.tween_property(self, "scale", Vector2.ONE, fade_duration)
 
 	tween.tween_interval(message_duration)
 
 	tween.tween_property(self, "modulate", Color.WHITE, fade_duration)
-	tween.parallel().tween_property(label, "modulate", Color.TRANSPARENT, fade_duration)
+	tween.parallel().tween_property(
+		notification_label, "modulate", Color.TRANSPARENT, fade_duration
+	)
 
 	tween.tween_callback(func() -> void: is_showing = false)
 	tween.tween_callback(_show_next_message)

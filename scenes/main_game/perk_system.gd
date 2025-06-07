@@ -111,7 +111,7 @@ func show_perk_earned_popup(perk_id: String):
 	"""Show premium popup when perk is earned"""
 	var perk = perk_data[perk_id]
 	var message = "✨ PERK EARNED! " + perk.icon + " " + perk.name + " [" + perk.class + " Class]"
-	main_game.show_aaa_popup(message, perk.color)
+	Events.notified.emit(Message.new(message, perk.color))
 
 
 func show_perk_selection_popup():
@@ -216,7 +216,7 @@ func use_perk(perk_id: String, inventory_index: int):
 		and main_game.ui_elements.has("roll_button")
 		and not main_game.ui_elements["roll_button"].disabled
 	):
-		main_game.show_aaa_popup("❌ Roll the dice first!", Color.RED)
+		Events.notified.emit(Message.new("❌ Roll the dice first!", Color.RED))
 		close_perk_popup()
 		return
 
@@ -226,7 +226,7 @@ func use_perk(perk_id: String, inventory_index: int):
 		and main_game.ui_elements.has("roll_button")
 		and main_game.ui_elements["roll_button"].disabled
 	):
-		main_game.show_aaa_popup("❌ Lucky 7 must be used before rolling dice!", Color.RED)
+		Events.notified.emit(Message.new("❌ Lucky 7 must be used before rolling dice!", Color.RED))
 		close_perk_popup()
 		return
 	perks_inventory.remove_at(inventory_index)
@@ -239,7 +239,7 @@ func use_perk(perk_id: String, inventory_index: int):
 	perk_used.emit(perk_id)
 	ui_update_needed.emit()
 
-	main_game.show_aaa_popup("🎯 Used: " + perk.icon + " " + perk.name, perk.color)
+	Events.notified.emit(Message.new("🎯 Used: " + perk.icon + " " + perk.name, perk.color))
 
 
 func apply_perk_effect(perk_id: String):
@@ -269,7 +269,9 @@ func apply_skip_round():
 
 	# Update UI and show popup
 	main_game.update_all_ui_animated()
-	main_game.show_aaa_popup("⏭️ Skipped to Round " + str(main_game.current_round), Color.GOLD)
+	Events.notified.emit(
+		Message.new("⏭️ Skipped to Round " + str(main_game.current_round), Color.GOLD)
+	)
 
 	# Call the video completion logic to set up the next round properly
 	main_game.on_video_completed()
@@ -277,7 +279,7 @@ func apply_skip_round():
 
 func apply_lucky_7():
 	active_perks["lucky_7"] = 1
-	main_game.show_aaa_popup("🍀 Next roll will be 7!", Color.GOLD)
+	Events.notified.emit(Message.new("🍀 Next roll will be 7!", Color.GOLD))
 
 
 func apply_reroll_dice():
@@ -318,20 +320,20 @@ func apply_reroll_dice():
 
 	main_game.update_all_ui_animated()
 
-	main_game.show_aaa_popup("🔄 You can reroll the dice!", Color.PURPLE)
+	Events.notified.emit(Message.new("🔄 You can reroll the dice!", Color.PURPLE))
 
 
 func apply_huge_dice():
 	active_perks["huge_dice"] = 2  # 2 rounds remaining
 	main_game.dice_min = 1
 	main_game.dice_max = 10
-	main_game.show_aaa_popup("🎲 Huge dice for 2 rounds! (1-10)", Color.PURPLE)
+	Events.notified.emit(Message.new("🎲 Huge dice for 2 rounds! (1-10)", Color.PURPLE))
 
 
 func apply_pause_extension():
 	active_perks["pause_extension"] = 3
 	main_game.pause_time = 10
-	main_game.show_aaa_popup("⏰ Pause duration doubled for 3 rounds!", Color.CYAN)
+	Events.notified.emit(Message.new("⏰ Pause duration doubled for 3 rounds!", Color.CYAN))
 
 
 func get_active_perks_display_text() -> String:
@@ -367,7 +369,9 @@ func update_perk_timers():
 	for perk_id in perks_to_remove:
 		active_perks.erase(perk_id)
 		var perk = perk_data[perk_id]
-		main_game.show_aaa_popup("⏳ " + perk.icon + " " + perk.name + " expired", Color.GRAY)
+		Events.notified.emit(
+			Message.new("⏳ " + perk.icon + " " + perk.name + " expired", Color.GRAY)
+		)
 
 		# Reset effects
 		if perk_id == "huge_dice":
@@ -379,7 +383,7 @@ func update_perk_timers():
 
 func apply_bonus_pauses():
 	main_game.pause_count += 3
-	main_game.show_aaa_popup("⏸️ +3 bonus pauses added!", Color.CYAN)
+	Events.notified.emit(Message.new("⏸️ +3 bonus pauses added!", Color.CYAN))
 
 
 # Helper functions for main game to check perk states

@@ -19,6 +19,7 @@ config/icon="uid://da1tpn3no06xw"
 [autoload]
 
 Config="*res://autoload/config.gd"
+Events="*res://autoload/events.gd"
 
 [display]
 

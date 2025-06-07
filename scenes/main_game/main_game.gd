@@ -83,12 +83,14 @@ func start_round(round_num: int):
 
 	update_all_ui_animated()
 	print("🎯 Round %s ready - Pauses: %s/1" % [current_round, pause_count])
-	show_aaa_popup(
-		(
-			"🎮 Round %s ready! You have %s pause%s available."
-			% [current_round, pause_count, "" if pause_count == 1 else "s"]
-		),
-		Color.CYAN
+	Events.notified.emit(
+		Message.new(
+			(
+				"🎮 Round %s ready! You have %s pause%s available."
+				% [current_round, pause_count, "" if pause_count == 1 else "s"]
+			),
+			Color.CYAN
+		)
 	)
 
 
@@ -140,19 +142,25 @@ func launch_video_with_handy_sync():
 
 	if not FileAccess.file_exists(video_path):
 		print("❌ ERROR: Video file not found: %s" % video_path)
-		show_aaa_popup("❌ ERROR: Video file %s.mp4 not found!" % video_name, Color.RED)
+		Events.notified.emit(
+			Message.new("❌ ERROR: Video file %s.mp4 not found!" % video_name, Color.RED)
+		)
 		reset_play_button()
 		return
 
 	if not FileAccess.file_exists(funscript_path):
 		print("❌ ERROR: Funscript file not found: %s" % funscript_path)
-		show_aaa_popup("❌ ERROR: Funscript file %s.funscript not found!" % video_name, Color.RED)
+		Events.notified.emit(
+			Message.new("❌ ERROR: Funscript file %s.funscript not found!" % video_name, Color.RED)
+		)
 		reset_play_button()
 		return
 
 	if not FileAccess.file_exists(python_script):
 		print("❌ ERROR: Python script not found: %s" % python_script)
-		show_aaa_popup("❌ ERROR: Script file %s not found!" % python_script, Color.RED)
+		Events.notified.emit(
+			Message.new("❌ ERROR: Script file %s not found!" % python_script, Color.RED)
+		)
 		reset_play_button()
 		return
 
@@ -176,18 +184,14 @@ func launch_video_with_handy_sync():
 	if process_id > 0:
 		video_process_id = process_id
 		print("✅ Python VLC+Handy script started with PID: %s" % video_process_id)
-		show_aaa_popup(
-			(
-				"🎬 VLC Player launched in FULLSCREEN! Pauses: %s (%ss each)"
-				% [pause_count, pause_time]
-			),
-			Color.GREEN
+		var notif := (
+			"🎬 VLC Player launched in FULLSCREEN! Pauses: %s (%ss each)" % [pause_count, pause_time]
 		)
+		Events.notified.emit(Message.new(notif, Color.GREEN))
 	else:
 		print("❌ Failed to start Python script with any Python command")
-		show_aaa_popup(
-			"❌ ERROR: Could not launch Python script! Make sure Python is installed.", Color.RED
-		)
+		var notif := "❌ ERROR: Could not launch Python script! Make sure Python is installed."
+		Events.notified.emit(Message.new(notif, Color.RED))
 		reset_play_button()
 
 
@@ -288,7 +292,7 @@ func on_video_completed():
 	play_button.text = "▶ PLAY"
 	play_button.modulate = Color(0.6, 0.6, 0.6, 1.0)
 
-	show_aaa_popup("🎬 Video finished! Roll the dice to continue.", Color.YELLOW)
+	Events.notified.emit(Message.new("🎬 Video finished! Roll the dice to continue.", Color.YELLOW))
 	video_process_id = -1
 
 
@@ -328,7 +332,9 @@ func _on_countdown_timer_timeout():
 	# Move player back rounds as penalty
 	var penalty_rounds = 5
 	current_round = max(1, current_round - penalty_rounds)
-	show_aaa_popup("⏰ TIME'S UP! Penalty: -%s rounds!" % penalty_rounds, Color.RED)
+	Events.notified.emit(
+		Message.new("⏰ TIME'S UP! Penalty: -%s rounds!" % penalty_rounds, Color.RED)
+	)
 	update_all_ui_animated()
 
 
@@ -365,7 +371,7 @@ func _on_perk_label_clicked(event: InputEvent):
 		if perk_system.perks_inventory.size() > 0:
 			perk_system.show_perk_selection_popup()
 		else:
-			show_aaa_popup("No perks available!", Color.GRAY)
+			Events.notified.emit(Message.new("No perks available!", Color.GRAY))
 
 
 func _on_roll_button_pressed():
@@ -380,7 +386,7 @@ func _on_roll_button_pressed():
 	if perk_system.has_active_perk("lucky_7"):
 		roll = 7
 		perk_system.consume_active_perk("lucky_7")
-		show_aaa_popup("🍀 Lucky 7 activated! Rolled: 7", Color.GOLD)
+		Events.notified.emit(Message.new("🍀 Lucky 7 activated! Rolled: 7", Color.GOLD))
 		next_round = current_round + roll
 	else:
 		roll_button.text = "🎲 ROLLING..."
@@ -405,9 +411,11 @@ func _on_roll_button_pressed():
 	result_tween.tween_property(dice_result, "modulate", Color.TRANSPARENT, 2.5)
 
 	if next_round >= max_rounds:
-		show_aaa_popup("🎲 Rolled %s! Moving to FINAL ROUND" % roll, Color.GOLD)
+		Events.notified.emit(Message.new("🎲 Rolled %s! Moving to FINAL ROUND" % roll, Color.GOLD))
 	else:
-		show_aaa_popup("🎲 Rolled %s! Moving to round %s" % [roll, next_round], Color.GOLD)
+		Events.notified.emit(
+			Message.new("🎲 Rolled %s! Moving to round %s" % [roll, next_round], Color.GOLD)
+		)
 	next_round = min(next_round, max_rounds)
 
 	# Wait for animations
@@ -452,9 +460,11 @@ func advance_to_round(next_round: int):
 	update_all_ui_animated()
 	print("🎯 Advanced to Round: %s" % current_round)
 	if current_round == max_rounds:
-		show_aaa_popup("🎮 FINAL ROUND - Click Play to watch video!", Color.CYAN)
+		Events.notified.emit(Message.new("🎮 FINAL ROUND - Click Play to watch video!", Color.CYAN))
 	else:
-		show_aaa_popup("🎮 Round %s - Click Play to watch video!" % current_round, Color.CYAN)
+		Events.notified.emit(
+			Message.new("🎮 Round %s - Click Play to watch video!" % current_round, Color.CYAN)
+		)
 
 
 func get_active_perks_display_text() -> String:
@@ -496,58 +506,7 @@ func victory():
 	Config.save_highscore(100, "victory", start_time)
 	victory_popup.open()
 
-	show_aaa_popup("🏆 VICTORY! You reached round 100 without ejaculating!", Color.GOLD)
-	print("🏆 VICTORY! Player completed the challenge!")
-
-
-func show_aaa_popup(message: String, color: Color = Color.YELLOW):
-	"""Premium popup with AAA styling and animations"""
-	print("💬 " + message)
-
-	# Create premium popup container
-	var popup_container = Panel.new()
-	popup_container.position = Vector2(300, 80)
-	popup_container.size = Vector2(600, 70)
-
-	# Premium popup style
-	var popup_style = StyleBoxFlat.new()
-	popup_style.bg_color = Color(0.02, 0.02, 0.08, 0.98)
-	popup_style.border_width_left = 3
-	popup_style.border_width_right = 3
-	popup_style.border_width_top = 3
-	popup_style.border_width_bottom = 3
-	popup_style.border_color = color
-	popup_style.corner_radius_top_left = 20
-	popup_style.corner_radius_top_right = 20
-	popup_style.corner_radius_bottom_left = 20
-	popup_style.corner_radius_bottom_right = 20
-	popup_style.shadow_color = Color(color.r, color.g, color.b, 0.5)
-	popup_style.shadow_size = 12
-	popup_container.add_theme_stylebox_override("panel", popup_style)
-	add_child(popup_container)
-
-	# Premium popup text
-	var popup_label = Label.new()
-	popup_label.text = message
-	popup_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	popup_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	popup_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	popup_label.add_theme_font_size_override("font_size", 18)
-	popup_label.add_theme_color_override("font_color", color)
-	popup_label.add_theme_color_override("font_shadow_color", Color.BLACK)
-	popup_label.add_theme_constant_override("shadow_outline_size", 3)
-	popup_container.add_child(popup_label)
-
-	# Premium popup animation
-	popup_container.modulate = Color.TRANSPARENT
-	popup_container.scale = 0.4 * Vector2.ONE
-
-	var popup_tween = create_tween()
-	popup_tween.parallel().tween_property(popup_container, "modulate", Color.WHITE, 0.4)
-	popup_tween.parallel().tween_property(popup_container, "scale", Vector2.ONE, 0.4)
-	popup_tween.tween_interval(2.5)
-	popup_tween.parallel().tween_property(
-		popup_container, "position", popup_container.position + Vector2(0, -120), 1.2
+	Events.notified.emit(
+		Message.new("🏆 VICTORY! You reached round 100 without ejaculating!", Color.GOLD)
 	)
-	popup_tween.parallel().tween_property(popup_container, "modulate", Color.TRANSPARENT, 1.2)
-	popup_tween.tween_callback(popup_container.queue_free)
+	print("🏆 VICTORY! Player completed the challenge!")
