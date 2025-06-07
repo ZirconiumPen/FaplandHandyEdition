@@ -50,19 +50,19 @@ layout_mode = 1
 anchors_preset = 4
 anchor_left = 0.0
 anchor_right = 0.0
-offset_left = 161.0
-offset_top = -167.0
-offset_right = 561.0
-offset_bottom = 133.0
+offset_left = 44.0
+offset_top = -230.0
+offset_right = 712.0
+offset_bottom = 196.0
 grow_horizontal = 1
 
 [node name="ActionButton" parent="." instance=ExtResource("4_fetp2")]
 unique_name_in_owner = true
 layout_mode = 2
-offset_left = 63.0
-offset_top = 530.0
-offset_right = 233.0
-offset_bottom = 618.0
+offset_left = 779.0
+offset_top = 531.0
+offset_right = 949.0
+offset_bottom = 619.0
 
 [node name="DiceResult" type="Label" parent="ActionButton"]
 unique_name_in_owner = true
@@ -83,10 +83,10 @@ vertical_alignment = 1
 unique_name_in_owner = true
 custom_minimum_size = Vector2(150, 220)
 layout_mode = 2
-offset_left = 693.0
-offset_top = 289.0
-offset_right = 863.0
-offset_bottom = 509.0
+offset_left = 760.0
+offset_top = 114.0
+offset_right = 930.0
+offset_bottom = 334.0
 text = "ACTIVE PERKS"
 
 [node name="RightPanel" type="VBoxContainer" parent="."]
@@ -152,10 +152,10 @@ layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_left = 270.0
-offset_top = -106.0
-offset_right = 870.0
-offset_bottom = -36.0
+offset_left = 76.0
+offset_top = -101.0
+offset_right = 676.0
+offset_bottom = -31.0
 grow_vertical = 0
 
 [node name="VictoryPopup" parent="." instance=ExtResource("10_r81kp")]

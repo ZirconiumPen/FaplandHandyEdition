@@ -1,5 +1,5 @@
 class_name ComingUpBox
-extends Panel
+extends PanelContainer
 
 const PATH_TO_SPRITESHEETS = "res://media/"
 const COLS = 10
