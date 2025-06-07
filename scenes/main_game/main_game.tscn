@@ -205,6 +205,16 @@ unique_name_in_owner = true
 visible = false
 layout_mode = 1
 
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Blocker" type="Control" parent="CanvasLayer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
 [connection signal="timeout" from="CountdownTimer" to="." method="_on_countdown_timer_timeout"]
 [connection signal="pressed" from="MidPanel/ActionButton/RollButton" to="." method="_on_roll_button_pressed"]
 [connection signal="pressed" from="MidPanel/ActionButton/PlayButton" to="." method="_on_play_button_pressed"]

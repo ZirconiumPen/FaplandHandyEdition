@@ -18,7 +18,6 @@ var pause_time = 5
 
 var is_playing = false
 var is_paused = false
-var game_active = true
 var video_process_id = -1
 
 var countdown_time_left: float = countdown_time:
@@ -96,8 +95,6 @@ func start_round(round_num: int):
 
 func _on_play_button_pressed():
 	remove_countdown_timer()
-	if not game_active:
-		return
 
 	previous_round = current_round
 
@@ -205,7 +202,7 @@ func monitor_video_completion():
 	var monitor_attempts = 0
 	var max_attempts = 600
 
-	while video_process_id > 0 and is_playing and game_active and monitor_attempts < max_attempts:
+	while video_process_id > 0 and is_playing and monitor_attempts < max_attempts:
 		await get_tree().create_timer(2.0).timeout
 		monitor_attempts += 1
 
@@ -245,11 +242,6 @@ func handle_ejaculation_from_video():
 		print("🛑 Killed video process")
 
 	game_over_popup.open(current_round)
-
-	# Disable all game controls
-	game_active = false
-	play_button.disabled = true
-	roll_button.disabled = true
 
 	await get_tree().create_timer(3.0).timeout
 	print("👋 Returning to start menu...")
@@ -369,7 +361,7 @@ func _on_perk_label_clicked(event: InputEvent):
 
 func _on_roll_button_pressed():
 	roll_button.disabled = true
-	if not game_active or is_playing:
+	if is_playing:
 		return
 
 	print("🎲 ROLL PRESSED")
