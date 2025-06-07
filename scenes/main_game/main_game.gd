@@ -51,15 +51,6 @@ var countdown_time_left: float = countdown_time:
 @onready var start_time: float = Time.get_unix_time_from_system()
 
 
-func update_pause_count_from_file():
-	"""Read back the updated pause count from the Python script"""
-
-	var current_pauses = Config.load_pause_config_timestamped()
-
-	pause_count = current_pauses + 1  # Apply the +1 stacking bonus
-	print("📝 Pauses set to: %s (%s + 1 bonus)" % [pause_count, current_pauses])
-
-
 func _ready():
 	clear_pause_config()
 
@@ -334,6 +325,15 @@ func on_video_completed():
 
 	show_aaa_popup("🎬 Video finished! Roll the dice to continue.", Color.YELLOW)
 	video_process_id = -1
+
+
+func update_pause_count_from_file():
+	"""Read back the updated pause count from the Python script"""
+
+	var current_pauses = Config.load_pause_config_timestamped()
+
+	pause_count = current_pauses + 1  # Apply the +1 stacking bonus
+	print("📝 Pauses set to: %s (%s + 1 bonus)" % [pause_count, current_pauses])
 
 
 func reset_play_button():
