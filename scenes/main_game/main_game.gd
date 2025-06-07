@@ -51,7 +51,7 @@ var countdown_time_left: float = countdown_time:
 
 
 func _ready():
-	clear_pause_config()
+	Config.clear_pause_config()
 
 	# Initialize perk system
 	perk_system = PerkSystem.new(self)
@@ -61,21 +61,6 @@ func _ready():
 
 	coming_up_box.open(current_round)
 	start_round(current_round)
-
-
-func clear_pause_config() -> void:
-	if FileAccess.file_exists("pause_config.json"):
-		var file = FileAccess.open("pause_config.json", FileAccess.WRITE)
-		if file:
-			# Write empty entries array
-			var empty_config = {"entries": []}
-			file.store_string(JSON.stringify(empty_config))
-			file.close()
-			print("🧹 Cleared pause config file on startup")
-		else:
-			print("❌ Could not clear pause config file")
-	else:
-		print("📁 No pause config file found to clear")
 
 
 func start_round(round_num: int):

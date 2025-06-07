@@ -61,14 +61,30 @@ func load_highscores() -> Array:
 	return data["scores"]
 
 
+func clear_pause_config() -> void:
+	if not FileAccess.file_exists(PATH_TO_PAUSE):
+		print("📁 No pause config file found to clear")
+		return
+	var file = FileAccess.open(PATH_TO_PAUSE, FileAccess.WRITE)
+	if not file:
+		print("❌ Could not clear pause config file")
+		return
+
+	# Write empty entries array
+	var empty_config = {"entries": []}
+	file.store_string(JSON.stringify(empty_config))
+	file.close()
+	print("🧹 Cleared pause config file on startup")
+
+
 func save_pause_config_timestamped(max_pauses_val: int, reason: String, pause_time: int):
 	"""Save pause config with timestamp and writer info"""
 	var timestamp = Time.get_datetime_string_from_system(true) + "Z"
 
 	# Read existing data
 	var pause_data = {"entries": []}
-	if FileAccess.file_exists("pause_config.json"):
-		var in_file = FileAccess.open("pause_config.json", FileAccess.READ)
+	if FileAccess.file_exists(PATH_TO_PAUSE):
+		var in_file = FileAccess.open(PATH_TO_PAUSE, FileAccess.READ)
 		if in_file:
 			var json_text = in_file.get_as_text()
 			in_file.close()
@@ -97,7 +113,7 @@ func save_pause_config_timestamped(max_pauses_val: int, reason: String, pause_ti
 		pause_data["entries"] = pause_data["entries"].slice(-50)
 
 	# Write back to file
-	var file = FileAccess.open("pause_config.json", FileAccess.WRITE)
+	var file = FileAccess.open(PATH_TO_PAUSE, FileAccess.WRITE)
 	if file:
 		file.store_string(JSON.stringify(pause_data))
 		file.close()
