@@ -60,40 +60,34 @@ offset_right = 170.0
 offset_bottom = 60.0
 text = "⛶ Fullscreen"
 
-[node name="RandomizeButton" type="Button" parent="."]
+[node name="ExtraButtons" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 37.0
+offset_top = -242.0
+offset_right = 337.0
+offset_bottom = -62.0
+grow_vertical = 0
+theme_override_constants/separation = 15
+
+[node name="RandomizeButton" type="Button" parent="ExtraButtons"]
 custom_minimum_size = Vector2(300, 50)
-layout_mode = 0
-offset_left = 50.0
-offset_top = 400.0
-offset_right = 350.0
-offset_bottom = 450.0
+layout_mode = 2
 theme_override_font_sizes/font_size = 18
 theme_override_styles/normal = SubResource("StyleBoxFlat_aihkd")
 text = "🎲 RANDOMIZE ROUNDS"
 
-[node name="HandyButton" type="Button" parent="."]
-layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 50.0
-offset_top = -198.0
-offset_right = 350.0
-offset_bottom = -148.0
-grow_vertical = 0
+[node name="HandyButton" type="Button" parent="ExtraButtons"]
+custom_minimum_size = Vector2(300, 50)
+layout_mode = 2
 theme_override_styles/normal = ExtResource("3_mrdy1")
 text = "🎮 HANDY CONFIG"
 
-[node name="InstallButton" type="Button" parent="."]
-layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 50.0
-offset_top = -148.0
-offset_right = 350.0
-offset_bottom = -98.0
-grow_vertical = 0
+[node name="InstallButton" type="Button" parent="ExtraButtons"]
+custom_minimum_size = Vector2(300, 50)
+layout_mode = 2
 theme_override_styles/normal = ExtResource("1_0bs6e")
 text = "⚙️ INSTALL DEPS"
 
@@ -169,9 +163,9 @@ anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
 offset_left = -200.0
-offset_top = -300.0
+offset_top = -258.0
 offset_right = 200.0
-offset_bottom = -20.0
+offset_bottom = -28.0
 grow_horizontal = 2
 grow_vertical = 0
 theme_override_constants/separation = 20
@@ -179,7 +173,7 @@ alignment = 2
 
 [node name="StartButton" type="Button" parent="MenuContainer"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(300, 80)
+custom_minimum_size = Vector2(400, 80)
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 theme_override_styles/hover = ExtResource("6_jor4d")
@@ -280,9 +274,9 @@ grow_horizontal = 2
 script = ExtResource("16_ktl6d")
 
 [connection signal="pressed" from="FullscreenButton" to="." method="_on_fullscreen_button_pressed"]
-[connection signal="pressed" from="RandomizeButton" to="." method="_on_randomize_button_pressed"]
-[connection signal="pressed" from="HandyButton" to="." method="_on_handy_button_pressed"]
-[connection signal="pressed" from="InstallButton" to="." method="_on_install_button_pressed"]
+[connection signal="pressed" from="ExtraButtons/RandomizeButton" to="." method="_on_randomize_button_pressed"]
+[connection signal="pressed" from="ExtraButtons/HandyButton" to="." method="_on_handy_button_pressed"]
+[connection signal="pressed" from="ExtraButtons/InstallButton" to="." method="_on_install_button_pressed"]
 [connection signal="pressed" from="MenuContainer/StartButton" to="." method="_on_start_button_pressed"]
 [connection signal="pressed" from="MenuContainer/HowToPlayButton" to="." method="_on_how_to_play_button_pressed"]
 [connection signal="pressed" from="MenuContainer/ExitButton" to="." method="_on_exit_button_pressed"]
