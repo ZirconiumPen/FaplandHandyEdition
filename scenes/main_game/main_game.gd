@@ -2,7 +2,6 @@ class_name MainGame
 extends Control
 
 @export var autoskip_videos: bool = false
-@export var countdown_time: float = 30.0
 
 #Game State Variables
 var max_rounds = 100
@@ -21,17 +20,6 @@ var pause_time = 5
 var is_playing = false
 var video_process_id = -1
 
-var countdown_time_left: float = countdown_time:
-	set(value):
-		countdown_time_left = value
-		if not is_instance_valid(countdown_label):
-			return
-		countdown_label.text = "Click PLAY in: %ss" % int(countdown_time_left)
-		if countdown_time_left <= 10:
-			countdown_label.add_theme_color_override("font_color", Color.RED)
-		elif countdown_time_left <= 20:
-			countdown_label.add_theme_color_override("font_color", Color.YELLOW)
-
 @onready var water_progress_container: Panel = %WaterProgressContainer
 @onready var dice_range_label: Label = %DiceRangeLabel
 @onready var perk_label: Label = %PerkLabel
@@ -40,8 +28,7 @@ var countdown_time_left: float = countdown_time:
 @onready var action_button: ActionButton = %ActionButton
 @onready var dice_result: Label = %DiceResult
 @onready var coming_up_box: Panel = %ComingUpBox
-@onready var countdown_label: Label = %CountdownLabel
-@onready var countdown_timer: Timer = $CountdownTimer
+@onready var countdown_bar: CountdownBar = %CountdownBar
 @onready var victory_popup: VictoryPopup = %VictoryPopup
 @onready var game_over_popup: GameOverPopup = %GameOverPopup
 
@@ -214,37 +201,6 @@ func update_pause_count_from_file():
 	print("📝 Pauses set to: %s (%s + 1 bonus)" % [pause_count, current_pauses])
 
 
-# TODO: separate countdown to its own scene
-func start_play_countdown_timer():
-	"""Start 30-second countdown timer for clicking play button"""
-	countdown_time_left = countdown_time
-	countdown_label.show()
-	countdown_timer.start()
-
-
-func _on_countdown_timer_timeout():
-	"""Update countdown timer display"""
-	countdown_time_left -= countdown_timer.wait_time
-	if countdown_time_left > 0:
-		return
-	# Time's up - penalize player
-	print("countdown expired, applying penalty")
-	remove_countdown_timer()
-
-	# Move player back rounds as penalty
-	var penalty_rounds = 5
-	current_round = max(1, current_round - penalty_rounds)
-	Events.notified.emit(
-		Message.new("⏰ TIME'S UP! Penalty: -%s rounds!" % penalty_rounds, Color.RED)
-	)
-	update_all_ui_animated()
-
-
-func remove_countdown_timer():
-	countdown_label.hide()
-	countdown_timer.stop()
-
-
 # TODO: separate perks into their own scene
 func _on_perk_earned(_perk_id: String):
 	"""Handle perk earned signal"""
@@ -368,7 +324,7 @@ func defeat():
 
 
 func _on_action_button_play_pressed() -> void:
-	remove_countdown_timer()
+	countdown_bar.stop()
 	previous_round = current_round
 	coming_up_box.close()
 	launch_video_with_handy_sync()
@@ -413,7 +369,23 @@ func _on_action_button_roll_pressed() -> void:
 	# Show "Coming Up Next" display
 	coming_up_box.open(next_round)
 
-	start_play_countdown_timer()
+	countdown_bar.start()
 
 	# Move to next round
 	advance_to_round(next_round)
+
+
+func _on_countdown_bar_timeout() -> void:
+	# TODO: auto start instead of penalize?
+
+	# Time's up - penalize player
+	print("countdown expired, applying penalty")
+	countdown_bar.stop()
+
+	# Move player back rounds as penalty
+	var penalty_rounds = 5
+	current_round = max(1, current_round - penalty_rounds)
+	Events.notified.emit(
+		Message.new("⏰ TIME'S UP! Penalty: -%s rounds!" % penalty_rounds, Color.RED)
+	)
+	update_all_ui_animated()

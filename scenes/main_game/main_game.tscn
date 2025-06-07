@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://c4ei5qhvpx1qf"]
+[gd_scene load_steps=13 format=3 uid="uid://c4ei5qhvpx1qf"]
 
 [ext_resource type="Script" uid="uid://owskp6hxgtge" path="res://scenes/main_game/main_game.gd" id="1_s3esy"]
 [ext_resource type="PackedScene" uid="uid://82dpan04jpj2" path="res://scenes/main_game/water_progress_container.tscn" id="2_mijjq"]
@@ -11,6 +11,7 @@
 [ext_resource type="PackedScene" uid="uid://3dufxjmok3fc" path="res://scenes/main_game/notification_tray.tscn" id="10_b4n6q"]
 [ext_resource type="PackedScene" uid="uid://bdmnjdt7ws4p2" path="res://scenes/main_game/victory_popup.tscn" id="10_r81kp"]
 [ext_resource type="PackedScene" uid="uid://bnt21fhms3wj1" path="res://scenes/main_game/game_over_popup.tscn" id="11_fetp2"]
+[ext_resource type="PackedScene" uid="uid://0sjs1ksqs6hv" path="res://scenes/main_game/countdown_bar.tscn" id="12_b4n6q"]
 
 [node name="MainGame" type="Control"]
 layout_mode = 3
@@ -55,19 +56,15 @@ offset_right = 561.0
 offset_bottom = 133.0
 grow_horizontal = 1
 
-[node name="MidPanel" type="VBoxContainer" parent="."]
-layout_mode = 0
-offset_left = 693.0
-offset_top = 143.0
-offset_right = 863.0
-offset_bottom = 509.0
-theme_override_constants/separation = 15
-
-[node name="ActionButton" parent="MidPanel" instance=ExtResource("4_fetp2")]
+[node name="ActionButton" parent="." instance=ExtResource("4_fetp2")]
 unique_name_in_owner = true
 layout_mode = 2
+offset_left = 63.0
+offset_top = 530.0
+offset_right = 233.0
+offset_bottom = 618.0
 
-[node name="DiceResult" type="Label" parent="MidPanel/ActionButton"]
+[node name="DiceResult" type="Label" parent="ActionButton"]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 10
@@ -82,20 +79,14 @@ text = "🎲 %s"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="CountdownLabel" type="Label" parent="MidPanel"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.647, 0, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
-theme_override_constants/shadow_outline_size = 3
-theme_override_font_sizes/font_size = 20
-text = "Click PLAY in: %ss"
-horizontal_alignment = 1
-
-[node name="ActivePerks" type="Label" parent="MidPanel"]
+[node name="ActivePerks" type="Label" parent="."]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(150, 220)
 layout_mode = 2
+offset_left = 693.0
+offset_top = 289.0
+offset_right = 863.0
+offset_bottom = 509.0
 text = "ACTIVE PERKS"
 
 [node name="RightPanel" type="VBoxContainer" parent="."]
@@ -161,10 +152,10 @@ layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_left = 31.0
-offset_top = -102.0
-offset_right = 631.0
-offset_bottom = -32.0
+offset_left = 270.0
+offset_top = -106.0
+offset_right = 870.0
+offset_bottom = -36.0
 grow_vertical = 0
 
 [node name="VictoryPopup" parent="." instance=ExtResource("10_r81kp")]
@@ -177,6 +168,15 @@ unique_name_in_owner = true
 visible = false
 layout_mode = 1
 
+[node name="CountdownBar" parent="." instance=ExtResource("12_b4n6q")]
+unique_name_in_owner = true
+layout_mode = 1
+offset_left = 10.0
+offset_top = -300.0
+offset_right = 15.0
+offset_bottom = 300.0
+
 [connection signal="timeout" from="CountdownTimer" to="." method="_on_countdown_timer_timeout"]
-[connection signal="play_pressed" from="MidPanel/ActionButton" to="." method="_on_action_button_play_pressed"]
-[connection signal="roll_pressed" from="MidPanel/ActionButton" to="." method="_on_action_button_roll_pressed"]
+[connection signal="play_pressed" from="ActionButton" to="." method="_on_action_button_play_pressed"]
+[connection signal="roll_pressed" from="ActionButton" to="." method="_on_action_button_roll_pressed"]
+[connection signal="timeout" from="CountdownBar" to="." method="_on_countdown_bar_timeout"]

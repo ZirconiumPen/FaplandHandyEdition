@@ -1,0 +1,26 @@
+[gd_scene load_steps=3 format=3 uid="uid://0sjs1ksqs6hv"]
+
+[ext_resource type="Script" uid="uid://djxk3j8vawfsl" path="res://scenes/main_game/countdown_bar.gd" id="1_7u76w"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ugfjx"]
+bg_color = Color(1, 0.843137, 0, 1)
+
+[node name="CountdownBar" type="ProgressBar"]
+custom_minimum_size = Vector2(5, 600)
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -324.0
+offset_right = 5.0
+offset_bottom = 276.0
+grow_vertical = 2
+theme_override_styles/fill = SubResource("StyleBoxFlat_ugfjx")
+max_value = 30.0
+value = 21.65
+fill_mode = 3
+show_percentage = false
+script = ExtResource("1_7u76w")
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 30.0
+one_shot = true
