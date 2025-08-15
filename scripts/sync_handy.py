@@ -65,26 +65,20 @@ round_trip_time = 0
 
 
 # Load from config file only - no defaults
-def load_handy_config():
-    try:
-        with open("handy_config.json", "r") as f:
-            config = json.load(f)
-        access_token = config.get("access_token", "")
-        app_id = config.get("app_id", "")
-        if not access_token or not app_id:
-            logger.info(
-                "❌ Please configure your Handy API keys using the game menu first!"
-            )
-            sys.exit(1)
-        return access_token, app_id
-    except FileNotFoundError:
-        logger.info(
-            "❌ No Handy configuration found! Use the game menu to set up your API keys."
-        )
-        sys.exit(1)
+try:
+    with open("handy_config.json", "r") as f:
+        config = json.load(f)
+except FileNotFoundError:
+    logger.info(
+        "❌ No Handy configuration found! Use the game menu to set up your API keys."
+    )
+    sys.exit(1)
+ACCESS_TOKEN = config.get("access_token", "")
+APP_ID = config.get("app_id", "")
+if not ACCESS_TOKEN or not APP_ID:
+    logger.info("❌ Please configure your Handy API keys using the game menu first!")
+    sys.exit(1)
 
-
-ACCESS_TOKEN, APP_ID = load_handy_config()
 
 # Read pause configuration from file
 original_max_pauses: int = 1
