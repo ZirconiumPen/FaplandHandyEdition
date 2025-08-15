@@ -45,6 +45,7 @@ class LoggingWriter:
 
 sys.stderr = LoggingWriter(logger.error)
 
+
 # Configuration
 # Load firmware version from config and set appropriate API
 def get_handy_api():
@@ -59,6 +60,7 @@ def get_handy_api():
     except:
         return "https://www.handyfeeling.com/api/handy-rest/v3", 4  # Default to v3
 
+
 HANDY_API, FIRMWARE_VERSION = get_handy_api()
 estimated_offset_ms = 0
 round_trip_time = 0
@@ -72,11 +74,15 @@ def load_handy_config():
         access_token = config.get("access_token", "")
         app_id = config.get("app_id", "")
         if not access_token or not app_id:
-            logger.info("❌ Please configure your Handy API keys using the game menu first!")
+            logger.info(
+                "❌ Please configure your Handy API keys using the game menu first!"
+            )
             sys.exit(1)
         return access_token, app_id
     except FileNotFoundError:
-        logger.info("❌ No Handy configuration found! Use the game menu to set up your API keys.")
+        logger.info(
+            "❌ No Handy configuration found! Use the game menu to set up your API keys."
+        )
         sys.exit(1)
 
 
@@ -311,7 +317,9 @@ def sync_server_time(tries=10):
 
         estimated_offset_ms = round(total_offset / successful_syncs)
         round_trip_time = round(round_trip_time / successful_syncs)
-        logger.info(f"⏱️ Server time synced successfully: {estimated_offset_ms}ms offset ({successful_syncs}/{tries} attempts succeeded)")
+        logger.info(
+            f"⏱️ Server time synced successfully: {estimated_offset_ms}ms offset ({successful_syncs}/{tries} attempts succeeded)"
+        )
         return True
 
     except Exception as e:
@@ -425,15 +433,15 @@ def play_hssp(headers, video_ms):
             # Firmware 3 payload format
             play_payload = {
                 "estimatedServerTime": server_time,
-                "startTime": video_ms + round_trip_time//2
+                "startTime": video_ms + round_trip_time // 2,
             }
         else:
             # Firmware 4 payload format
             play_payload = {
-                "start_time": video_ms + round_trip_time//2,
+                "start_time": video_ms + round_trip_time // 2,
                 "server_time": server_time,
                 "playback_rate": 1.0,
-                "loop": False
+                "loop": False,
             }
 
         play_url = f"{HANDY_API}/hssp/play?timeout=5000"
