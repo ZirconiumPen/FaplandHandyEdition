@@ -1027,30 +1027,19 @@ def main():
             state = player.get_state()
 
             # Check fullscreen more frequently in the first 30 seconds
-            if loop_count < 120:  # First 30 seconds (120 * 0.25s)
-                if loop_count % 4 == 0:  # Every 1 second
-                    try:
-                        if not player.get_fullscreen():
-                            logger.debug(
-                                f"🖥️ Loop {loop_count}: Not fullscreen, fixing..."
-                            )
-                            player.set_fullscreen(True)
-                    except Exception as e:
-                        logger.debug(f"Fullscreen check error: {e}")
-            else:
-                # Normal periodic check every 10 seconds after initial period
-                if loop_count % 40 == 0:  # Every 10 seconds
-                    logger.debug(
-                        f"Player state: {state}, Position: {player.get_position()}"
-                    )
-
-                    # Re-attempt fullscreen every 10 seconds if needed
-                    try:
-                        if not player.get_fullscreen():
-                            logger.debug("🖥️ Not in fullscreen, attempting to fix...")
-                            player.set_fullscreen(True)
-                    except Exception as e:
-                        logger.debug(f"Fullscreen check/fix error: {e}")
+            loop_checkpoint = 4 if loop_count < 120 else 40
+            if loop_count % loop_checkpoint == 0:
+                logger.debug(
+                    f"Player state: {state}, Position: {player.get_position()}"
+                )
+                try:
+                    if not player.get_fullscreen():
+                        logger.debug(
+                            f"🖥️ Loop {loop_count}: Not in fullscreen, attempting to fix..."
+                        )
+                        player.set_fullscreen(True)
+                except Exception as e:
+                    logger.debug(f"Fullscreen check/fix error: {e}")
 
             # Check for ejaculation trigger
             if check_ejaculation_trigger():
