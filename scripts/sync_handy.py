@@ -45,23 +45,21 @@ class LoggingWriter:
 
 sys.stderr = LoggingWriter(logger.error)
 
-
-# Configuration
 # Load firmware version from config and set appropriate API
-def get_handy_api():
-    try:
-        with open("handy_config.json", "r") as f:
-            config = json.load(f)
-        firmware = config.get("firmware", 4)
-        if firmware == 3:
-            return "https://www.handyfeeling.com/api/handy/v2", firmware
-        else:
-            return "https://www.handyfeeling.com/api/handy-rest/v3", firmware
-    except:
-        return "https://www.handyfeeling.com/api/handy-rest/v3", 4  # Default to v3
+FIRMWARE_TO_URL = {
+    3: "https://www.handyfeeling.com/api/handy/v2",
+    4: "https://www.handyfeeling.com/api/handy-rest/v3",
+}
 
+FIRMWARE_VERSION = 4  # Default to v3
+try:
+    with open("handy_config.json", "r") as f:
+        config = json.load(f)
+    FIRMWARE_VERSION = config.get("firmware", 4)
+except:
+    pass
 
-HANDY_API, FIRMWARE_VERSION = get_handy_api()
+HANDY_API = FIRMWARE_TO_URL[FIRMWARE_VERSION]
 estimated_offset_ms = 0
 round_trip_time = 0
 
