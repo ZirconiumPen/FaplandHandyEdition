@@ -92,49 +92,43 @@ def load_pause_config():
     try:
         with open("pause_config.json", "r") as f:
             pause_data = json.load(f)
-
-        # Find the most recent entry
-        if "entries" in pause_data and pause_data["entries"]:
-            # Sort by timestamp to get the latest entry
-            latest_entry = max(pause_data["entries"], key=lambda x: x["timestamp"])
-
-            logger.info(
-                f"🔍 DEBUG: Found {len(pause_data['entries'])} entries in pause config"
-            )
-            logger.info(f"🔍 DEBUG: Latest entry: {latest_entry}")
-
-            max_pauses = int(latest_entry["max_pauses"])
-            original_max_pauses = max_pauses
-            pause_duration = latest_entry["pause_duration"]
-
-            # Log the full history for debugging
-            logger.info("📜 PAUSE CONFIG HISTORY:")
-            for i, entry in enumerate(
-                sorted(pause_data["entries"], key=lambda x: x["timestamp"])
-            ):
-                logger.info(
-                    f"  {i+1}. {entry['timestamp']} | {entry['writer']} | pauses={entry['max_pauses']} | reason={entry.get('reason', 'unknown')}"
-                )
-
-        else:
-            # Fallback for old format or empty file
-            logger.warning("⚠️ No entries found, using defaults")
-            max_pauses = 1
-            original_max_pauses = 1
-            pause_duration = 5
-
-        logger.info(
-            f"📝 Loaded pause config: {max_pauses} max, {pause_duration}s duration, {pauses_used} used"
-        )
-
     except FileNotFoundError:
         logger.warning("⚠️ Pause config file not found, using defaults")
         max_pauses = 1
         original_max_pauses = 1
         pause_duration = 5
-    except Exception as e:
-        logger.error(f"Failed to read pause config file: {e}")
-        raise
+        return
+    try:
+        entries = pause_data["entries"]
+        entries[0]
+    except (KeyError, IndexError):
+        # Fallback for old format or empty file
+        logger.warning("⚠️ No entries found, using defaults")
+        max_pauses = 1
+        original_max_pauses = 1
+        pause_duration = 5
+        return
+
+    # Sort by timestamp to get the latest entry
+    latest_entry = max(entries, key=lambda x: x["timestamp"])
+
+    logger.info(f"🔍 DEBUG: Found {len(entries)} entries in pause config")
+    logger.info(f"🔍 DEBUG: Latest entry: {latest_entry}")
+
+    max_pauses = int(latest_entry["max_pauses"])
+    original_max_pauses = max_pauses
+    pause_duration = latest_entry["pause_duration"]
+
+    # Log the full history for debugging
+    logger.info("📜 PAUSE CONFIG HISTORY:")
+    for i, entry in enumerate(sorted(entries, key=lambda x: x["timestamp"])):
+        logger.info(
+            f"  {i+1}. {entry['timestamp']} | {entry['writer']} | pauses={entry['max_pauses']} | reason={entry.get('reason', 'unknown')}"
+        )
+
+    logger.info(
+        f"📝 Loaded pause config: {max_pauses} max, {pause_duration}s duration, {pauses_used} used"
+    )
 
 
 def save_pause_config(reason="unknown"):
@@ -177,9 +171,6 @@ def save_pause_config(reason="unknown"):
 
     except Exception as e:
         logger.error(f"Error saving pause config: {e}")
-
-
-load_pause_config()
 
 
 def log_system_info():
@@ -1132,4 +1123,5 @@ def main():
 
 
 if __name__ == "__main__":
+    load_pause_config()
     main()
