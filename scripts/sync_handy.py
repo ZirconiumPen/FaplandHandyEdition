@@ -1021,7 +1021,11 @@ def main():
         last_sync_time = 0
         sync_start_time = None
 
-        while True:
+        cummed = False
+        video_on = True
+
+        while not cummed and video_on:
+            time.sleep(0.25)
             loop_count += 1
             current_time = time.time()
             state = player.get_state()
@@ -1041,13 +1045,11 @@ def main():
                 except Exception as e:
                     logger.debug(f"Fullscreen check/fix error: {e}")
 
-            # Check for ejaculation trigger
             if check_ejaculation_trigger():
                 logger.warning("💀 Ejaculation detected - ending playback")
-                break
+                cummed = True
 
             if state == vlc.State.Playing and not was_playing:
-
                 video_time = player.get_time()
                 if video_time is not None and video_time >= 0:
                     play_hssp(headers, video_time)
@@ -1067,38 +1069,38 @@ def main():
                 was_playing = False
                 sync_start_time = None  # Reset sync timing
 
-            elif state in [vlc.State.Ended, vlc.State.Stopped, vlc.State.Error]:
+            elif state in {vlc.State.Ended, vlc.State.Stopped, vlc.State.Error}:
                 logger.info(f"🛑 Video ended/stopped. State: {state}")
-                break
+                video_on = False
 
             # FINE-TUNING SYNC: Send periodic time updates while playing
-            if (
+            if not (
                 was_playing
                 and state == vlc.State.Playing
                 and sync_start_time is not None
             ):
-                video_time = player.get_time()
-                if video_time is not None and video_time >= 0:
-                    time_since_start = current_time - sync_start_time
-                    time_since_last_sync = current_time - last_sync_time
+                continue
+            video_time = player.get_time()
+            if video_time is None or video_time < 0:
+                continue
+            time_since_start = current_time - sync_start_time
+            time_since_last_sync = current_time - last_sync_time
 
-                    # Sync strategy as per Handy docs:
-                    # - Every 2 seconds for first 10 seconds
-                    # - Every 10 seconds after that
-                    should_sync = False
+            # Sync strategy as per Handy docs:
+            # - Every 2 seconds for first 10 seconds
+            # - Every 10 seconds after that
+            should_sync = False
 
-                    if time_since_start <= 10.0 and time_since_last_sync >= 2.0:
-                        should_sync = True
-                        logger.debug("🔄 Initial sync phase: 2s interval")
-                    elif time_since_start > 10.0 and time_since_last_sync >= 10.0:
-                        should_sync = True
-                        logger.debug("🔄 Maintenance sync phase: 10s interval")
+            if time_since_start <= 10.0 and time_since_last_sync >= 2.0:
+                should_sync = True
+                logger.debug("🔄 Initial sync phase: 2s interval")
+            elif time_since_start > 10.0 and time_since_last_sync >= 10.0:
+                should_sync = True
+                logger.debug("🔄 Maintenance sync phase: 10s interval")
 
-                    if should_sync:
-                        sync_time_hssp(headers, video_time)
-                        last_sync_time = current_time
-
-            time.sleep(0.25)
+            if should_sync:
+                sync_time_hssp(headers, video_time)
+                last_sync_time = current_time
 
         # Cleanup
         logger.info("🧹 Cleaning up...")
@@ -1106,7 +1108,7 @@ def main():
         player.stop()
 
         # Check final result
-        if check_ejaculation_trigger():
+        if cummed():
             logger.info("💀 Round ended due to ejaculation")
             sys.exit(2)  # Special exit code for ejaculation
         else:
