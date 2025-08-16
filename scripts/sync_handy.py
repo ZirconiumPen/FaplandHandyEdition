@@ -249,10 +249,10 @@ def check_network_connectivity(url="https://www.google.com"):
 
 def get_server_time():
     """Get server time from Handy API"""
+    logger.debug("Getting server time...")
     try:
-        logger.debug("Getting server time...")
         resp = requests.get(
-            f"https://www.handyfeeling.com/api/handy/v2/servertime", timeout=10
+            "https://www.handyfeeling.com/api/handy/v2/servertime", timeout=10
         )
         resp.raise_for_status()
         server_time = resp.json()["serverTime"]
