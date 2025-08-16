@@ -235,16 +235,16 @@ def log_system_info():
     logger.info("===================")
 
 
-def check_network_connectivity():
+def check_network_connectivity(url="https://www.google.com"):
     """Test basic network connectivity"""
+    logger.info("Testing network connectivity...")
     try:
-        logger.info("Testing network connectivity...")
-        response = requests.get("https://www.google.com", timeout=5)
-        logger.info(f"Network test successful: {response.status_code}")
-        return True
+        response = requests.get(url, timeout=5)
     except Exception as e:
         logger.error(f"Network connectivity failed: {e}")
         return False
+    logger.info(f"Network test successful: {response.status_code}")
+    return True
 
 
 def get_server_time():
