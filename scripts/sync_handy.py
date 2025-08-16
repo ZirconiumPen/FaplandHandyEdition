@@ -272,41 +272,33 @@ def get_server_time():
 def sync_server_time(tries=10):
     """Sync with Handy server time"""
     global estimated_offset_ms, round_trip_time
-    try:
-        logger.info(f"Syncing server time with {tries} attempts...")
-        total_offset = 0
-        successful_syncs = 0
-
-        for attempt in range(tries):
-            try:
-                t_start = int(time.time() * 1000)
-                t_server = get_server_time()
-                t_end = int(time.time() * 1000)
-                rtd = t_end - t_start
-                round_trip_time += rtd
-                offset = (t_server + rtd / 2) - t_end
-                total_offset += offset
-                successful_syncs += 1
-                logger.debug(
-                    f"Sync attempt {attempt + 1}: offset = {offset}ms, RTD = {rtd}ms"
-                )
-            except Exception as e:
-                logger.warning(f"Sync attempt {attempt + 1} failed: {e}")
-                continue
-
-        if successful_syncs == 0:
-            raise Exception("All server time sync attempts failed")
-
-        estimated_offset_ms = round(total_offset / successful_syncs)
-        round_trip_time = round(round_trip_time / successful_syncs)
-        logger.info(
-            f"⏱️ Server time synced successfully: {estimated_offset_ms}ms offset ({successful_syncs}/{tries} attempts succeeded)"
-        )
-        return True
-
-    except Exception as e:
-        logger.error(f"Failed to sync server time: {e}")
+    logger.info(f"Syncing server time with {tries} attempts...")
+    total_offset = 0
+    successful_syncs = 0
+    for attempt in range(tries):
+        t_start = int(time.time() * 1000)
+        try:
+            t_server = get_server_time()
+        except Exception as e:
+            logger.warning(f"Sync attempt {attempt + 1} failed: {e}")
+            continue
+        t_end = int(time.time() * 1000)
+        rtd = t_end - t_start
+        round_trip_time += rtd
+        offset = (t_server + rtd / 2) - t_end
+        total_offset += offset
+        successful_syncs += 1
+        logger.debug(f"Sync attempt {attempt + 1}: offset = {offset}ms, RTD = {rtd}ms")
+    if successful_syncs == 0:
+        logger.error("Failed to sync server time: All server time sync attempts failed")
         return False
+
+    estimated_offset_ms = round(total_offset / successful_syncs)
+    round_trip_time = round(round_trip_time / successful_syncs)
+    logger.info(
+        f"⏱️ Server time synced successfully: {estimated_offset_ms}ms offset ({successful_syncs}/{tries} attempts succeeded)"
+    )
+    return True
 
 
 def get_estimated_server_time():
