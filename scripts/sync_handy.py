@@ -530,196 +530,179 @@ def force_fullscreen(player, max_attempts=15):
 
 def monitor_keyboard(player, headers=None):
     """Monitor keyboard input for game controls"""
-    global max_pauses, pause_duration, pauses_used, original_max_pauses
-    try:
+
+    # Top left
+    player.video_set_marquee_string(vlc.VideoMarqueeOption.Position, "top_left")
+    # Smaller text
+    player.video_set_marquee_int(vlc.VideoMarqueeOption.Size, 16)
+    # Green
+    player.video_set_marquee_int(vlc.VideoMarqueeOption.Color, 0x00FF00)
+    # Slightly transparent
+    player.video_set_marquee_int(vlc.VideoMarqueeOption.Opacity, 200)
+
+    # Create overlay for VLC display - smaller and top-left
+    def update_vlc_overlay(message=""):
+        try:
+            if not message:  # Hide overlay
+                player.video_set_marquee_int(vlc.VideoMarqueeOption.Enable, 0)
+                logger.debug("VLC overlay hidden")
+                return
+            player.video_set_marquee_string(
+                vlc.VideoMarqueeOption.Text, message.encode("utf-8")
+            )
+            player.video_set_marquee_int(vlc.VideoMarqueeOption.Enable, 1)
+            logger.debug(f"VLC overlay shown: {message}")
+        except Exception as e:
+            logger.debug(f"VLC overlay error (non-critical): {e}")
+
+    def clear_overlay_after_delay(delay_seconds):
+        """Clear overlay after specified delay"""
+
+        def delayed_clear():
+            time.sleep(delay_seconds)
+            update_vlc_overlay("")
+
+        threading.Thread(target=delayed_clear, daemon=True).start()
+
+    def cum():
+        logger.warning("💀 EJACULATION KEY PRESSED!")
+        update_vlc_overlay("EJACULATION!")
+        create_ejaculation_trigger()
+        player.stop()
+
+    def pause():
+        global max_pauses, pause_duration, pauses_used, original_max_pauses
+        state = player.get_state()
+        if state != vlc.State.Playing:  # Only pause if actually playing
+            return
+        available_pauses = original_max_pauses - pauses_used
+        if available_pauses <= 0:
+            logger.warning("❌ No pauses remaining!")
+            update_vlc_overlay("NO PAUSES LEFT!")
+            clear_overlay_after_delay(3.0)
+            time.sleep(1.0)  # Prevent spam
+
+        pauses_used += 1
+        max_pauses -= 1
+        save_pause_config("pause_used")
         logger.info(
-            f"⏸️ Keyboard monitor started - Pauses: {max_pauses}x{pause_duration}s available"
+            f"⏸️ PAUSE {pauses_used}/{original_max_pauses} - Starting {pause_duration}s timer"
         )
 
-        # Create overlay for VLC display - smaller and top-left
-        def update_vlc_overlay(message, temporary=False):
-            try:
-                if message:  # Show overlay
-                    player.video_set_marquee_int(vlc.VideoMarqueeOption.Enable, 1)
-                    player.video_set_marquee_string(
-                        vlc.VideoMarqueeOption.Text, message.encode("utf-8")
-                    )
-                    player.video_set_marquee_int(
-                        vlc.VideoMarqueeOption.Position, vlc.Position.TopLeft
-                    )
-                    player.video_set_marquee_int(
-                        vlc.VideoMarqueeOption.Size, 16
-                    )  # Smaller text
-                    player.video_set_marquee_int(vlc.VideoMarqueeOption.Color, 0x00FF00)
-                    player.video_set_marquee_int(
-                        vlc.VideoMarqueeOption.Opacity, 200
-                    )  # Slightly transparent
-                    logger.debug(f"VLC overlay shown: {message}")
-                else:  # Hide overlay
-                    player.video_set_marquee_int(vlc.VideoMarqueeOption.Enable, 0)
-                    logger.debug("VLC overlay hidden")
-            except Exception as e:
-                logger.debug(f"VLC overlay error (non-critical): {e}")
+        player.pause()
+        # Wait a moment for pause to take effect
+        time.sleep(0.2)
+        update_vlc_overlay(f"PAUSED - {pause_duration}s")
+        # Pause countdown - no early resume allowed
+        pause_start_time = time.time()
+        elapsed = 0
+        last_remaining = pause_duration
+        while elapsed < pause_duration:
+            elapsed = time.time() - pause_start_time
+            remaining = int(pause_duration - elapsed)
+            # Only update overlay if countdown changed (reduce flicker)
+            if remaining != last_remaining:
+                update_vlc_overlay(f"PAUSED - {remaining}s")
+                last_remaining = remaining
+            if keyboard.is_pressed("e"):
+                cum()
+                return
+            time.sleep(0.1)  # Check every 100ms
 
-        def clear_overlay_after_delay(delay_seconds):
-            """Clear overlay after specified delay"""
+        # Resume playback after full countdown
+        if player.get_state() == vlc.State.Paused:
+            player.pause()  # This unpauses in VLC
+            update_vlc_overlay("Auto-resumed")
+            clear_overlay_after_delay(1.0)
 
-            def delayed_clear():
-                time.sleep(delay_seconds)
-                update_vlc_overlay("")
+            # Wait a moment then show remaining pauses briefly
+            time.sleep(1.2)  # Wait for resume message to clear
 
-            threading.Thread(target=delayed_clear, daemon=True).start()
+        remaining_pauses = max_pauses
+        if remaining_pauses > 0:
+            update_vlc_overlay(f"Pauses left: {remaining_pauses}")
+            clear_overlay_after_delay(2.0)
+        else:
+            update_vlc_overlay("No pauses remaining!")
+            clear_overlay_after_delay(3.0)
 
-        # Track pause state to avoid conflicts
-        currently_pausing = False
+        # Prevent immediate re-trigger
+        time.sleep(1.0)
 
-        # Start with clean screen - no overlay
-        update_vlc_overlay("")
+    def fullscreen():
+        logger.info("🖥️ F key pressed - toggling fullscreen")
+        try:
+            player.toggle_fullscreen()
+            time.sleep(0.5)  # Prevent multiple triggers
+        except Exception as e:
+            logger.debug(f"Fullscreen toggle error: {e}")
 
-        while True:
-            try:
-                # Check for ejaculation key (E)
-                if keyboard.is_pressed("e"):
-                    logger.warning("💀 EJACULATION KEY PRESSED!")
-                    update_vlc_overlay("EJACULATION!")
-                    create_ejaculation_trigger()
-                    player.stop()
-                    break
+    def resync():
+        state = player.get_state()
+        if state != vlc.State.Playing:
+            logger.warning("⚠️ Cannot resync - video not playing")
+            update_vlc_overlay("Cannot resync - not playing")
+            clear_overlay_after_delay(2.0)
+            time.sleep(0.5)
+            return
+        logger.info("🔄 R key pressed - Quick resync pause")
+        update_vlc_overlay("Resyncing...")
 
-                # Check for pause key (SPACE) - only if not currently in a pause cycle
-                elif keyboard.is_pressed("space") and not currently_pausing:
-                    state = player.get_state()
-                    if state == vlc.State.Playing:  # Only pause if actually playing
-                        available_pauses = original_max_pauses - pauses_used
-                        if available_pauses > 0:
-                            currently_pausing = True
-                            pauses_used += 1
-                            max_pauses -= 1
-                            save_pause_config("pause_used")
-                            logger.info(
-                                f"⏸️ PAUSE {pauses_used}/{original_max_pauses} - Starting {pause_duration}s timer"
-                            )
+        # Do exactly what space pause does but for just 0.5 seconds
+        player.pause()
+        time.sleep(0.5)  # Short pause
 
-                            # Pause the video
-                            player.pause()
+        # Resume exactly like space pause does
+        if player.get_state() == vlc.State.Paused:
+            player.pause()  # This unpauses in VLC
+            update_vlc_overlay("Resync complete!")
+            clear_overlay_after_delay(1.5)
 
-                            # Wait a moment for pause to take effect
-                            time.sleep(0.2)
+        time.sleep(1.0)  # Prevent multiple triggers
 
-                            # Show initial pause message
-                            update_vlc_overlay(f"PAUSED - {pause_duration}s")
+    def quit():
+        logger.info("🛑 Exit key pressed (Q or ESC)")
+        player.stop()
 
-                            # Pause countdown - no early resume allowed
-                            pause_start_time = time.time()
-                            last_remaining = pause_duration
-
-                            while time.time() - pause_start_time < pause_duration:
-                                elapsed = time.time() - pause_start_time
-                                remaining = int(pause_duration - elapsed)
-
-                                # Only update overlay if countdown changed (reduce flicker)
-                                if remaining != last_remaining:
-                                    update_vlc_overlay(f"PAUSED - {remaining}s")
-                                    last_remaining = remaining
-
-                                # Check for ejaculation only
-                                if keyboard.is_pressed("e"):
-                                    logger.warning("💀 EJACULATION DURING PAUSE!")
-                                    update_vlc_overlay("EJACULATION!")
-                                    create_ejaculation_trigger()
-                                    player.stop()
-                                    return
-
-                                time.sleep(0.1)  # Check every 100ms
-
-                            # Resume playback after full countdown
-                            if player.get_state() == vlc.State.Paused:
-                                player.pause()  # This unpauses in VLC
-                                update_vlc_overlay("Auto-resumed")
-                                clear_overlay_after_delay(1.0)
-
-                            # Wait a moment then show remaining pauses briefly
-                            time.sleep(1.2)  # Wait for resume message to clear
-
-                            remaining_pauses = max_pauses
-                            if remaining_pauses > 0:
-                                update_vlc_overlay(f"Pauses left: {remaining_pauses}")
-                                clear_overlay_after_delay(2.0)
-                            else:
-                                update_vlc_overlay("No pauses remaining!")
-                                clear_overlay_after_delay(3.0)
-
-                            currently_pausing = False  # Reset flag
-
-                            # Prevent immediate re-trigger
-                            time.sleep(1.0)
-
-                        else:
-                            # No pauses left
-                            logger.warning("❌ No pauses remaining!")
-                            update_vlc_overlay("NO PAUSES LEFT!")
-                            clear_overlay_after_delay(3.0)
-                            time.sleep(1.0)  # Prevent spam
-
-                # Check for fullscreen toggle (F key)
-                elif keyboard.is_pressed("f"):
-                    logger.info("🖥️ F key pressed - toggling fullscreen")
-                    try:
-                        player.toggle_fullscreen()
-                        time.sleep(0.5)  # Prevent multiple triggers
-                    except Exception as e:
-                        logger.debug(f"Fullscreen toggle error: {e}")
-
-                elif keyboard.is_pressed("r"):
-                    state = player.get_state()
-                    if state == vlc.State.Playing:
-                        logger.info("🔄 R key pressed - Quick resync pause")
-                        update_vlc_overlay("Resyncing...")
-
-                        # Do exactly what space pause does but for just 0.5 seconds
-                        player.pause()
-                        time.sleep(0.5)  # Short pause
-
-                        # Resume exactly like space pause does
-                        if player.get_state() == vlc.State.Paused:
-                            player.pause()  # This unpauses in VLC
-                            update_vlc_overlay("Resync complete!")
-                            clear_overlay_after_delay(1.5)
-
-                        time.sleep(1.0)  # Prevent multiple triggers
-                    else:
-                        logger.warning("⚠️ Cannot resync - video not playing")
-                        update_vlc_overlay("Cannot resync - not playing")
-                        clear_overlay_after_delay(2.0)
-                        time.sleep(0.5)
-
-                # General debounce for other keys
-                elif keyboard.is_pressed("q") or keyboard.is_pressed("esc"):
-                    logger.info("🛑 Exit key pressed (Q or ESC)")
-                    player.stop()
-                    break
-
-                # Check if video ended naturally
-                if player.get_state() in [
-                    vlc.State.Ended,
-                    vlc.State.Stopped,
-                    vlc.State.Error,
-                ]:
-                    logger.info("🎬 Video ended or stopped")
-                    break
-
-                # Small delay to prevent excessive CPU usage
-                time.sleep(0.05)  # 50ms delay
-
-            except Exception as e:
-                logger.error(f"Keyboard monitor error: {e}")
+    logger.info(
+        f"⏸️ Keyboard monitor started - Pauses: {max_pauses}x{pause_duration}s available"
+    )
+    # Start with clean screen - no overlay
+    update_vlc_overlay("")
+    while True:
+        try:
+            if keyboard.is_pressed("e"):
+                cum()
                 break
+            if keyboard.is_pressed("space"):
+                pause()
+                break
+            if keyboard.is_pressed("f"):
+                fullscreen()
+                break
+            if keyboard.is_pressed("r"):
+                resync()
+                break
+            if keyboard.is_pressed("q") or keyboard.is_pressed("esc"):
+                quit()
+                break
+        except Exception as e:
+            logger.error(f"Keyboard monitor error: {e}")
+            logger.error(f"Traceback: {traceback.format_exc()}")
+            return
+        # Check if video ended naturally
+        if player.get_state() in {
+            vlc.State.Ended,
+            vlc.State.Stopped,
+            vlc.State.Error,
+        }:
+            logger.info("🎬 Video ended or stopped")
+            break
 
-        logger.info("⌨️ Keyboard monitor ended")
+        # Small delay to prevent excessive CPU usage
+        time.sleep(0.05)
 
-    except Exception as e:
-        logger.error(f"Fatal keyboard monitor error: {e}")
-        logger.error(f"Traceback: {traceback.format_exc()}")
+    logger.info("⌨️ Keyboard monitor ended")
 
 
 def main():
