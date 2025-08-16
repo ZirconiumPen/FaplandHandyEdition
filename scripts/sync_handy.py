@@ -348,15 +348,14 @@ def upload_funscript(funscript_path):
 
 def setup_hssp(script_url):
     """Setup HSSP mode on Handy device"""
+    headers = {
+        "X-Connection-Key": ACCESS_TOKEN,
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": f"Bearer {APP_ID}",
+    }
+    logger.info("Setting device to HSSP mode...")
     try:
-        headers = {
-            "X-Connection-Key": ACCESS_TOKEN,
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            "Authorization": f"Bearer {APP_ID}",
-        }
-
-        logger.info("Setting device to HSSP mode...")
         mode_response = requests.put(f"{HANDY_API}/hssp", headers=headers, timeout=10)
         logger.debug(
             f"Mode response: {mode_response.status_code} - {mode_response.text}"
