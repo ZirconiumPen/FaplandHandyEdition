@@ -441,24 +441,19 @@ def stop_hssp(headers):
 
 def sync_time_hssp(headers, video_ms):
     """Send time sync update to Handy device for fine-tuning"""
+    server_time = get_estimated_server_time()
+    logger.debug(f"🔄 Syncing time: video={video_ms}ms, server={server_time}ms")
+    sync_payload = {"start_time": video_ms, "server_time": server_time}
+    sync_url = f"{HANDY_API}/hssp/synctime?timeout=5000"
     try:
-        server_time = get_estimated_server_time()
-        logger.debug(f"🔄 Syncing time: video={video_ms}ms, server={server_time}ms")
-
-        sync_payload = {"start_time": video_ms, "server_time": server_time}
-
-        sync_url = f"{HANDY_API}/hssp/synctime?timeout=5000"
         sync_resp = requests.put(
             sync_url, headers=headers, json=sync_payload, timeout=5
         )
-
         logger.debug(f"HSSP synctime response: {sync_resp.status_code}")
         sync_resp.raise_for_status()
-
     except Exception as e:
-        logger.debug(
-            f"Non-critical sync time error: {e}"
-        )  # Don't fail the whole session for sync errors
+        # Don't fail the whole session for sync errors
+        logger.debug(f"Non-critical sync time error: {e}")
 
 
 def check_ejaculation_trigger():
