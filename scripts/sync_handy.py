@@ -390,41 +390,41 @@ def setup_hssp(script_url):
 
 def play_hssp(headers, video_ms):
     """Start HSSP playback"""
+    server_time = get_estimated_server_time()
+    logger.info(
+        f"🔁 Starting HSSP playback at {video_ms}ms, server time: {server_time}"
+    )
+    if FIRMWARE_VERSION == 3:
+        # Firmware 3 payload format
+        play_payload = {
+            "estimatedServerTime": server_time,
+            "startTime": video_ms + round_trip_time // 2,
+        }
+    elif FIRMWARE_VERSION == 4:
+        # Firmware 4 payload format
+        play_payload = {
+            "start_time": video_ms + round_trip_time // 2,
+            "server_time": server_time,
+            "playback_rate": 1.0,
+            "loop": False,
+        }
+    else:
+        logger.error(f"Unsupported firmware version: {FIRMWARE_VERSION}")
+        raise
+
+    play_url = f"{HANDY_API}/hssp/play?timeout=5000"
     try:
-        server_time = get_estimated_server_time()
-        logger.info(
-            f"🔁 Starting HSSP playback at {video_ms}ms, server time: {server_time}"
-        )
-
-        if FIRMWARE_VERSION == 3:
-            # Firmware 3 payload format
-            play_payload = {
-                "estimatedServerTime": server_time,
-                "startTime": video_ms + round_trip_time // 2,
-            }
-        else:
-            # Firmware 4 payload format
-            play_payload = {
-                "start_time": video_ms + round_trip_time // 2,
-                "server_time": server_time,
-                "playback_rate": 1.0,
-                "loop": False,
-            }
-
-        play_url = f"{HANDY_API}/hssp/play?timeout=5000"
         play_resp = requests.put(
             play_url, headers=headers, json=play_payload, timeout=10
         )
-
         logger.debug(f"HSSP play response: {play_resp.status_code} - {play_resp.text}")
         play_resp.raise_for_status()
-        logger.info("✅ Handy playback started")
-
-        # Note: sync timing will be reset in main loop when this is called
+        # NOTE: sync timing will be reset in main loop when this is called
 
     except Exception as e:
         logger.error(f"Error starting HSSP playback: {e}")
         raise
+    logger.info("✅ Handy playback started")
 
 
 def stop_hssp(headers):
