@@ -429,13 +429,14 @@ def play_hssp(headers, video_ms):
 
 def stop_hssp(headers):
     """Stop HSSP playback"""
+    logger.info("Stopping HSSP playback...")
     try:
-        logger.info("Stopping HSSP playback...")
         response = requests.put(f"{HANDY_API}/hssp/stop", headers=headers, timeout=10)
         response.raise_for_status()
-        logger.info("🛑 Handy script stopped")
     except Exception as e:
         logger.error(f"Error stopping Handy: {e}")
+        return
+    logger.info("🛑 Handy script stopped")
 
 
 def sync_time_hssp(headers, video_ms):
