@@ -14,6 +14,7 @@ import vlc
 
 # Clear log file on startup
 LOG_FILE = "handy_sync.log"
+CUM_FILE = "iejaculated.txt"
 if os.path.exists(LOG_FILE):
     os.remove(LOG_FILE)
 
@@ -456,23 +457,16 @@ def sync_time_hssp(headers, video_ms):
         logger.debug(f"Non-critical sync time error: {e}")
 
 
-def check_ejaculation_trigger():
-    """Check if ejaculation trigger file was created"""
-    ejac_file = "iejaculated.txt"
-    if os.path.exists(ejac_file):
-        logger.warning("💀 EJACULATION TRIGGER DETECTED!")
-        return True
-    return False
-
-
 def create_ejaculation_trigger():
     """Create ejaculation trigger file"""
     try:
-        with open("iejaculated.txt", "w") as f:
+        with open(CUM_FILE, "w") as f:
             f.write(f"ejaculated_at={datetime.now().isoformat()}")
-        logger.info("💀 Ejaculation trigger file created")
     except Exception as e:
         logger.error(f"Error creating ejaculation trigger: {e}")
+        return False
+    logger.info("💀 Ejaculation trigger file created")
+    return True
 
 
 def force_fullscreen(player, max_attempts=15):
@@ -1008,7 +1002,7 @@ def main():
                 except Exception as e:
                     logger.debug(f"Fullscreen check/fix error: {e}")
 
-            if check_ejaculation_trigger():
+            if os.path.exists(CUM_FILE):
                 logger.warning("💀 Ejaculation detected - ending playback")
                 cummed = True
 
