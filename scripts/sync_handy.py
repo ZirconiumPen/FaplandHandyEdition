@@ -133,36 +133,35 @@ def load_pause_config():
 
 def save_pause_config(reason="unknown"):
     global max_pauses, pause_duration, pauses_used
+    # FIX: Use UTC time instead of local time
+    timestamp = datetime.utcnow().isoformat() + "Z"
+
+    logger.info(
+        f"🔍 DEBUG: About to save - max_pauses={max_pauses}, pauses_used={pauses_used}, reason={reason}"
+    )
+
+    # Read existing data
     try:
-        # FIX: Use UTC time instead of local time
-        timestamp = datetime.utcnow().isoformat() + "Z"
+        with open("pause_config.json", "r") as f:
+            pause_data = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        pause_data = {"entries": []}
 
-        logger.info(
-            f"🔍 DEBUG: About to save - max_pauses={max_pauses}, pauses_used={pauses_used}, reason={reason}"
-        )
+    # Add new entry
+    new_entry = {
+        "timestamp": timestamp,
+        "max_pauses": max_pauses,
+        "pause_duration": pause_duration,
+        "writer": "python",
+        "reason": reason,
+    }
 
-        # Read existing data
-        try:
-            with open("pause_config.json", "r") as f:
-                pause_data = json.load(f)
-        except (FileNotFoundError, json.JSONDecodeError):
-            pause_data = {"entries": []}
+    pause_data["entries"].append(new_entry)
 
-        # Add new entry
-        new_entry = {
-            "timestamp": timestamp,
-            "max_pauses": max_pauses,
-            "pause_duration": pause_duration,
-            "writer": "python",
-            "reason": reason,
-        }
+    # Keep only last 50 entries to prevent file from getting too large
+    pause_data["entries"] = pause_data["entries"][-50:]
 
-        pause_data["entries"].append(new_entry)
-
-        # Keep only last 50 entries to prevent file from getting too large
-        if len(pause_data["entries"]) > 50:
-            pause_data["entries"] = pause_data["entries"][-50:]
-
+    try:
         # Write back to file
         with open("pause_config.json", "w") as f:
             json.dump(pause_data, f, indent=2)
