@@ -310,36 +310,26 @@ def get_estimated_server_time():
 
 def upload_funscript(funscript_path):
     """Upload funscript to Handy servers"""
+    logger.info(f"Uploading funscript: {funscript_path}")
+    if not os.path.exists(funscript_path):
+        logger.error(f"Funscript file not found: {funscript_path}")
+        return None
+
+    # Check file size
+    file_size = os.path.getsize(funscript_path)
+    logger.info(f"Funscript file size: {file_size} bytes")
+    logger.debug("Making upload request to Handy API...")
     try:
-        logger.info(f"Uploading funscript: {funscript_path}")
-
-        if not os.path.exists(funscript_path):
-            logger.error(f"Funscript file not found: {funscript_path}")
-            return None
-
-        # Check file size
-        file_size = os.path.getsize(funscript_path)
-        logger.info(f"Funscript file size: {file_size} bytes")
-
         with open(funscript_path, "rb") as file:
-            logger.debug("Making upload request to Handy API...")
             response = requests.post(
                 "https://www.handyfeeling.com/api/hosting/v2/upload",
                 headers={"accept": "application/json"},
                 files={"file": file},
                 timeout=30,
             )
-
         logger.debug(f"Upload response status: {response.status_code}")
         logger.debug(f"Upload response text: {response.text}")
-
         response.raise_for_status()
-        upload_result = response.json()
-        script_url = upload_result["url"]
-
-        logger.info(f"✅ Funscript uploaded successfully to: {script_url}")
-        return script_url
-
     except requests.exceptions.Timeout:
         logger.error("Timeout uploading funscript")
         return None
@@ -350,6 +340,10 @@ def upload_funscript(funscript_path):
         logger.error(f"Unexpected error uploading funscript: {e}")
         logger.error(f"Traceback: {traceback.format_exc()}")
         return None
+    upload_result = response.json()
+    script_url = upload_result["url"]
+    logger.info(f"✅ Funscript uploaded successfully to: {script_url}")
+    return script_url
 
 
 def setup_hssp(script_url):
